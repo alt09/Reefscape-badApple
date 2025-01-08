@@ -13,11 +13,10 @@
 
 package frc.robot;
 
-import java.util.Optional;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
+import java.util.Optional;
 
 /**
  * This class defines the runtime mode used by AdvantageKit. The mode is always "real" when running
@@ -25,7 +24,7 @@ import edu.wpi.first.wpilibj.RobotBase;
  * (log replay from a file).
  */
 public final class Constants {
-  public static class RobotStateConstants{
+  public static class RobotStateConstants {
     public static final Mode simMode = Mode.SIM;
     public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
@@ -42,7 +41,7 @@ public final class Constants {
 
     /** Returns Robot Mode (Real/Sim/Replay) */
     public static Mode getMode() {
-      if(RobotBase.isReal()) {
+      if (RobotBase.isReal()) {
         return Mode.REAL;
       } else if (RobotBase.isSimulation()) {
         return Mode.SIM;

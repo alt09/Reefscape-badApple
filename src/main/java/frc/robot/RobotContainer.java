@@ -5,19 +5,20 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.RobotStateConstants;
 
 public class RobotContainer {
-    // Subsystems
+  // Subsystems
 
-    // Controllers
-    private final CommandXboxController controller = new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER);
+  // Controllers
+  private final CommandXboxController controller =
+      new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER);
 
-    public RobotContainer() {
-        switch (RobotStateConstants.getMode()) {
-            case REAL:
-                break;
-            case SIM:
-                break;
-            default:
-                break;
-        }
+  public RobotContainer() {
+    switch (RobotStateConstants.getMode()) {
+      case REAL:
+        break;
+      case SIM:
+        break;
+      default:
+        break;
     }
+  }
 }
