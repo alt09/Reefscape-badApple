@@ -1,5 +1,6 @@
 package frc.robot.Subsystems.Drive;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ModuleIO {
@@ -55,6 +56,9 @@ public interface ModuleIO {
    * @param volts A value between -12 (full reverse) to 12 (full forward)
    */
   public default void setTurnVoltage(double volts) {}
+
+  /** Overrides the turn position */
+  public default void setTurnPosition(Rotation2d angle) {}
 
   /**
    * Sets the idle mode for the Drive motor
