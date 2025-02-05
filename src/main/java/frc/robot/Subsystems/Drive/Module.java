@@ -1,5 +1,6 @@
 package frc.robot.Subsystems.Drive;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,6 +18,9 @@ public class Module {
   private final PIDController m_steerPID;
 
   private SimpleMotorFeedforward m_driveFeedforward;
+
+  // private double counter = 0;
+  // private final double updateFrequency = 25;
 
   /**
    * Constructs a new Module instance.
@@ -38,8 +42,10 @@ public class Module {
         new PIDController(DriveConstants.TURN_KP, DriveConstants.TURN_KI, DriveConstants.TURN_KD);
 
     m_driveFeedforward =
-        new SimpleMotorFeedforward(DriveConstants.DRIVE_KS_KRAKEN, DriveConstants.DRIVE_KV_KRAKEN);
+        new SimpleMotorFeedforward(DriveConstants.DRIVE_KS, DriveConstants.DRIVE_KV);
 
+    // Considers min and max the same point, needed for our Swerve Modules since we wrap the
+    // position from -pi to pi
     m_steerPID.enableContinuousInput(-Math.PI, Math.PI);
   }
 
@@ -50,6 +56,12 @@ public class Module {
   public void periodic() {
     this.updateInputs();
     Logger.processInputs("Drive/Module" + Integer.toString(m_moduleNumber), m_inputs);
+
+    // if (counter % updateFrequency == 0) {
+    //   this.updateRelativePosition();
+    // }
+
+    // counter++;
   }
 
   /**
@@ -108,13 +120,33 @@ public class Module {
   }
 
   /**
+   * Sets the velocity of the Drive motor using the closed loop controller built into the TalonFX
+   * speed controller
+   *
+   * @param velocityRadPerSec Velocity to set Drive motor to in radians per second
+   */
+  public void setDriveVelocity(double velocityRadPerSec) {
+    m_io.setDriveVelocity(velocityRadPerSec);
+  }
+
+  /**
+   * Sets the position of the Turn motor using the closed loop controller built into the SparkMax
+   * speed controller
+   *
+   * @param position Rotation2d with angle to set the Module wheel to
+   */
+  public void setTurnPosition(Rotation2d position) {
+    m_io.setTurnPosition(position);
+  }
+
+  /**
    * The current absolute turn angle of the module in radians, normalized to a range of negative pi
    * to pi.
    *
    * @return The current turn angle of the module in radians.
    */
   public Rotation2d getAngle() {
-    return new Rotation2d(m_inputs.turnAbsolutePositionRad);
+    return new Rotation2d(MathUtil.angleModulus(m_inputs.turnAbsolutePositionRad));
   }
 
   /**
@@ -184,15 +216,45 @@ public class Module {
     m_io.setTurnVoltage(m_steerPID.calculate(getAngle().getRadians(), state.angle.getRadians()));
 
     // Update velocity based on turn error
-    state.speedMetersPerSecond *= Math.cos(m_steerPID.getError());
+    // state.speedMetersPerSecond *= Math.cos(m_steerPID.getError());
 
     // Turn Speed m/s into Vel rad/s
     double velocityRadPerSec = state.speedMetersPerSecond / DriveConstants.WHEEL_RADIUS_M;
 
-    // Run drive controller
-    m_io.setDriveVoltage(
-        m_driveFeedforward.calculate(velocityRadPerSec)
-            + (m_drivePID.calculate(m_inputs.driveVelocityRadPerSec, velocityRadPerSec)));
+    // Runs the Drive motor through the TalonFX closed loop controller
+    m_io.setDriveVelocity(velocityRadPerSec);
+  }
+
+  /**
+   * Sets the PID values for the Drive motor's built in closed loop controller
+   *
+   * @param kP P gain value
+   * @param kI I gain value
+   * @param kD D gain value
+   */
+  public void setDrivePID(double kP, double kI, double kD) {
+    m_io.setDrivePID(kP, kI, kD);
+  }
+
+  /**
+   * Sets the FF values for the Drive motor's built in closed loop controller
+   *
+   * @param kS S gain value
+   * @param kV V gain value
+   */
+  public void setDriveFF(double kS, double kV) {
+    m_io.setDriveFF(kS, kV);
+  }
+
+  /**
+   * Sets the PID values for the Turn motor's built in closed loop controller
+   *
+   * @param kP P gain value
+   * @param kI I gain value
+   * @param kD D gain value
+   */
+  public void setTurnPID(double kP, double kI, double kD) {
+    m_steerPID.setPID(kP, kI, kD);
   }
 
   /**

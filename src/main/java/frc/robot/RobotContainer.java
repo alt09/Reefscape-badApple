@@ -132,50 +132,50 @@ public class RobotContainer {
     m_driveSubsystem.setDefaultCommand(
         DriveCommands.fieldRelativeDrive(
             m_driveSubsystem,
-            () -> m_driverController.getLeftX(),
             () -> -m_driverController.getLeftY(),
-            () -> m_driverController.getRightX()));
+            () -> -m_driverController.getLeftX(),
+            () -> -m_driverController.getRightX()));
 
     m_driverController
         .b()
         .onTrue(
             DriveCommands.robotRelativeDrive(
                 m_driveSubsystem,
-                () -> m_driverController.getLeftX(),
+                () -> -m_driverController.getLeftX(),
                 () -> -m_driverController.getLeftY(),
-                () -> m_driverController.getRightX()));
+                () -> -m_driverController.getRightX()));
 
     m_driverController
         .povUp()
         .onTrue(
             DriveCommands.fieldRelativeDriveAtAngle(
                 m_driveSubsystem,
-                () -> m_driverController.getLeftX(),
                 () -> -m_driverController.getLeftY(),
+                () -> -m_driverController.getLeftX(),
                 () -> Rotation2d.fromRadians(0)));
     m_driverController
         .povLeft()
         .onTrue(
             DriveCommands.fieldRelativeDriveAtAngle(
                 m_driveSubsystem,
-                () -> m_driverController.getLeftX(),
                 () -> -m_driverController.getLeftY(),
+                () -> -m_driverController.getLeftX(),
                 () -> Rotation2d.fromRadians(Math.PI / 2)));
     m_driverController
         .povDown()
         .onTrue(
             DriveCommands.fieldRelativeDriveAtAngle(
                 m_driveSubsystem,
-                () -> m_driverController.getLeftX(),
                 () -> -m_driverController.getLeftY(),
+                () -> -m_driverController.getLeftX(),
                 () -> Rotation2d.fromRadians(Math.PI)));
     m_driverController
         .povRight()
         .onTrue(
             DriveCommands.fieldRelativeDriveAtAngle(
                 m_driveSubsystem,
-                () -> m_driverController.getLeftX(),
                 () -> -m_driverController.getLeftY(),
+                () -> -m_driverController.getLeftX(),
                 () -> Rotation2d.fromRadians(-Math.PI / 2)));
 
     m_driverController

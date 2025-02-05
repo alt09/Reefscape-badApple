@@ -107,6 +107,7 @@ public final class Constants {
     public static final String BACK_CAMERA_NAME = "Back";
   }
 
+  /** Constants for PathPlanner configurations and PathFinding */
   public final class PathPlannerConstants {
     /* Configuration */
     // PID

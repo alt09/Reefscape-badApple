@@ -78,9 +78,9 @@ public class DriveCommands {
       Supplier<Rotation2d> rotationSupplier) {
     ProfiledPIDController angleController =
         new ProfiledPIDController(
-            0.5,
+            1,
             0,
-            100,
+            0,
             new TrapezoidProfile.Constraints(
                 DriveConstants.MAX_ANGULAR_SPEED_RAD_PER_S,
                 DriveConstants.MAX_ANGULAR_SPEED_RAD_PER_S));
@@ -112,7 +112,7 @@ public class DriveCommands {
   private static Translation2d getLinearVelocity(double x, double y) {
     // Apply deadband
     double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DriveConstants.DEADBAND);
-    Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
+    Rotation2d linearDirection = new Rotation2d(x, y);
 
     // Square magnitude for more precise control
     // NOTE: The x & y values range from -1 to +1, so their squares are as well

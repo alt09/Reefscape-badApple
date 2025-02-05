@@ -23,36 +23,36 @@ public final class DriveConstants {
   /**
    * KP represents the constant multiplied by the current error from setpoint (Proportional Error)
    */
-  public static final double DRIVE_KP = 0;
+  public static double DRIVE_KP = 0;
   /**
    * KI represents the constant multiplied by the integral of the error from setpoint (Integral
    * Error)
    */
-  public static final double DRIVE_KI = 0;
+  public static double DRIVE_KI = 0;
   /** KD represents the constant multiplied by the change in error over time (Derivative Error) */
-  public static final double DRIVE_KD = 0;
+  public static double DRIVE_KD = 0;
   /** KS represents the voltage required to overcome static friction */
-  public static final double DRIVE_KS_KRAKEN = 0.12289;
+  public static double DRIVE_KS = 0.12289;
   /** KV represents the voltage used every second per meter */
-  public static final double DRIVE_KV_KRAKEN = 0.17161;
+  public static double DRIVE_KV = 0.17161;
 
   /**
    * KP represents the constant multiplied by the current error from setpoint (Proportional Error)
    */
-  public static final double TURN_KP = 6.4;
+  public static double TURN_KP = 6.4;
   /**
    * KI represents the constant multiplied by the integral of the error from setpoint (Integral
    * Error)
    */
-  public static final double TURN_KI = 0.0;
+  public static double TURN_KI = 0.0;
   /** KD represents the constant multiplied by the change in error over time (Derivative Error) */
-  public static final double TURN_KD = 0.05;
+  public static double TURN_KD = 0.05;
 
   /** Max Linear Speed of Robot */
   public static final double MAX_LINEAR_SPEED_M_PER_S = 5.2; // TODO: Update? Since robot is larger
   /** Set the inverted for the turn SparkMax */
   public static final double MAX_ANGULAR_SPEED_RAD_PER_S =
-      MAX_LINEAR_SPEED_M_PER_S / (Math.sqrt(2) * TRACK_WIDTH_M / 2);
+      MAX_LINEAR_SPEED_M_PER_S / DRIVETRAIN_RADIUS_M;
 
   public static final boolean TURN_IS_INVERTED = true;
   /** the update frequency */
@@ -82,10 +82,10 @@ public final class DriveConstants {
    */
   public static final Translation2d[] getModuleTranslations() {
     return new Translation2d[] {
-      new Translation2d(-DriveConstants.TRACK_WIDTH_M / 2.0, DriveConstants.TRACK_WIDTH_M / 2.0),
-      new Translation2d(-DriveConstants.TRACK_WIDTH_M / 2.0, -DriveConstants.TRACK_WIDTH_M / 2.0),
       new Translation2d(DriveConstants.TRACK_WIDTH_M / 2.0, -DriveConstants.TRACK_WIDTH_M / 2.0),
       new Translation2d(DriveConstants.TRACK_WIDTH_M / 2.0, DriveConstants.TRACK_WIDTH_M / 2.0),
+      new Translation2d(-DriveConstants.TRACK_WIDTH_M / 2.0, DriveConstants.TRACK_WIDTH_M / 2.0),
+      new Translation2d(-DriveConstants.TRACK_WIDTH_M / 2.0, -DriveConstants.TRACK_WIDTH_M / 2.0),
     };
   }
 
@@ -132,10 +132,10 @@ public final class DriveConstants {
   }
 
   public enum ABSOLUTE_ENCODER_OFFSET {
-    FRONT_RIGHT(1.8775924843720249), // Module 0
-    FRONT_LEFT(1.1489516101263453), // Module 1
-    BACK_LEFT(-0.6534758156392831), // Module 2
-    BACK_RIGHT(1.0615147052168636); // Module 3
+    FRONT_RIGHT(1.88059248437), // Module 0
+    FRONT_LEFT(1.16695161013), // Module 1
+    BACK_LEFT(-0.60147581563), // Module 2
+    BACK_RIGHT(1.04951470522); // Module 3
 
     public final double OFFSET;
 
