@@ -15,10 +15,8 @@ import frc.robot.Subsystems.Drive.DriveConstants;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+/** The commands to run the different driving modes and characterization routines of the robot */
 public class DriveCommands {
-
-  public DriveCommands() {}
-
   /**
    * Drives the robot with a 10% joystick deadband applied. This means joystick values between 0-0.1
    * (or 0-10%) will be ignored and not more the robot for both axises and rotation.
@@ -78,7 +76,7 @@ public class DriveCommands {
       Supplier<Rotation2d> rotationSupplier) {
     ProfiledPIDController angleController =
         new ProfiledPIDController(
-            1,
+            0.1,
             0,
             0,
             new TrapezoidProfile.Constraints(
@@ -112,7 +110,7 @@ public class DriveCommands {
   private static Translation2d getLinearVelocity(double x, double y) {
     // Apply deadband
     double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DriveConstants.DEADBAND);
-    Rotation2d linearDirection = new Rotation2d(x, y);
+    Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
 
     // Square magnitude for more precise control
     // NOTE: The x & y values range from -1 to +1, so their squares are as well
