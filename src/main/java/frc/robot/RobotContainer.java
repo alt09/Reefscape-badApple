@@ -63,7 +63,7 @@ public class RobotContainer {
                 m_gyroSubsystem);
         m_visionSubsystem =
             new Vision(
-                m_driveSubsystem::addVisionMeasurment,
+                m_driveSubsystem::addVisionMeasurement,
                 new VisionIOPhotonVision(VisionConstants.CAMERA.FRONT.CAMERA_INDEX)
                 // new VisionIOPhotonVision(VisionConstants.CAMERA.BACK.CAMERA_INDEX)
                 );
@@ -80,7 +80,7 @@ public class RobotContainer {
                 m_gyroSubsystem);
         m_visionSubsystem =
             new Vision(
-                m_driveSubsystem::addVisionMeasurment,
+                m_driveSubsystem::addVisionMeasurement,
                 new VisionIOSim(
                     VisionConstants.CAMERA.FRONT.CAMERA_INDEX, m_driveSubsystem::getCurrentPose2d),
                 new VisionIOSim(
@@ -96,7 +96,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 m_gyroSubsystem);
-        m_visionSubsystem = new Vision(m_driveSubsystem::addVisionMeasurment, new VisionIO() {});
+        m_visionSubsystem = new Vision(m_driveSubsystem::addVisionMeasurement, new VisionIO() {});
         break;
     }
 
@@ -129,7 +129,8 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)",
         m_driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     m_autoChooser.addOption(
-        "Drive FeedForward Characterization", m_driveSubsystem.feedforwardCharacterization());
+        "Drive FeedForward Characterization",
+        DriveCommands.feedforwardCharacterization(m_driveSubsystem));
 
     // Adds an "Auto" tab on ShuffleBoard
     Shuffleboard.getTab("Auto").add(m_autoChooser.getSendableChooser());
@@ -150,13 +151,13 @@ public class RobotContainer {
 
     CommandScheduler.getInstance().getActiveButtonLoop().clear();
 
-    /** Driver Controls */
     this.driverControllerBindings();
   }
 
-  // Driver Controls
+  /** Driver Controls */
   private void driverControllerBindings() {
     /* Driving the robot */
+    // Default to field relative driving
     m_driveSubsystem.setDefaultCommand(
         DriveCommands.fieldRelativeDrive(
             m_driveSubsystem,
@@ -164,6 +165,17 @@ public class RobotContainer {
             () -> -m_driverController.getLeftX(),
             () -> -m_driverController.getRightX()));
 
+    // Field relative
+    m_driverController
+        .y()
+        .onTrue(
+            DriveCommands.fieldRelativeDrive(
+                m_driveSubsystem,
+                () -> -m_driverController.getLeftY(),
+                () -> -m_driverController.getLeftX(),
+                () -> -m_driverController.getRightX()));
+
+    // Robot relative
     m_driverController
         .y()
         .onTrue(
@@ -182,6 +194,7 @@ public class RobotContainer {
                 () -> -m_driverController.getLeftX(),
                 () -> -m_driverController.getRightX()));
 
+    // Lock robot heading to 0 degrees
     m_driverController
         .povUp()
         .onTrue(
@@ -190,6 +203,7 @@ public class RobotContainer {
                 () -> -m_driverController.getLeftY(),
                 () -> -m_driverController.getLeftX(),
                 () -> Rotation2d.fromRadians(0)));
+    // Lock robot heading to 90 degrees
     m_driverController
         .povLeft()
         .onTrue(
@@ -198,6 +212,7 @@ public class RobotContainer {
                 () -> -m_driverController.getLeftY(),
                 () -> -m_driverController.getLeftX(),
                 () -> Rotation2d.fromRadians(Math.PI / 2)));
+    // Lock robot heading to 180 degrees
     m_driverController
         .povDown()
         .onTrue(
@@ -206,6 +221,7 @@ public class RobotContainer {
                 () -> -m_driverController.getLeftY(),
                 () -> -m_driverController.getLeftX(),
                 () -> Rotation2d.fromRadians(Math.PI)));
+    // Lock robot heading to -90 degrees
     m_driverController
         .povRight()
         .onTrue(
@@ -215,6 +231,7 @@ public class RobotContainer {
                 () -> -m_driverController.getLeftX(),
                 () -> Rotation2d.fromRadians(-Math.PI / 2)));
 
+    // Reset Gyro heading, making the front side of the robot the new 0 degree angle
     m_driverController
         .a()
         .onTrue(

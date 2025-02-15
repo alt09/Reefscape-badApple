@@ -8,6 +8,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants.RobotStateConstants;
 
+/** ModuleIO implementation for the simulated mode of the robot */
 public class ModuleIOSim implements ModuleIO {
   // Sim objects
   private final FlywheelSim m_driveSim;
@@ -17,7 +18,7 @@ public class ModuleIOSim implements ModuleIO {
   private double m_driveAppliedVolts = 0.0;
   private double m_turnAppliedVolts = 0.0;
 
-  // PID FF controllers
+  // PID & Feedforward controllers
   private final PIDController m_driveController;
   private SimpleMotorFeedforward m_driveFeedForward;
   private double m_driveSetpoint = 0.0;
@@ -40,7 +41,6 @@ public class ModuleIOSim implements ModuleIO {
                 DriveConstants.DRIVE_GEAR_RATIO),
             DCMotor.getKrakenX60(1),
             0);
-
     m_turnSim =
         new FlywheelSim(
             LinearSystemId.createFlywheelSystem(
@@ -48,7 +48,7 @@ public class ModuleIOSim implements ModuleIO {
             DCMotor.getNEO(1),
             0);
 
-    // Initilize PID FF controllers
+    // Initilize PID & Feedforward controllers
     m_driveController =
         new PIDController(
             DriveConstants.DRIVE_KP_SIM, DriveConstants.DRIVE_KI_SIM, DriveConstants.DRIVE_KD_SIM);
@@ -58,7 +58,7 @@ public class ModuleIOSim implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    // Update Drive and Turn based on setpoint
+    // Update Drive motor based on setpoint
     m_driveAppliedVolts =
         m_driveController.calculate(inputs.driveVelocityRadPerSec, m_driveSetpoint)
             + m_driveFeedForward.calculate(m_driveSetpoint);
@@ -70,20 +70,20 @@ public class ModuleIOSim implements ModuleIO {
 
     // Update Drive motor inputs
     inputs.driveIsConnected = true;
-    inputs.drivePositionRad +=
-        m_driveSim.getAngularVelocityRadPerSec() * RobotStateConstants.LOOP_PERIODIC_SEC;
     inputs.driveVelocityRadPerSec = m_driveSim.getAngularVelocityRadPerSec();
+    inputs.drivePositionRad +=
+        inputs.driveVelocityRadPerSec * RobotStateConstants.LOOP_PERIODIC_SEC;
     inputs.driveAppliedVoltage = m_driveAppliedVolts;
     inputs.driveCurrentAmps = Math.abs(m_driveSim.getCurrentDrawAmps());
 
     // Update Turn motor inputs
     inputs.absoluteEncoderIsConnected = true;
+    inputs.turnVelocityRadPerSec = m_turnSim.getAngularVelocityRadPerSec();
     inputs.turnAbsolutePositionRad =
         MathUtil.angleModulus(
             inputs.turnAbsolutePositionRad
                 + (m_turnSim.getAngularVelocityRadPerSec()
                     * RobotStateConstants.LOOP_PERIODIC_SEC));
-    inputs.turnPositionRad = inputs.turnAbsolutePositionRad;
     inputs.turnVelocityRadPerSec = m_turnSim.getAngularVelocityRadPerSec();
     inputs.turnAppliedVoltage = m_turnAppliedVolts;
     inputs.turnCurrentAmps = Math.abs(m_turnSim.getCurrentDrawAmps());

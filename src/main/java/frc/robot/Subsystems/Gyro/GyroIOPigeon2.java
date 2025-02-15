@@ -10,12 +10,12 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 
-/** GyroIO implementation for the real mode of the robot */
+/** GyroIO implementation for the real mode of the robot running a Pigeon 2.0 */
 public class GyroIOPigeon2 implements GyroIO {
-
+  // Gyroscope
   private final Pigeon2 m_gyro;
 
-  // Pigeon inputs
+  // Pigeon logged signals
   private StatusSignal<Angle> m_yawDeg;
   private StatusSignal<AngularVelocity> m_yawVelocityDegPerSec;
 
@@ -23,10 +23,11 @@ public class GyroIOPigeon2 implements GyroIO {
    * Constructs a new GyroIOPigeon2 instance
    *
    * <p>This creates a new GyroIO object that uses the real Pigeon 2.0 IMU sensor for updating
-   * values
+   * values related to Gyroscope readings
    */
   public GyroIOPigeon2() {
     System.out.println("[Init] Creating GyroIOPigeon2");
+
     // Ininitalize Pigeon Gyro
     m_gyro = new Pigeon2(GyroConstants.CAN_ID, "DriveTrain");
 
@@ -34,18 +35,18 @@ public class GyroIOPigeon2 implements GyroIO {
     m_gyro.getConfigurator().apply(new Pigeon2Configuration());
     m_gyro.optimizeBusUtilization();
 
-    // Initialize Gyro inputs
+    // Initialize Gyro inputs and set update frequency to be every 0.01 seconds
     m_yawDeg = m_gyro.getYaw();
-    m_yawVelocityDegPerSec = m_gyro.getAngularVelocityZWorld();
-
-    // Update Gyro signals every 0.01 seconds
     m_yawDeg.setUpdateFrequency(GyroConstants.UPDATE_FREQUENCY_HZ);
+    m_yawVelocityDegPerSec = m_gyro.getAngularVelocityZWorld();
     m_yawVelocityDegPerSec.setUpdateFrequency(GyroConstants.UPDATE_FREQUENCY_HZ);
   }
 
   @Override
   public void updateInputs(GyroIOInputs inputs) {
+    // Update Gyro signals and check if they are recieved
     inputs.connected = BaseStatusSignal.refreshAll(m_yawDeg, m_yawVelocityDegPerSec).isOK();
+    // Update Gyro logged inputs
     inputs.yawPositionRad =
         Rotation2d.fromRadians(
             MathUtil.angleModulus(
@@ -53,8 +54,6 @@ public class GyroIOPigeon2 implements GyroIO {
                     + GyroConstants.HEADING_OFFSET_RAD));
     inputs.yawVelocityRadPerSec =
         Units.degreesToRadians(m_gyro.getAngularVelocityZWorld().getValueAsDouble());
-    inputs.rawYawPositionRad =
-        Rotation2d.fromRadians(Units.degreesToRadians(m_yawDeg.getValueAsDouble()));
   }
 
   @Override
