@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Commands.TeleopCommands.DriveCommands;
 import frc.robot.Commands.TeleopCommands.PathfindingCommands;
 import frc.robot.Constants.OperatorConstants;
@@ -27,7 +26,6 @@ import frc.robot.Subsystems.Vision.VisionConstants;
 import frc.robot.Subsystems.Vision.VisionIO;
 import frc.robot.Subsystems.Vision.VisionIOPhotonVision;
 import frc.robot.Subsystems.Vision.VisionIOSim;
-import frc.robot.Utils.PathPlanner;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -38,7 +36,6 @@ public class RobotContainer {
 
   // Utils
   private final Vision m_visionSubsystem;
-  private final PathPlanner m_pathPlanner;
 
   // Controllers
   private final CommandXboxController m_driverController =
@@ -100,9 +97,6 @@ public class RobotContainer {
         break;
     }
 
-    // Utils
-    m_pathPlanner = new PathPlanner(m_driveSubsystem, m_visionSubsystem);
-
     /** Autonomous Routines */
     m_autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
     m_autoChooser.addOption("Path Planner", new PathPlannerAuto("test1"));
@@ -115,22 +109,13 @@ public class RobotContainer {
     m_autoChooser.addOption("Diagonal 180", new PathPlannerAuto("Diagonal 180"));
     m_autoChooser.addOption("Curve", new PathPlannerAuto("Curve"));
     m_autoChooser.addOption("Curve 180", new PathPlannerAuto("Curve 180"));
-    /* SysId Routines */
-    m_autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        m_driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    m_autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        m_driveSubsystem.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    m_autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)",
-        m_driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    m_autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)",
-        m_driveSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    /* Characterization Routines */
     m_autoChooser.addOption(
         "Drive FeedForward Characterization",
         DriveCommands.feedforwardCharacterization(m_driveSubsystem));
+    m_autoChooser.addOption(
+        "Drive Wheel Radius Characterization",
+        DriveCommands.wheelRadiusCharacterization(m_driveSubsystem));
 
     // Adds an "Auto" tab on ShuffleBoard
     Shuffleboard.getTab("Auto").add(m_autoChooser.getSendableChooser());
@@ -164,7 +149,6 @@ public class RobotContainer {
             () -> -m_driverController.getLeftY(),
             () -> -m_driverController.getLeftX(),
             () -> -m_driverController.getRightX()));
-
     // Field relative
     m_driverController
         .y()
@@ -174,17 +158,7 @@ public class RobotContainer {
                 () -> -m_driverController.getLeftY(),
                 () -> -m_driverController.getLeftX(),
                 () -> -m_driverController.getRightX()));
-
     // Robot relative
-    m_driverController
-        .y()
-        .onTrue(
-            DriveCommands.fieldRelativeDrive(
-                m_driveSubsystem,
-                () -> -m_driverController.getLeftY(),
-                () -> -m_driverController.getLeftX(),
-                () -> -m_driverController.getRightX()));
-
     m_driverController
         .b()
         .onTrue(
@@ -193,7 +167,6 @@ public class RobotContainer {
                 () -> -m_driverController.getLeftY(),
                 () -> -m_driverController.getLeftX(),
                 () -> -m_driverController.getRightX()));
-
     // Lock robot heading to 0 degrees
     m_driverController
         .povUp()
@@ -231,6 +204,7 @@ public class RobotContainer {
                 () -> -m_driverController.getLeftX(),
                 () -> Rotation2d.fromRadians(-Math.PI / 2)));
 
+    /* Gyro */
     // Reset Gyro heading, making the front side of the robot the new 0 degree angle
     m_driverController
         .a()
@@ -243,50 +217,36 @@ public class RobotContainer {
         .x()
         .onTrue(
             PathfindingCommands.pathfindToCurrentTag(
-                m_driveSubsystem,
-                m_visionSubsystem,
-                m_pathPlanner,
-                m_driverController.x().negate()));
+                    m_visionSubsystem, () -> PathPlannerConstants.DEFAULT_APRILTAG_DISTANCE_M)
+                .until(m_driverController.x().negate()));
     // AprilTag 18 - REEF
     m_driverController
         .leftTrigger()
         .onTrue(
             PathfindingCommands.pathfindToAprilTag(
-                m_driveSubsystem,
-                m_pathPlanner,
-                () -> 18,
-                () -> PathPlannerConstants.DEFAULT_APRILTAG_DISTANCE_M,
-                m_driverController.leftTrigger().negate()));
+                    () -> 18, () -> PathPlannerConstants.DEFAULT_APRILTAG_DISTANCE_M)
+                .until(m_driverController.leftTrigger().negate()));
     // AprilTag 17 - REEF
     m_driverController
         .leftBumper()
         .onTrue(
             PathfindingCommands.pathfindToAprilTag(
-                m_driveSubsystem,
-                m_pathPlanner,
-                () -> 17,
-                () -> PathPlannerConstants.DEFAULT_APRILTAG_DISTANCE_M,
-                m_driverController.leftBumper().negate()));
+                    () -> 17, () -> PathPlannerConstants.DEFAULT_APRILTAG_DISTANCE_M)
+                .until(m_driverController.leftBumper().negate()));
     // AprilTag 19 - REEF
     m_driverController
         .rightTrigger()
         .onTrue(
             PathfindingCommands.pathfindToAprilTag(
-                m_driveSubsystem,
-                m_pathPlanner,
-                () -> 19,
-                () -> PathPlannerConstants.DEFAULT_APRILTAG_DISTANCE_M,
-                m_driverController.rightTrigger().negate()));
+                    () -> 19, () -> PathPlannerConstants.DEFAULT_APRILTAG_DISTANCE_M)
+                .until(m_driverController.rightTrigger().negate()));
     // AprilTag 14 - BARGE Net
     m_driverController
         .rightBumper()
         .onTrue(
             PathfindingCommands.pathfindToAprilTag(
-                m_driveSubsystem,
-                m_pathPlanner,
-                () -> 14,
-                () -> PathPlannerConstants.DEFAULT_APRILTAG_DISTANCE_M,
-                m_driverController.rightBumper().negate()));
+                    () -> 14, () -> PathPlannerConstants.DEFAULT_APRILTAG_DISTANCE_M)
+                .until(m_driverController.rightBumper().negate()));
   }
 
   /**

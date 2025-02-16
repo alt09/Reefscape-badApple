@@ -123,6 +123,13 @@ public class Module {
   }
 
   /**
+   * @return The current Drive position of the Module in radians
+   */
+  public double getPositionRad() {
+    return m_inputs.drivePositionRad;
+  }
+
+  /**
    * Calculates the Drive linear displacement of the Module based on the encoder readings (angular
    * position) and the wheel radius.
    *
