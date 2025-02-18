@@ -14,6 +14,10 @@ import frc.robot.Commands.TeleopCommands.PathfindingCommands;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.Constants.RobotStateConstants;
+import frc.robot.Subsystems.CoralEndEffector.CEE;
+import frc.robot.Subsystems.CoralEndEffector.CEEIO;
+import frc.robot.Subsystems.CoralEndEffector.CEEIOSim;
+import frc.robot.Subsystems.CoralEndEffector.CEEIOSparkMax;
 import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Drive.ModuleIO;
 import frc.robot.Subsystems.Drive.ModuleIOSim;
@@ -39,6 +43,9 @@ public class RobotContainer {
   private final Drive m_driveSubsystem;
   private final Gyro m_gyroSubsystem;
   private final Periscope m_periscopeSubsystem;
+
+  // Mechanisms
+  private final CEE m_CEESubsystem;
 
   // Utils
   private final Vision m_visionSubsystem;
@@ -67,6 +74,7 @@ public class RobotContainer {
                 new ModuleIOSparkMaxTalonFX(2),
                 new ModuleIOSparkMaxTalonFX(3),
                 m_gyroSubsystem);
+        m_CEESubsystem = new CEE(new CEEIOSparkMax());
         m_periscopeSubsystem = new Periscope(new PeriscopeIOTalonFX());
         m_visionSubsystem =
             new Vision(
@@ -85,6 +93,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 m_gyroSubsystem);
+        m_CEESubsystem = new CEE(new CEEIOSim());
         m_periscopeSubsystem = new Periscope(new PeriscopeIOSim());
         m_visionSubsystem =
             new Vision(
@@ -104,6 +113,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 m_gyroSubsystem);
+        m_CEESubsystem = new CEE(new CEEIO() {});
         m_periscopeSubsystem = new Periscope(new PeriscopeIO() {});
         m_visionSubsystem = new Vision(m_driveSubsystem::addVisionMeasurement, new VisionIO() {});
         break;
@@ -224,6 +234,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(() -> m_gyroSubsystem.zeroYaw(), m_gyroSubsystem)
                 .withName("ZeroYaw"));
+                
     /* Pathfinding */
     // AprilTag currently seen
     m_driverController
@@ -263,7 +274,13 @@ public class RobotContainer {
   }
 
   /** Aux Controls */
-  private void auxControllerBindings() {
+  public void auxControllerBindings () {
+    // CEE testing binding
+    m_CEESubsystem.setDefaultCommand(
+        new InstantCommand (
+            () -> m_CEESubsystem.setVoltage(m_auxController.getRightTriggerAxis() * 12),
+            m_CEESubsystem));
+
     m_auxController
         .a()
         .onTrue(
