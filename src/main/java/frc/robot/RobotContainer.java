@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -22,6 +23,10 @@ import frc.robot.Subsystems.Drive.Drive;
 import frc.robot.Subsystems.Drive.ModuleIO;
 import frc.robot.Subsystems.Drive.ModuleIOSim;
 import frc.robot.Subsystems.Drive.ModuleIOSparkMaxTalonFX;
+import frc.robot.Subsystems.Funnel.Funnel;
+import frc.robot.Subsystems.Funnel.FunnelIO;
+import frc.robot.Subsystems.Funnel.FunnelIOSim;
+import frc.robot.Subsystems.Funnel.FunnelIOSparkMax;
 import frc.robot.Subsystems.Gyro.Gyro;
 import frc.robot.Subsystems.Gyro.GyroIO;
 import frc.robot.Subsystems.Gyro.GyroIOPigeon2;
@@ -47,13 +52,15 @@ public class RobotContainer {
   // Mechanisms
   private final CEE m_CEESubsystem;
 
+  // Mechanisms
+  private final Funnel m_funnelSubsystem;
+
   // Utils
   private final Vision m_visionSubsystem;
 
   // Controllers
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER);
-  // Controllers
   private final CommandXboxController m_auxController =
       new CommandXboxController(OperatorConstants.AUX_CONTROLLER);
 
@@ -74,6 +81,7 @@ public class RobotContainer {
                 new ModuleIOSparkMaxTalonFX(2),
                 new ModuleIOSparkMaxTalonFX(3),
                 m_gyroSubsystem);
+        m_funnelSubsystem = new Funnel(new FunnelIOSparkMax());
         m_CEESubsystem = new CEE(new CEEIOSparkMax());
         m_periscopeSubsystem = new Periscope(new PeriscopeIOTalonFX());
         m_visionSubsystem =
@@ -93,6 +101,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 m_gyroSubsystem);
+        m_funnelSubsystem = new Funnel(new FunnelIOSim());
         m_CEESubsystem = new CEE(new CEEIOSim());
         m_periscopeSubsystem = new Periscope(new PeriscopeIOSim());
         m_visionSubsystem =
@@ -113,6 +122,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 m_gyroSubsystem);
+        m_funnelSubsystem = new Funnel(new FunnelIO() {});
         m_CEESubsystem = new CEE(new CEEIO() {});
         m_periscopeSubsystem = new Periscope(new PeriscopeIO() {});
         m_visionSubsystem = new Vision(m_driveSubsystem::addVisionMeasurement, new VisionIO() {});
@@ -273,8 +283,22 @@ public class RobotContainer {
                 .until(m_driverController.rightBumper().negate()));
   }
 
-  /** Aux Controls */
-  public void auxControllerBindings () {
+  // Driver Controls
+  private void auxControllerBindings() {
+    m_auxController
+        .x()
+        .onTrue(new InstantCommand(() -> m_funnelSubsystem.setVoltage(12), m_funnelSubsystem))
+        .onFalse(new InstantCommand(() -> m_funnelSubsystem.setVoltage(0), m_funnelSubsystem));
+
+    m_auxController
+        .y()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    m_funnelSubsystem.setSetpoint(Units.rotationsPerMinuteToRadiansPerSecond(500)),
+                m_funnelSubsystem))
+        .onFalse(new InstantCommand(() -> m_funnelSubsystem.setSetpoint(0), m_funnelSubsystem));
+
     // CEE testing binding
     m_CEESubsystem.setDefaultCommand(
         new InstantCommand (
@@ -311,6 +335,7 @@ public class RobotContainer {
    */
   public void allMechanismsBrakeMode(boolean enable) {
     m_driveSubsystem.setBrakeModeAll(enable);
+    m_funnelSubsystem.enableBrakeMode(enable);
     m_periscopeSubsystem.enableBrakeMode(enable);
   }
 }
