@@ -1,4 +1,4 @@
-package frc.robot.Subsystems.CoralEndEffector;
+package frc.robot.Subsystems.Algae.Pivot;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -11,59 +11,64 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.RobotStateConstants;
 
-public class CEEIOSparkMax implements CEEIO {
-  // CEE motor, encoder, and configurator
+public class AlgaePivotIOSparkMax implements AlgaePivotIO {
+  // ALGAE Pivot motor
   private final SparkMax m_sparkmax;
   private final RelativeEncoder m_relativeEncoder;
   private final SparkMaxConfig m_config = new SparkMaxConfig();
 
   /**
-   * Constructs a new {@link CEEIOSparkMax} instance.
+   * Constructs a new {@link AlgaePivotIOSparkMax} instance.
    *
-   * <p>This creates a new {@link CEEIO} object that uses a real NEO 550 motor to run the CEE
-   * mechanism
+   * <p>This creates a new {@link AlgaePivotIO} object that uses the real NEO motor to run the Algae
+   * Pivot mechanism
    */
-  public CEEIOSparkMax() {
-    System.out.println("[Init] Creating CEEIOSparkMax");
+  public AlgaePivotIOSparkMax() {
+    System.out.println("[Init] Creating ALGAEPivotSparkMax");
 
     // Initialize the SPARK MAX with a NEO (brushless) motor
-    m_sparkmax = new SparkMax(CEEConstants.CAN_ID, MotorType.kBrushless);
+    m_sparkmax = new SparkMax(AlgaePivotConstants.CAN_ID, MotorType.kBrushless);
 
     // SPARK MAX configurations
     m_config
-        .inverted(CEEConstants.IS_INVERTED)
+        .inverted(AlgaePivotConstants.IS_INVERTED)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(CEEConstants.CUR_LIM_A);
-    // setCANTimeout arguments in miliseconds so multiply by 1000 to convert sec to milisec
+        .smartCurrentLimit(AlgaePivotConstants.CUR_LIM_A);
+    // setCANTimeout arguments in miliseconds so multiple by 1000 to convert sec to miliseconds
     m_sparkmax.setCANTimeout(RobotStateConstants.CAN_CONFIG_TIMEOUT_SEC * 1000);
 
     // Initialize relative encoder from SPARK MAX
     m_relativeEncoder = m_sparkmax.getEncoder();
 
-    // Apply configurations
+    // Apply configuration
     m_sparkmax.configure(m_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
-  public void updateInputs(CEEIOInputs inputs) {
-    // Update inputs from the motor
+  public void updateInputs(AlgaePivotIOInputs inputs) {
+    // Update logged inputs from the motor
     inputs.appliedVoltage = m_sparkmax.getAppliedOutput() * m_sparkmax.getBusVoltage();
+    inputs.positionRad =
+        Units.rotationsToRadians(m_relativeEncoder.getPosition()) / AlgaePivotConstants.GEAR_RATIO;
     inputs.velocityRadPerSec =
         Units.rotationsPerMinuteToRadiansPerSecond(m_relativeEncoder.getVelocity())
-            / CEEConstants.GEAR_RATIO;
+            / AlgaePivotConstants.GEAR_RATIO;
     inputs.currentAmps = m_sparkmax.getOutputCurrent();
     inputs.tempCelsius = m_sparkmax.getMotorTemperature();
+  }
+
+  @Override
+  public void enableBrakeMode(boolean enable) {
+    // Update configurator
+    m_config.idleMode(enable ? IdleMode.kBrake : IdleMode.kCoast);
+    // Apply configuration
+    m_sparkmax.configure(
+        m_config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   @Override
   public void setVoltage(double volts) {
     m_sparkmax.setVoltage(
         MathUtil.clamp(volts, -RobotStateConstants.MAX_VOLTAGE, RobotStateConstants.MAX_VOLTAGE));
-  }
-
-  @Override
-  public void enableBrakeMode(boolean enable) {
-    m_config.idleMode(enable ? IdleMode.kBrake : IdleMode.kCoast);
-    m_sparkmax.configure(m_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 }

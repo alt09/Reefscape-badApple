@@ -15,6 +15,14 @@ import frc.robot.Commands.TeleopCommands.PathfindingCommands;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.Constants.RobotStateConstants;
+import frc.robot.Subsystems.Algae.EndEffector.AEE;
+import frc.robot.Subsystems.Algae.EndEffector.AEEIO;
+import frc.robot.Subsystems.Algae.EndEffector.AEEIOSim;
+import frc.robot.Subsystems.Algae.EndEffector.AEEIOSparkMax;
+import frc.robot.Subsystems.Algae.Pivot.AlgaePivot;
+import frc.robot.Subsystems.Algae.Pivot.AlgaePivotIO;
+import frc.robot.Subsystems.Algae.Pivot.AlgaePivotIOSim;
+import frc.robot.Subsystems.Algae.Pivot.AlgaePivotIOSparkMax;
 import frc.robot.Subsystems.CoralEndEffector.CEE;
 import frc.robot.Subsystems.CoralEndEffector.CEEIO;
 import frc.robot.Subsystems.CoralEndEffector.CEEIOSim;
@@ -47,13 +55,13 @@ public class RobotContainer {
   // Chassis
   private final Drive m_driveSubsystem;
   private final Gyro m_gyroSubsystem;
+
+  // Mechanisms
   private final Periscope m_periscopeSubsystem;
-
-  // Mechanisms
   private final CEE m_CEESubsystem;
-
-  // Mechanisms
   private final Funnel m_funnelSubsystem;
+  private final AEE m_AEESubsystem;
+  private final AlgaePivot m_algaePivotSubsystem;
 
   // Utils
   private final Vision m_visionSubsystem;
@@ -90,6 +98,8 @@ public class RobotContainer {
                 new VisionIOPhotonVision(VisionConstants.CAMERA.FRONT.CAMERA_INDEX)
                 // new VisionIOPhotonVision(VisionConstants.CAMERA.BACK.CAMERA_INDEX)
                 );
+        m_AEESubsystem = new AEE(new AEEIOSparkMax() {});
+        m_algaePivotSubsystem = new AlgaePivot(new AlgaePivotIOSparkMax());
         break;
         // Sim robot, instantiates physics sim IO implementations
       case SIM:
@@ -111,6 +121,8 @@ public class RobotContainer {
                     VisionConstants.CAMERA.FRONT.CAMERA_INDEX, m_driveSubsystem::getCurrentPose2d),
                 new VisionIOSim(
                     VisionConstants.CAMERA.BACK.CAMERA_INDEX, m_driveSubsystem::getCurrentPose2d));
+        m_AEESubsystem = new AEE(new AEEIOSim() {});
+        m_algaePivotSubsystem = new AlgaePivot(new AlgaePivotIOSim());
         break;
         // Replayed robot, disables all IO implementations
       default:
@@ -126,6 +138,8 @@ public class RobotContainer {
         m_CEESubsystem = new CEE(new CEEIO() {});
         m_periscopeSubsystem = new Periscope(new PeriscopeIO() {});
         m_visionSubsystem = new Vision(m_driveSubsystem::addVisionMeasurement, new VisionIO() {});
+        m_AEESubsystem = new AEE(new AEEIO() {});
+        m_algaePivotSubsystem = new AlgaePivot(new AlgaePivotIO() {});
         break;
     }
 
@@ -244,7 +258,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(() -> m_gyroSubsystem.zeroYaw(), m_gyroSubsystem)
                 .withName("ZeroYaw"));
-                
+
     /* Pathfinding */
     // AprilTag currently seen
     m_driverController
@@ -283,8 +297,20 @@ public class RobotContainer {
                 .until(m_driverController.rightBumper().negate()));
   }
 
-  // Driver Controls
-  private void auxControllerBindings() {
+  /** Aux Controls */
+  public void auxControllerBindings() {
+    // AEE testing binding
+    m_AEESubsystem.setDefaultCommand(
+        new InstantCommand(
+            () -> m_AEESubsystem.setVoltage(m_auxController.getLeftTriggerAxis() * 12),
+            m_AEESubsystem));
+
+    // ALGAE Pivot testing binding
+    m_algaePivotSubsystem.setDefaultCommand(
+        new InstantCommand(
+            () -> m_algaePivotSubsystem.setVoltage(m_auxController.getRightTriggerAxis() * 12),
+            m_algaePivotSubsystem));
+
     m_auxController
         .x()
         .onTrue(new InstantCommand(() -> m_funnelSubsystem.setVoltage(12), m_funnelSubsystem))
@@ -301,7 +327,7 @@ public class RobotContainer {
 
     // CEE testing binding
     m_CEESubsystem.setDefaultCommand(
-        new InstantCommand (
+        new InstantCommand(
             () -> m_CEESubsystem.setVoltage(m_auxController.getRightTriggerAxis() * 12),
             m_CEESubsystem));
 
@@ -335,6 +361,8 @@ public class RobotContainer {
    */
   public void allMechanismsBrakeMode(boolean enable) {
     m_driveSubsystem.setBrakeModeAll(enable);
+    m_AEESubsystem.enableBrakeMode(enable);
+    m_algaePivotSubsystem.enableBrakeMode(enable);
     m_funnelSubsystem.enableBrakeMode(enable);
     m_periscopeSubsystem.enableBrakeMode(enable);
   }

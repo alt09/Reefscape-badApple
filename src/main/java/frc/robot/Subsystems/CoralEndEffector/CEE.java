@@ -61,7 +61,7 @@ public class CEE extends SubsystemBase {
 
   /**
    * Enables or disables brake mode for the CEE motor
-   * 
+   *
    * @param enable
    */
   public void enableBrakeMode(boolean enable) {
@@ -105,7 +105,7 @@ public class CEE extends SubsystemBase {
   public void enablePID(boolean enable) {
     m_enablePID = enable;
   }
-  
+
   /** Update PID gains for the CEE motors from SmartDashboard inputs */
   private void updatePID() {
     // If any value on SmartDashboard changes, update the gains
