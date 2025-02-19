@@ -8,20 +8,20 @@ import frc.robot.Constants.RobotStateConstants;
 
 public class AlgaePivotIOSim implements AlgaePivotIO {
   // Arm system simulation
-  private final SingleJointedArmSim m_algaePivotSim;
+  private final SingleJointedArmSim m_armSim;
   private double m_voltage = 0.0;
 
   /**
-   * Constructs a new {@link AlgaePivotIOSim} instance
+   * Constructs a new {@link AlgaePivotIOSim} instance.
    *
    * <p>This creates a new {@link AlgaePivotIOSim} object that uses a simulated NEO motor to drive
-   * the simulated Pivot (arm) mechanism
+   * the simulated Pivot (arm) mechanism.
    */
   public AlgaePivotIOSim() {
-    System.out.println("[Init] Creating ALGAEPivotIOSim");
+    System.out.println("[Init] Creating AlgaePivotIOSim");
 
     // Initialize the simulated Algae Pivot arm with a NEO motor
-    m_algaePivotSim =
+    m_armSim =
         new SingleJointedArmSim(
             LinearSystemId.createSingleJointedArmSystem(
                 DCMotor.getNEO(1), AlgaePivotConstants.MOI_KG_M2, AlgaePivotConstants.GEAR_RATIO),
@@ -31,26 +31,25 @@ public class AlgaePivotIOSim implements AlgaePivotIO {
             AlgaePivotConstants.MIN_ANGLE_RAD,
             AlgaePivotConstants.MAX_ANGLE_RAD,
             AlgaePivotConstants.SIMULATE_GRAVITY,
-            AlgaePivotConstants.STARTING_ANGLE_RAD);
+            AlgaePivotConstants.DEFAULT_ANGLE_RAD); // Starting angle
   }
 
   @Override
   public void updateInputs(AlgaePivotIOInputs inputs) {
     // Update arm sim
-    m_algaePivotSim.update(RobotStateConstants.LOOP_PERIODIC_SEC);
+    m_armSim.update(RobotStateConstants.LOOP_PERIODIC_SEC);
 
     // Update logged inputs from the simulated arm system
-    inputs.isConnected = true;
-    inputs.positionRad = m_algaePivotSim.getAngleRads();
-    inputs.velocityRadPerSec = m_algaePivotSim.getVelocityRadPerSec();
     inputs.appliedVoltage = m_voltage;
-    inputs.currentAmps = Math.abs(m_algaePivotSim.getCurrentDrawAmps());
+    inputs.currentAmps = Math.abs(m_armSim.getCurrentDrawAmps());
+    inputs.positionRad = m_armSim.getAngleRads();
+    inputs.velocityRadPerSec = m_armSim.getVelocityRadPerSec();
   }
 
   @Override
   public void setVoltage(double volts) {
     m_voltage =
         MathUtil.clamp(volts, -RobotStateConstants.MAX_VOLTAGE, RobotStateConstants.MAX_VOLTAGE);
-    m_algaePivotSim.setInputVoltage(m_voltage);
+    m_armSim.setInputVoltage(m_voltage);
   }
 }

@@ -16,8 +16,9 @@ public class Funnel extends SubsystemBase {
   /**
    * Constructs a new {@link Funnel} instance.
    *
-   * <p>This creates a new Funnel {@link SubsystemBase} object with given IO implementation which
-   * determines whether the methods and inputs are initialized with the real, sim, or replay code
+   * <p>This creates a new Funnel {@link SubsystemBase} object with the given IO implementation
+   * which determines whether the methods and inputs are initialized with the real, sim, or replay
+   * code.
    *
    * @param io {@link FunnelIO} implementation of the current mode of the robot
    */
@@ -30,7 +31,7 @@ public class Funnel extends SubsystemBase {
     /// Initialize the PID controller
     m_PIDController = new PIDController(FunnelConstants.KP, FunnelConstants.KI, FunnelConstants.KD);
 
-    // Tunable PID values
+    // Tunable PID gains
     SmartDashboard.putBoolean("PIDFF_Tuning/Funnel/EnableTuning", false);
     SmartDashboard.putNumber("PIDFF_Tuning/Funnel/KP", FunnelConstants.KP);
     SmartDashboard.putNumber("PIDFF_Tuning/Funnel/KI", FunnelConstants.KI);
@@ -40,7 +41,7 @@ public class Funnel extends SubsystemBase {
   @Override
   // This method will be called once per scheduler run
   public void periodic() {
-    // Update inputs and logger
+    // Update and log inputs
     m_io.updateInputs(m_inputs);
     Logger.processInputs("Funnel", m_inputs);
 
@@ -48,63 +49,62 @@ public class Funnel extends SubsystemBase {
     // disabled
     if (m_enablePID) {
       this.setVoltage(m_PIDController.calculate(m_inputs.velocityRadPerSec));
-      SmartDashboard.putNumber("Funnel Setpoint", m_PIDController.getSetpoint());
     }
 
-    // Enable and update tunable PID values through SmartDashboard
+    // Enable and update tunable PID gains through SmartDashboard
     if (SmartDashboard.getBoolean("PIDFF_Tuning/Funnel/EnableTuning", false)) {
       this.updatePID();
     }
   }
 
   /**
-   * Sets voltage of the Funnel motor. The value inputed is clamped between values of -12 to 12
+   * Sets the idle mode of the Funnel motor.
    *
-   * @param volts A value between -12 (full reverse speed) tp 12 (full forward speed)
-   */
-  public void setVoltage(double volts) {
-    m_io.setVoltage(volts);
-  }
-
-  /**
-   * Sets the idle mode for the Funnel motor
-   *
-   * @param enable Sets brake mode on true, coast on false
+   * @param enable {@code true} to enable brake mode, {@code false} to enable coast mode.
    */
   public void enableBrakeMode(boolean enable) {
     m_io.enableBrakeMode(enable);
   }
 
   /**
-   * Sets the setpoint of the Funnel PID controller
+   * Sets voltage of the Funnel motor. The value inputed is clamped between values of -12 to 12.
    *
-   * @param setpoint Velocity in radians per second
+   * @param volts A value between -12 (full reverse speed) to 12 (full forward speed).
+   */
+  public void setVoltage(double volts) {
+    m_io.setVoltage(volts);
+  }
+
+  /**
+   * Sets the setpoint of the Funnel PID controller.
+   *
+   * @param setpoint Velocity in radians per second.
    */
   public void setSetpoint(double setpoint) {
     m_PIDController.setSetpoint(setpoint);
   }
 
   /**
-   * Sets the PID gains for PID controller
+   * Sets the PID gains for PID controller.
    *
-   * @param kP Proportional gain value
-   * @param kI Integral gain value
-   * @param kD Derivative gain value
+   * @param kP Proportional gain value.
+   * @param kI Integral gain value.
+   * @param kD Derivative gain value.
    */
   public void setPID(double kP, double kI, double kD) {
     m_PIDController.setPID(kP, kI, kD);
   }
 
   /**
-   * Enable closed loop PID control for the Funnel
+   * Enable closed loop PID control for the Funnel.
    *
-   * @param enable True to enable PID, false to disable
+   * @param enable {@code true} to enable PID control, {@code false} to disable.
    */
   public void enablePID(boolean enable) {
     m_enablePID = enable;
   }
 
-  /** Update PID gains for the Funnel from SmartDashboard inputs */
+  /** Update PID gains for the Funnel from SmartDashboard inputs. */
   private void updatePID() {
     // If any value on SmartDashboard changes, update the gains
     if (FunnelConstants.KP != SmartDashboard.getNumber("PIDFF_Tuning/Funnel/KP", FunnelConstants.KP)
