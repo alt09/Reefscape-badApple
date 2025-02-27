@@ -25,9 +25,10 @@ public class VisionConstants {
   /** Names of cameras on PhotonVision and NetworkTables */
   public static final String[] CAMERA_NAMES = {"Front", "Back"};
 
-  /** 3d offset of the center of the robot to the Front camera.
-   * 
-   * <p> WPI coordinate system z is camera offset
+  /**
+   * 3d offset of the center of the robot to the Front camera.
+   *
+   * <p>WPI coordinate system z is camera offset
    */
   private static final Transform3d FRONT_CAMERA_ROBOT_OFFSET =
       new Transform3d(
@@ -36,9 +37,10 @@ public class VisionConstants {
               Units.inchesToMeters(4.816861),
               Units.inchesToMeters(-5.625)), // 5.5 inches for final bot
           new Rotation3d(Math.PI / 2, Units.degreesToRadians(0), 0));
-  /** 3d offset of the center of the robot to the Back camera.
-   * 
-   * <p> WPI coordinate system z is camera offset
+  /**
+   * 3d offset of the center of the robot to the Back camera.
+   *
+   * <p>WPI coordinate system z is camera offset
    */
   private static final Transform3d BACK_CAMERA_ROBOT_OFFSET =
       new Transform3d(
