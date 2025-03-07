@@ -86,7 +86,7 @@ public class Robot extends LoggedRobot {
      * 3: Commit number (of this branch),
      * 4: Functionality: 0 = working, 1 = WIP, 2 = doesn't work
      */
-    SmartDashboard.putString("Version Number", "27.0.27.1");
+    SmartDashboard.putString("Version Number", "28.0.28.1");
 
     SmartDashboard.putString("Last Deployed: ", BuildConstants.BUILD_DATE);
 
@@ -109,7 +109,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    m_robotContainer.allMechanismsBrakeMode(true);
+    m_robotContainer.allMechanismsBrakeMode(false);
   }
 
   /** This function is called periodically when disabled. */
