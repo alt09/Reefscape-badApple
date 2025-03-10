@@ -1,19 +1,22 @@
 package frc.robot;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Commands.AutoCommands;
 import frc.robot.Commands.DriveCommands;
 import frc.robot.Commands.PathfindingCommands;
 import frc.robot.Commands.SuperstructureCommands;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.Constants.RobotStateConstants;
@@ -25,6 +28,8 @@ import frc.robot.Subsystems.Drive.*;
 import frc.robot.Subsystems.Funnel.*;
 import frc.robot.Subsystems.Periscope.*;
 import frc.robot.Subsystems.Vision.*;
+
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -97,10 +102,13 @@ public class RobotContainer {
         m_visionSubsystem =
             new Vision(
                 m_driveSubsystem::addVisionMeasurement,
-                new VisionIOSim(
-                    VisionConstants.CAMERA.FRONT.CAMERA_INDEX, m_driveSubsystem::getCurrentPose2d),
-                new VisionIOSim(
-                    VisionConstants.CAMERA.BACK.CAMERA_INDEX, m_driveSubsystem::getCurrentPose2d));
+                // new VisionIOSim(
+                //     VisionConstants.CAMERA.FRONT.CAMERA_INDEX,
+                // m_driveSubsystem::getCurrentPose2d),
+                // new VisionIOSim(
+                //     VisionConstants.CAMERA.BACK.CAMERA_INDEX,
+                // m_driveSubsystem::getCurrentPose2d))
+                new VisionIO() {});
         break;
         // Replayed robot, disables all IO implementations
       default:
@@ -121,9 +129,130 @@ public class RobotContainer {
         break;
     }
 
+    /* PathPlanner Commands */
+    NamedCommands.registerCommand(
+        "Zero_Superstructure",
+        SuperstructureCommands.zero(
+            m_periscopeSubsystem,
+            m_algaePivotSubsystem,
+            m_AEESubsystem,
+            m_CEESubsystem,
+            m_funnelSubsystem));
+    NamedCommands.registerCommand(
+        "Position_L1",
+        SuperstructureCommands.positionsToL1(m_periscopeSubsystem, m_algaePivotSubsystem));
+    NamedCommands.registerCommand(
+        "Position_L2_CORAL",
+        SuperstructureCommands.positionsToL2Coral(m_periscopeSubsystem, m_algaePivotSubsystem));
+    NamedCommands.registerCommand(
+        "Position_L3_CORAL",
+        SuperstructureCommands.positionsToL3Coral(m_periscopeSubsystem, m_algaePivotSubsystem));
+    NamedCommands.registerCommand(
+        "Position_L4",
+        SuperstructureCommands.positionsToL4(
+            m_periscopeSubsystem, m_algaePivotSubsystem, m_CEESubsystem));
+    NamedCommands.registerCommand(
+        "Score", SuperstructureCommands.score(m_AEESubsystem, m_CEESubsystem, m_funnelSubsystem));
+    NamedCommands.registerCommand(
+        "Intake_CORAL",
+        SuperstructureCommands.intakeCoral(
+            m_periscopeSubsystem,
+            m_algaePivotSubsystem,
+            m_AEESubsystem,
+            m_CEESubsystem,
+            m_funnelSubsystem));
+    NamedCommands.registerCommand(
+        "CEE_Out",
+        Commands.runOnce(() -> m_CEESubsystem.setPercentSpeed(CEEConstants.SCORE_PERCENT_SPEED)));
+
     /* Autonomous Routines */
     m_autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
-    m_autoChooser.addOption("Path Planner", new PathPlannerAuto("test1"));
+    // Dynamic/Pathfinding Autos
+    m_autoChooser.addOption(
+        "Pathfinding Auto",
+        AutoCommands.pathfindingAuto(
+            m_driveSubsystem,
+            m_periscopeSubsystem,
+            m_algaePivotSubsystem,
+            m_AEESubsystem,
+            m_CEESubsystem,
+            m_funnelSubsystem));
+    // 1 Piece
+    // Starting Line Left (SLL)
+    m_autoChooser.addOption("1P_SLL-IJ1", new PathPlannerAuto("1P_SLL-IJ1"));
+    m_autoChooser.addOption("1P_SLL-I1", new PathPlannerAuto("1P_SLL-I1"));
+    m_autoChooser.addOption("1P_SLL-I4", new PathPlannerAuto("1P_SLL-I4"));
+    m_autoChooser.addOption("1P_SLL-J1", new PathPlannerAuto("1P_SLL-J1"));
+    m_autoChooser.addOption("1P_SLL-J4", new PathPlannerAuto("1P_SLL-J4"));
+    // Starting Line Center (SLC)
+    m_autoChooser.addOption("1P_SLC-GH1", new PathPlannerAuto("1P_SLC-GH1"));
+    m_autoChooser.addOption("1P_SLC-G1", new PathPlannerAuto("1P_SLC-G1"));
+    m_autoChooser.addOption("1P_SLC-G2", new PathPlannerAuto("1P_SLC-G2"));
+    m_autoChooser.addOption("1P_SLC-G3", new PathPlannerAuto("1P_SLC-G3"));
+    m_autoChooser.addOption("1P_SLC-G4", new PathPlannerAuto("1P_SLC-G4"));
+    m_autoChooser.addOption("1P_SLC-H1", new PathPlannerAuto("1P_SLC-H1"));
+    m_autoChooser.addOption("1P_SLC-H2", new PathPlannerAuto("1P_SLC-H2"));
+    m_autoChooser.addOption("1P_SLC-H3", new PathPlannerAuto("1P_SLC-H3"));
+    m_autoChooser.addOption("1P_SLC-H4", new PathPlannerAuto("1P_SLC-H4"));
+    // Starting Line Right (SLR)
+    m_autoChooser.addOption("1P_SLR-EF1", new PathPlannerAuto("1P_SLR-EF1"));
+    m_autoChooser.addOption("1P_SLR-E1", new PathPlannerAuto("1P_SLR-E1"));
+    m_autoChooser.addOption("1P_SLR-E4", new PathPlannerAuto("1P_SLR-E4"));
+    m_autoChooser.addOption("1P_SLR-F1", new PathPlannerAuto("1P_SLR-F1"));
+    m_autoChooser.addOption("1P_SLR-F4", new PathPlannerAuto("1P_SLR-F4"));
+    // 2 Piece
+    // SLL
+    m_autoChooser.addOption("2P_SLL-IJ1-CS1L-L4", new PathPlannerAuto("2P_SLL-IJ1-CS1L-L4"));
+    m_autoChooser.addOption("2P_SLL-IJ1-CS1L-K4", new PathPlannerAuto("2P_SLL-IJ1-CS1L-K4"));
+    m_autoChooser.addOption("2P_SLL-IJ1-CS1L-A4", new PathPlannerAuto("2P_SLL-IJ1-CS1L-A4"));
+    m_autoChooser.addOption("2P_SLL-I1-CS1L-L4", new PathPlannerAuto("2P_SLL-I1-CS1L-L4"));
+    m_autoChooser.addOption("2P_SLL-I1-CS1L-K4", new PathPlannerAuto("2P_SLL-I1-CS1L-K4"));
+    m_autoChooser.addOption("2P_SLL-I1-CS1L-A4", new PathPlannerAuto("2P_SLL-I1-CS1L-A4"));
+    m_autoChooser.addOption("2P_SLL-I4-CS1L-L4", new PathPlannerAuto("2P_SLL-I4-CS1L-L4"));
+    m_autoChooser.addOption("2P_SLL-I4-CS1L-K4", new PathPlannerAuto("2P_SLL-I4-CS1L-K4"));
+    m_autoChooser.addOption("2P_SLL-I4-CS1L-A4", new PathPlannerAuto("2P_SLL-I4-CS1L-A4"));
+    m_autoChooser.addOption("2P_SLL-J1-CS1L-L4", new PathPlannerAuto("2P_SLL-J1-CS1L-L4"));
+    m_autoChooser.addOption("2P_SLL-J1-CS1L-K4", new PathPlannerAuto("2P_SLL-J1-CS1L-K4"));
+    m_autoChooser.addOption("2P_SLL-J1-CS1L-A4", new PathPlannerAuto("2P_SLL-J1-CS1L-A4"));
+    m_autoChooser.addOption("2P_SLL-J4-CS1L-L4", new PathPlannerAuto("2P_SLL-J4-CS1L-L4"));
+    m_autoChooser.addOption("2P_SLL-J4-CS1L-K4", new PathPlannerAuto("2P_SLL-J4-CS1L-K4"));
+    m_autoChooser.addOption("2P_SLL-J4-CS1L-A4", new PathPlannerAuto("2P_SLL-J4-CS1L-A4"));
+    // SLC
+    m_autoChooser.addOption("2P_SLC-GH1-CS1L-L4", new PathPlannerAuto("2P_SLC-GH1-CS1L-L4"));
+    m_autoChooser.addOption("2P_SLC-GH1-CS1L-K4", new PathPlannerAuto("2P_SLC-GH1-CS1L-K4"));
+    m_autoChooser.addOption("2P_SLC-GH1-CS1L-A4", new PathPlannerAuto("2P_SLC-GH1-CS1L-A4"));
+    m_autoChooser.addOption("2P_SLC-GH1-CS2R-B4", new PathPlannerAuto("2P_SLC-GH1-CS2R-B4"));
+    m_autoChooser.addOption("2P_SLC-GH1-CS2R-C4", new PathPlannerAuto("2P_SLC-GH1-CS2R-C4"));
+    m_autoChooser.addOption("2P_SLC-GH1-CS2R-D4", new PathPlannerAuto("2P_SLC-GH1-CS2R-D4"));
+    m_autoChooser.addOption("2P_SLC-G1-CS2R-B4", new PathPlannerAuto("2P_SLC-G1-CS2R-B4"));
+    m_autoChooser.addOption("2P_SLC-G1-CS2R-C4", new PathPlannerAuto("2P_SLC-G1-CS2R-C4"));
+    m_autoChooser.addOption("2P_SLC-G1-CS2R-D4", new PathPlannerAuto("2P_SLC-G1-CS2R-D4"));
+    m_autoChooser.addOption("2P_SLC-G4-CS2R-B4", new PathPlannerAuto("2P_SLC-G4-CS2R-B4"));
+    m_autoChooser.addOption("2P_SLC-G4-CS2R-C4", new PathPlannerAuto("2P_SLC-G4-CS2R-C4"));
+    m_autoChooser.addOption("2P_SLC-G4-CS2R-D4", new PathPlannerAuto("2P_SLC-G4-CS2R-D4"));
+    m_autoChooser.addOption("2P_SLC-H1-CS1L-L4", new PathPlannerAuto("2P_SLC-H1-CS1L-L4"));
+    m_autoChooser.addOption("2P_SLC-H1-CS1L-K4", new PathPlannerAuto("2P_SLC-H1-CS1L-K4"));
+    m_autoChooser.addOption("2P_SLC-H1-CS1L-A4", new PathPlannerAuto("2P_SLC-H1-CS1L-A4"));
+    m_autoChooser.addOption("2P_SLC-H4-CS1L-L4", new PathPlannerAuto("2P_SLC-H4-CS1L-L4"));
+    m_autoChooser.addOption("2P_SLC-H4-CS1L-K4", new PathPlannerAuto("2P_SLC-H4-CS1L-K4"));
+    m_autoChooser.addOption("2P_SLC-H4-CS1L-A4", new PathPlannerAuto("2P_SLC-H4-CS1L-A4"));
+    // SLR
+    m_autoChooser.addOption("2P_SLR-EF1-CS2R-B4", new PathPlannerAuto("2P_SLR-EF1-CS2R-B4"));
+    m_autoChooser.addOption("2P_SLR-EF1-CS2R-C4", new PathPlannerAuto("2P_SLR-EF1-CS2R-C4"));
+    m_autoChooser.addOption("2P_SLR-EF1-CS2R-D4", new PathPlannerAuto("2P_SLR-EF1-CS2R-D4"));
+    m_autoChooser.addOption("2P_SLR-E1-CS2R-B4", new PathPlannerAuto("2P_SLR-E1-CS2R-B4"));
+    m_autoChooser.addOption("2P_SLR-E1-CS2R-C4", new PathPlannerAuto("2P_SLR-E1-CS2R-C4"));
+    m_autoChooser.addOption("2P_SLR-E1-CS2R-D4", new PathPlannerAuto("2P_SLR-E1-CS2R-D4"));
+    m_autoChooser.addOption("2P_SLR-E4-CS2R-B4", new PathPlannerAuto("2P_SLR-E4-CS2R-B4"));
+    m_autoChooser.addOption("2P_SLR-E4-CS2R-C4", new PathPlannerAuto("2P_SLR-E4-CS2R-C4"));
+    m_autoChooser.addOption("2P_SLR-E4-CS2R-D4", new PathPlannerAuto("2P_SLR-E4-CS2R-D4"));
+    m_autoChooser.addOption("2P_SLR-F1-CS2R-B4", new PathPlannerAuto("2P_SLR-F1-CS2R-B4"));
+    m_autoChooser.addOption("2P_SLR-F1-CS2R-C4", new PathPlannerAuto("2P_SLR-F1-CS2R-C4"));
+    m_autoChooser.addOption("2P_SLR-F1-CS2R-D4", new PathPlannerAuto("2P_SLR-F1-CS2R-D4"));
+    m_autoChooser.addOption("2P_SLR-F4-CS2R-B4", new PathPlannerAuto("2P_SLR-F4-CS2R-B4"));
+    m_autoChooser.addOption("2P_SLR-F4-CS2R-C4", new PathPlannerAuto("2P_SLR-F4-CS2R-C4"));
+    m_autoChooser.addOption("2P_SLR-F4-CS2R-D4", new PathPlannerAuto("2P_SLR-F4-CS2R-D4"));
+
     /* Test Routines */
     m_autoChooser.addOption("Forward", new PathPlannerAuto("Forward"));
     m_autoChooser.addOption("Forward 180", new PathPlannerAuto("Forward 180"));
@@ -147,10 +276,25 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    SmartDashboard.putNumber("Funnel Speed Percent", 0);
-    SmartDashboard.putNumber("ClimberVoltage", 0);
-    SmartDashboard.putNumber("PSVoltage", 0);
-    SmartDashboard.putNumber("PSHeightInches", 0);
+    Logger.recordOutput("FieldPoses/CoralStation/CS1L", FieldConstants.CORAL_STATION_POSES.get("CS1L"));
+    Logger.recordOutput("FieldPoses/CoralStation/CS1C", FieldConstants.CORAL_STATION_POSES.get("CS1C"));
+    Logger.recordOutput("FieldPoses/CoralStation/CS1R", FieldConstants.CORAL_STATION_POSES.get("CS1R"));
+    Logger.recordOutput("FieldPoses/CoralStation/CS2L", FieldConstants.CORAL_STATION_POSES.get("CS2L"));
+    Logger.recordOutput("FieldPoses/CoralStation/CS2C", FieldConstants.CORAL_STATION_POSES.get("CS2C"));
+    Logger.recordOutput("FieldPoses/CoralStation/CS2R", FieldConstants.CORAL_STATION_POSES.get("CS2R"));
+
+    Logger.recordOutput("FieldPoses/Reef/A", FieldConstants.BRANCH_POSES.get("A"));
+    Logger.recordOutput("FieldPoses/Reef/B", FieldConstants.BRANCH_POSES.get("B"));
+    Logger.recordOutput("FieldPoses/Reef/C", FieldConstants.BRANCH_POSES.get("C"));
+    Logger.recordOutput("FieldPoses/Reef/D", FieldConstants.BRANCH_POSES.get("D"));
+    Logger.recordOutput("FieldPoses/Reef/E", FieldConstants.BRANCH_POSES.get("E"));
+    Logger.recordOutput("FieldPoses/Reef/F", FieldConstants.BRANCH_POSES.get("F"));
+    Logger.recordOutput("FieldPoses/Reef/G", FieldConstants.BRANCH_POSES.get("G"));
+    Logger.recordOutput("FieldPoses/Reef/H", FieldConstants.BRANCH_POSES.get("H"));
+    Logger.recordOutput("FieldPoses/Reef/I", FieldConstants.BRANCH_POSES.get("I"));
+    Logger.recordOutput("FieldPoses/Reef/J", FieldConstants.BRANCH_POSES.get("J"));
+    Logger.recordOutput("FieldPoses/Reef/K", FieldConstants.BRANCH_POSES.get("K"));
+    Logger.recordOutput("FieldPoses/Reef/L", FieldConstants.BRANCH_POSES.get("L"));
   }
 
   /**
@@ -176,7 +320,7 @@ public class RobotContainer {
                 m_driveSubsystem,
                 () -> -m_driverController.getLeftY(),
                 () -> -m_driverController.getLeftX(),
-                () -> -m_driverController.getRightX())
+                () -> 0.8 * -m_driverController.getRightX())
             .withName("FieldRelativeDrive"));
     // Field relative
     m_driverController
@@ -186,7 +330,7 @@ public class RobotContainer {
                     m_driveSubsystem,
                     () -> -m_driverController.getLeftY(),
                     () -> -m_driverController.getLeftX(),
-                    () -> -m_driverController.getRightX())
+                    () -> 0.8 * -m_driverController.getRightX())
                 .withName("FieldRelativeDrive"));
     // Lock robot heading to 0 degrees
     m_driverController
@@ -254,9 +398,17 @@ public class RobotContainer {
         .onTrue(
             PathfindingCommands.pathfindToClosestBranch(
                     m_driveSubsystem,
-                    () -> PathPlannerConstants.DEFAULT_WALL_DISTANCE_M,
-                    m_driverController.leftTrigger().negate())
+                    PathPlannerConstants.DEFAULT_WALL_DISTANCE_M,
+                    m_driverController.y().negate())
                 .withName("PathfindToBranch"));
+    // Closest CORAL STATION
+    m_driverController
+        .leftBumper()
+        .onTrue(
+            PathfindingCommands.pathfindToClosestCoralStation(
+                m_driveSubsystem,
+                PathPlannerConstants.DEFAULT_WALL_DISTANCE_M,
+                m_driverController.leftBumper().negate()));
 
     /* Scoring commands */
     // Score
@@ -270,7 +422,7 @@ public class RobotContainer {
     m_driverController
         .rightBumper()
         .onTrue(
-            SuperstructureCommands.coralIntake(
+            SuperstructureCommands.intakeCoral(
                     m_periscopeSubsystem,
                     m_algaePivotSubsystem,
                     m_AEESubsystem,
@@ -285,6 +437,12 @@ public class RobotContainer {
                 m_AEESubsystem,
                 m_CEESubsystem,
                 m_funnelSubsystem));
+
+    /* Misc */
+    m_driverController
+        .back()
+        .onTrue(
+            new InstantCommand(() -> m_periscopeSubsystem.resetPosition(0), m_periscopeSubsystem));
   }
 
   /** Aux Button Board Controls */
@@ -363,7 +521,9 @@ public class RobotContainer {
     // L4 or NET
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.L4_NET.BUTTON_ID)
-        .onTrue(SuperstructureCommands.positionsToL4(m_periscopeSubsystem, m_algaePivotSubsystem))
+        .onTrue(
+            SuperstructureCommands.positionsToL4(
+                m_periscopeSubsystem, m_algaePivotSubsystem, m_CEESubsystem))
         .onFalse(
             SuperstructureCommands.zero(
                 m_periscopeSubsystem,
@@ -423,42 +583,44 @@ public class RobotContainer {
         .and(m_driverController.leftTrigger()) // Only Pathfind with Driver confirmation
         .onTrue(
             PathfindingCommands.pathfindToBranch("A", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-                .withName("PathfindToAB"))
+                .until(m_driverController.leftTrigger().negate())
+                .withName("PathfindToA"))
         .and(
-            m_auxButtonBoard.axisGreaterThan(
+            m_auxButtonBoard.axisLessThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_BRANCH.BUTTON_ID,
-                0.5)) // Pathfind to right branch (Driver POV) if switch is toggled // TODO: Change
-        // axis to correct one and the threshold too
+                -0.5)) // Pathfind to right branch (Driver POV) if switch is toggled
         .onTrue(
-            PathfindingCommands.pathfindToBranch(
-                "B", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M));
+            PathfindingCommands.pathfindToBranch("B", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
+                .until(m_driverController.leftTrigger().negate())
+                .withName("PathfindToB"));
     // REEF Face CD
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.REEF_CD.BUTTON_ID)
         .and(m_driverController.leftTrigger()) // Only Pathfind with Driver confirmation
         .onTrue(
             PathfindingCommands.pathfindToBranch("C", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-                .withName("PathfindToCD"))
+                .until(m_driverController.leftTrigger().negate())
+                .withName("PathfindToC"))
         .and(
-            m_auxButtonBoard.axisGreaterThan(
+            m_auxButtonBoard.axisLessThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_BRANCH.BUTTON_ID,
-                0.5)) // Pathfind to right branch (Driver POV) if switch is toggled // TODO: Change
-        // axis to correct one and the threshold too
+                -0.5)) // Pathfind to right branch (Driver POV) if switch is toggled
         .onTrue(
-            PathfindingCommands.pathfindToBranch(
-                "D", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M));
+            PathfindingCommands.pathfindToBranch("D", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
+                .until(m_driverController.leftTrigger().negate())
+                .withName("PathfindToD"));
     // REEF Face EF
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.REEF_EF.BUTTON_ID)
         .and(m_driverController.leftTrigger()) // Only Pathfind with Driver confirmation
         .onTrue(
             PathfindingCommands.pathfindToBranch("F", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-                .withName("PathfindToEF"))
+                .until(m_driverController.leftTrigger().negate())
+                .withName("PathfindToF"))
         .and(
-            m_auxButtonBoard.axisGreaterThan(
+            m_auxButtonBoard.axisLessThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_BRANCH.BUTTON_ID,
-                0.5)) // Pathfind to right branch (Driver POV) if switch is toggled // TODO: Change
-        // axis to correct one and the threshold too
+                -0.5)) // Pathfind to right branch (Driver POV) if switch is toggled
         .onTrue(
             PathfindingCommands.pathfindToBranch(
                 "E", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M));
@@ -468,12 +630,12 @@ public class RobotContainer {
         .and(m_driverController.leftTrigger()) // Only Pathfind with Driver confirmation
         .onTrue(
             PathfindingCommands.pathfindToBranch("H", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-                .withName("PathfindToGH"))
+                .until(m_driverController.leftTrigger().negate())
+                .withName("PathfindToH"))
         .and(
-            m_auxButtonBoard.axisGreaterThan(
+            m_auxButtonBoard.axisLessThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_BRANCH.BUTTON_ID,
-                0.5)) // Pathfind to right branch (Driver POV) if switch is toggled // TODO: Change
-        // axis to correct one and the threshold too
+                -0.5)) // Pathfind to right branch (Driver POV) if switch is toggled
         .onTrue(
             PathfindingCommands.pathfindToBranch(
                 "G", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M));
@@ -483,30 +645,32 @@ public class RobotContainer {
         .and(m_driverController.leftTrigger()) // Only Pathfind with Driver confirmation
         .onTrue(
             PathfindingCommands.pathfindToBranch("J", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-                .withName("PathfindToIJ"))
+                .until(m_driverController.leftTrigger().negate())
+                .withName("PathfindToJ"))
         .and(
-            m_auxButtonBoard.axisGreaterThan(
+            m_auxButtonBoard.axisLessThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_BRANCH.BUTTON_ID,
-                0.5)) // Pathfind to right branch (Driver POV) if switch is toggled // TODO: Change
-        // axis to correct one and the threshold too
+                -0.5)) // Pathfind to right branch (Driver POV) if switch is toggled
         .onTrue(
-            PathfindingCommands.pathfindToBranch(
-                "I", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M));
+            PathfindingCommands.pathfindToBranch("I", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
+                .until(m_driverController.leftTrigger().negate())
+                .withName("PathfindToI"));
     // REEF Face KL
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.REEF_KL.BUTTON_ID)
         .and(m_driverController.leftTrigger()) // Only Pathfind with Driver confirmation
         .onTrue(
             PathfindingCommands.pathfindToBranch("K", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-                .withName("PathfindToKL"))
+                .until(m_driverController.leftTrigger().negate())
+                .withName("PathfindToK"))
         .and(
-            m_auxButtonBoard.axisGreaterThan(
+            m_auxButtonBoard.axisLessThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_BRANCH.BUTTON_ID,
-                0.5)) // Pathfind to right branch (Driver POV) if switch is toggled // TODO: Change
-        // axis to correct one and the threshold too
+                -0.5)) // Pathfind to right branch (Driver POV) if switch is toggled
         .onTrue(
-            PathfindingCommands.pathfindToBranch(
-                "L", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M));
+            PathfindingCommands.pathfindToBranch("L", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
+                .until(m_driverController.leftTrigger().negate())
+                .withName("PathfindToL"));
   }
 
   /** Aux Xbox Controls */
@@ -588,7 +752,7 @@ public class RobotContainer {
             new InstantCommand(
                 () ->
                     m_periscopeSubsystem.setPosition(
-                        Units.inchesToMeters(SmartDashboard.getNumber("PSHeightInches", 0))),
+                        Units.inchesToMeters(18)),
                 m_periscopeSubsystem))
         .onFalse(
             new InstantCommand(
@@ -598,14 +762,25 @@ public class RobotContainer {
         .b()
         .onTrue(
             new InstantCommand(
-                () -> m_periscopeSubsystem.setVoltage(SmartDashboard.getNumber("PSVoltage", 0)),
+                () -> {
+                  m_periscopeSubsystem.enablePID(false);
+                  m_periscopeSubsystem.setVoltage(2);
+                },
                 m_periscopeSubsystem))
         .onFalse(
             new InstantCommand(() -> m_periscopeSubsystem.setVoltage(0), m_periscopeSubsystem));
     m_auxController
-        .start()
+        .rightStick()
         .onTrue(
             new InstantCommand(() -> m_periscopeSubsystem.resetPosition(0), m_periscopeSubsystem));
+    m_auxController
+        .start()
+        .onTrue(
+            new InstantCommand(() -> m_periscopeSubsystem.enablePID(true), m_periscopeSubsystem));
+    m_auxController
+        .back()
+        .onTrue(
+            new InstantCommand(() -> m_periscopeSubsystem.enablePID(false), m_periscopeSubsystem));
 
     /* Climb */
     // Joystick to move
@@ -770,10 +945,10 @@ public class RobotContainer {
    */
   public void allMechanismsBrakeMode(boolean enable) {
     m_driveSubsystem.enableBrakeModeAll(enable);
-    m_algaePivotSubsystem.enableBrakeMode(enable);
-    m_periscopeSubsystem.enableBrakeMode(enable);
+    // m_algaePivotSubsystem.enableBrakeMode(enable);
+    // m_periscopeSubsystem.enableBrakeMode(enable);
     m_climberSubsystem.enableBrakeMode(enable);
-    m_funnelSubsystem.enableBrakeMode(enable);
+    // m_funnelSubsystem.enableBrakeMode(enable);
     m_AEESubsystem.enableBrakeMode(enable);
     m_CEESubsystem.enableBrakeMode(enable);
   }

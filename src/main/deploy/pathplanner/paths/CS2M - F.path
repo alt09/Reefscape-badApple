@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.884468124673432,
-        "y": 3.3034818122181178
+        "x": 1.282684426229508,
+        "y": 0.9741290983606552
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.8844681246734325,
-        "y": 3.3034818122181178
+        "x": 2.157960784379328,
+        "y": 1.3887637378603446
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "CS2M"
     },
     {
       "anchor": {
-        "x": 2.4348734737355513,
-        "y": 4.876462402497455
+        "x": 5.3527499999999995,
+        "y": 2.913499999999999
       },
       "prevControl": {
-        "x": 1.4348734737355513,
-        "y": 4.876462402497455
+        "x": 4.318802370075282,
+        "y": 2.375995999013996
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "F"
     }
   ],
   "rotationTargets": [],
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 5.2,
-    "maxAcceleration": 5.2,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 119.99999999999999
   },
   "reversed": false,
-  "folder": null,
+  "folder": "CS2M",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 55.0
   },
   "useDefaultConstraints": true
 }

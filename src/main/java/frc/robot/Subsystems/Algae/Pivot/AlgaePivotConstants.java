@@ -24,38 +24,42 @@ public class AlgaePivotConstants {
   public static final double MASS_KG = Units.lbsToKilograms(6.8);
   // Angle positions
   /** Starting angle of the ALGAE Pivot in radians */
-  public static final double DEFAULT_ANGLE_RAD = 0.0;
+  public static final double DEFAULT_ANGLE_RAD = Units.degreesToRadians(75);
   /** Minimum angle of the ALGAE Pivot in radians */
   public static final double MIN_ANGLE_RAD = Units.degreesToRadians(-35);
   /** Maximum angle of the ALGAE Pivot in radians */
-  public static final double MAX_ANGLE_RAD = Units.degreesToRadians(75);
+  public static final double MAX_ANGLE_RAD = Units.degreesToRadians(90);
   /** Angle (radians) of the ALGAE Pivot when trying to pickup ALGAE off the REEF */
   public static final double REEF_ALGAE_ANGLE_RAD = Units.degreesToRadians(12.5);
   /** Angle (radians) of the ALGAE Pivot when trying to pickup ALGAE off the ground */
-  public static final double GROUND_ALGAE_ANGLE_RAD = MIN_ANGLE_RAD; // TODO: Update
+  public static final double GROUND_ALGAE_ANGLE_RAD = MIN_ANGLE_RAD;
   /** Angle (radians) of the ALGAE Pivot when trying to score ALGAE at the NET */
   public static final double NET_ANGLE_RAD = Units.degreesToRadians(45);
   /** Angle (radians) of the ALGAE Pivot when trying to score ALGAE at PROCESSOR */
   public static final double PROCESSOR_ANGLE_RAD = Units.degreesToRadians(0); // TODO: Update
 
   // PID CONSTANTS
-  // TODO: Tune PID gains
   /**
    * KP represents the constant multiplied by the current error from setpoint (Proportional Error)
    */
-  public static double KP = 1.1;
+  public static double KP = 2.1;
   /**
    * KI represents the constant multiplied by the integral of the error from setpoint (Integral
    * Error)
    */
-  public static double KI = 0.225;
+  public static double KI = 0.0;
   /** KD represents the constant multiplied by the change in error over time (Derivative Error) */
-  public static double KD = 0.05;
+  public static double KD = 0.2;
+
+  public static double KS = 0.0;
+  public static double KG = 0.5;
+  public static double KV = 0.8;
+  // TODO: ALGAE affects KG tuning (can't go up w ALGAE in)
   /**
    * How many radians the angle of the ALGAE Pivot can be within its angle setpoint to be considered
    * at the setpoint
    */
-  public static final double ERROR_TOLERANCE_RAD = Units.degreesToRadians(1); // TODO: test
+  public static final double ERROR_TOLERANCE_RAD = Units.degreesToRadians(2.5);
 
   // SIM CONSTANTS
   /** Moment of inertia for the ALGAE Pivot in kilograms * meters squared */

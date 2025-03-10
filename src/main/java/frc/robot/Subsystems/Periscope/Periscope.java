@@ -44,16 +44,17 @@ public class Periscope extends SubsystemBase {
             PeriscopeConstants.KD,
             new TrapezoidProfile.Constraints(
                 PeriscopeConstants.MAX_VELOCITY_M_PER_SEC,
-                PeriscopeConstants.IDEAL_ACCELERATION_M_PER_SEC2));
+                PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2));
     m_feedforward =
         new ElevatorFeedforward(
             PeriscopeConstants.KS,
             PeriscopeConstants.KG,
             PeriscopeConstants.KV,
             PeriscopeConstants.KA);
+    m_profiledPIDController.setGoal(0);
 
     // Tunable PID & Feedforward gains
-    SmartDashboard.putBoolean("PIDFF_Tuning/Periscope/EnableTuning", false);
+    SmartDashboard.putBoolean("PIDFF_Tuning/Periscope/EnableTuning", true);
     SmartDashboard.putNumber("PIDFF_Tuning/Periscope/KP", PeriscopeConstants.KP);
     SmartDashboard.putNumber("PIDFF_Tuning/Periscope/KI", PeriscopeConstants.KI);
     SmartDashboard.putNumber("PIDFF_Tuning/Periscope/KD", PeriscopeConstants.KD);
@@ -61,6 +62,8 @@ public class Periscope extends SubsystemBase {
     SmartDashboard.putNumber("PIDFF_Tuning/Periscope/KG", PeriscopeConstants.KG);
     SmartDashboard.putNumber("PIDFF_Tuning/Periscope/KV", PeriscopeConstants.KV);
     SmartDashboard.putNumber("PIDFF_Tuning/Periscope/KA", PeriscopeConstants.KA);
+    SmartDashboard.putNumber(
+        "PIDFF_Tuning/Periscope/Max_Accel", PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2);
   }
 
   @Override
@@ -77,7 +80,7 @@ public class Periscope extends SubsystemBase {
               + m_feedforward.calculate(m_profiledPIDController.getConstraints().maxVelocity));
 
       // Enable and update tunable PID & Feedforward gains through SmartDashboard
-      if (SmartDashboard.getBoolean("PIDFF_Tuning/Periscope/EnableTuning", false)) {
+      if (SmartDashboard.getBoolean("PIDFF_Tuning/Periscope/EnableTuning", true)) {
         this.updatePID();
         this.updateFF();
       }
@@ -92,6 +95,7 @@ public class Periscope extends SubsystemBase {
   public void enableBrakeMode(boolean enable) {
     m_io.enableBrakeMode(enable);
   }
+  
 
   /**
    * Sets the position of the Periscope motors in meters.
@@ -112,6 +116,17 @@ public class Periscope extends SubsystemBase {
   }
 
   /**
+   * Triggered means that the Periscope is at the sensor. Hall Effect works just as a magnetic limit
+   * switch.
+   *
+   * @param index Port of the desired Hall Effect sensor to get the triggered status of.
+   * @return {@code true} if the specified Hall Effect sensor triggered, {@code false} if not.
+   */
+  public boolean isHallEffectSensorTriggered(int index) {
+    return m_inputs.isHallEffectSensorTriggered[index];
+  }
+
+  /**
    * Sets the position of the Periscope using a motion profiled PID controller.
    *
    * @param heightMeters Position of the Periscope in meters.
@@ -120,8 +135,8 @@ public class Periscope extends SubsystemBase {
     // Compare new setpoint to previous to determine whether to lower acceleration or not
     this.setMaxAcceleration(
         (heightMeters < m_prevSetpoint)
-            ? PeriscopeConstants.IDEAL_ACCELERATION_M_PER_SEC2 / 6
-            : PeriscopeConstants.IDEAL_ACCELERATION_M_PER_SEC2);
+            ? PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2 / 6
+            : PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2);
 
     // Record and update setpoint
     m_prevSetpoint = heightMeters;
@@ -139,7 +154,7 @@ public class Periscope extends SubsystemBase {
   }
 
   /**
-   * Sets the PID gains of the Periscope motors' Profiled PID controller.
+   * Sets the PID gains of the Periscope motors' {@link ProfiledPIDController}.
    *
    * @param kP Proportional gain value.
    * @param kI Integral gain value.
@@ -164,9 +179,23 @@ public class Periscope extends SubsystemBase {
     m_feedforward.setKa(kA);
   }
 
+  /**
+   * Sets the maximum acceleration of the {@link ProfiledPIDController}.
+   * 
+   * @param acceleration Maximum acceleration in m/s²
+   */
   public void setMaxAcceleration(double acceleration) {
     m_profiledPIDController.setConstraints(
         new TrapezoidProfile.Constraints(PeriscopeConstants.MAX_VELOCITY_M_PER_SEC, acceleration));
+  }
+
+  /**
+   * Toggle closed loop {@link ProfiledPIDController} and Feedforward and open loop voltage control.
+   * 
+   * @param enable {@code true} for closed loop control, {@code false} for open loop.
+   */
+  public void enablePID(boolean enable) {
+    m_enablePID = enable;
   }
 
   /** Update PID gains for the Periscope motors from SmartDashboard inputs. */
@@ -177,15 +206,26 @@ public class Periscope extends SubsystemBase {
         || PeriscopeConstants.KI
             != SmartDashboard.getNumber("PIDFF_Tuning/Periscope/KI", PeriscopeConstants.KI)
         || PeriscopeConstants.KD
-            != SmartDashboard.getNumber("PIDFF_Tuning/Periscope/KD", PeriscopeConstants.KD)) {
+            != SmartDashboard.getNumber("PIDFF_Tuning/Periscope/KD", PeriscopeConstants.KD)
+        || PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2
+            != SmartDashboard.getNumber(
+                "PIDFF_Tuning/Periscope/Max_Accel",
+                PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2)) {
       PeriscopeConstants.KP =
           SmartDashboard.getNumber("PIDFF_Tuning/Periscope/KP", PeriscopeConstants.KP);
       PeriscopeConstants.KI =
           SmartDashboard.getNumber("PIDFF_Tuning/Periscope/KI", PeriscopeConstants.KI);
       PeriscopeConstants.KD =
           SmartDashboard.getNumber("PIDFF_Tuning/Periscope/KD", PeriscopeConstants.KD);
+      PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2 =
+          SmartDashboard.getNumber(
+              "PIDFF_Tuning/Periscope/Max_Accel", PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2);
       // Sets the new gains
       this.setPID(PeriscopeConstants.KP, PeriscopeConstants.KI, PeriscopeConstants.KD);
+      m_profiledPIDController.setConstraints(
+          new TrapezoidProfile.Constraints(
+              PeriscopeConstants.MAX_VELOCITY_M_PER_SEC,
+              PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2));
     }
   }
 
@@ -215,16 +255,5 @@ public class Periscope extends SubsystemBase {
           PeriscopeConstants.KV,
           PeriscopeConstants.KA);
     }
-  }
-
-  /**
-   * Triggered means that the Periscope is at the sensor. Hall Effect works just as a magnetic limit
-   * switch.
-   *
-   * @param index Port of the desired Hall Effect sensor to get the triggered status of.
-   * @return {@code true} if the specified Hall Effect sensor triggered, {@code false} if not.
-   */
-  public boolean isHallEffectSensorTriggered(int index) {
-    return m_inputs.isHallEffectSensorTriggered[index];
-  }
+  }  
 }

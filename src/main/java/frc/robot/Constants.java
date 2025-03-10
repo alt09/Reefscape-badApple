@@ -20,6 +20,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -116,11 +117,11 @@ public final class Constants {
       REEF_CD(7),
       REEF_EF(6),
       REEF_GH(5),
-      REEF_IJ(9),
-      REEF_KL(10),
-      SWITCH_BRANCH(3), // Axis number
+      REEF_IJ(10),
+      REEF_KL(9),
+      SWITCH_BRANCH(0), // Axis number
       ZERO(0), // Axis number
-      CLIMB(2), // Axis number
+      CLIMB(1), // Axis number
       SCORE(11),
       GROUND_ALGAE(12);
 
@@ -182,6 +183,14 @@ public final class Constants {
     /** Distance from the BRANCH to the REEF face wall in meters */
     public static final double BRANCH_TO_WALL_X_M = Units.inchesToMeters(7);
 
+    /** A Map that links the CORAL STATION names to its position on the field as a {@link Pose2d} */
+    public static final Map<String, Pose2d> CORAL_STATION_POSES = new HashMap<>();
+    /**
+     * {@link Pose2d} of the center of the CORAL STATIONS (same as the AprilTag pose). Bottom left
+     * is index 0, top left is index 1
+     */
+    public static final Pose2d[] CENTER_CORAL_STATION = new Pose2d[2];
+
     static {
       // Initialize faces starting from inner face and in clockwise order
       CENTER_FACES[0] = getAprilTagPose(21).get().toPose2d();
@@ -236,6 +245,45 @@ public final class Constants {
         BRANCH_POSES.put(BRANCH_LETTERS.substring(i, i + 1), leftBranch);
         BRANCH_POSES.put(BRANCH_LETTERS.substring(i + 6, i + 7), rightBranch);
       }
+      // Initialize the locations of the center of the CORAL STATIONS
+      CENTER_CORAL_STATION[0] = APRILTAG_FIELD_LAYOUT.getTagPose(13).get().toPose2d();
+      CENTER_CORAL_STATION[1] = APRILTAG_FIELD_LAYOUT.getTagPose(12).get().toPose2d();
+      /**
+       * Distance from the center of the CS to the left/right sides. 76 = CS Width, (76 in / 2) -
+       * (76 in / 6) = 25.3333 in
+       */
+      double CENTER_TO_SIDE = Units.inchesToMeters(25.3333);
+      for (int i = 0; i < 2; i++) {
+        // Left CORAL STATION area
+        var leftCS =
+            new Pose2d(
+                CENTER_CORAL_STATION[i].getX()
+                    + (CENTER_TO_SIDE
+                        * Math.cos(
+                            -Math.PI / 2 + CENTER_CORAL_STATION[i].getRotation().getRadians())),
+                CENTER_CORAL_STATION[i].getY()
+                    + (CENTER_TO_SIDE
+                        * Math.sin(
+                            -Math.PI / 2 + CENTER_CORAL_STATION[i].getRotation().getRadians())),
+                CENTER_CORAL_STATION[i].getRotation());
+        // Right CORAL STATION area
+        var rightCS =
+            new Pose2d(
+                CENTER_CORAL_STATION[i].getX()
+                    + (-CENTER_TO_SIDE
+                        * Math.cos(
+                            -Math.PI / 2 + CENTER_CORAL_STATION[i].getRotation().getRadians())),
+                CENTER_CORAL_STATION[i].getY()
+                    + (-CENTER_TO_SIDE
+                        * Math.sin(
+                            -Math.PI / 2 + CENTER_CORAL_STATION[i].getRotation().getRadians())),
+                CENTER_CORAL_STATION[i].getRotation());
+
+        // Map poses to names
+        CORAL_STATION_POSES.put("CS" + (i + 1) + "C", CENTER_CORAL_STATION[i]);
+        CORAL_STATION_POSES.put("CS" + (i + 1) + "L", leftCS);
+        CORAL_STATION_POSES.put("CS" + (i + 1) + "R", rightCS);
+      }
     }
   }
 
@@ -245,8 +293,8 @@ public final class Constants {
     // PID
     public static final double TRANSLATION_KP = 5.0;
     public static final double TRANSLATION_KD = 0.0;
-    public static final double ROTATION_KP = 5.0;
-    public static final double ROTATION_KD = 0.0;
+    public static final double ROTATION_KP = 4.5;
+    public static final double ROTATION_KD = 0.0; // tuning
     /** Coefficient of friction between wheels and the carpet */
     public static final double WHEEL_FRICTION_COEFF = 0.7;
     /** Swerve Module configuartion for PathPlanner */
@@ -267,11 +315,30 @@ public final class Constants {
             MODULE_CONFIG,
             DriveConstants.getModuleTranslations());
 
+    /* Starting Poses */
+    /** {@link Pose2d} of the center starting line pose for autos */
+    public static final Pose2d STARTING_LINE_CENTER =
+        RobotStateConstants.isRed()
+            ? new Pose2d(10.266, 2.874, Rotation2d.kZero)
+            : new Pose2d(7.265, 4.041, Rotation2d.k180deg);
+    /** {@link Pose2d} of the left starting line pose for autos */
+    public static final Pose2d STARTING_LINE_LEFT =
+        RobotStateConstants.isRed()
+            ? new Pose2d(10.266, 5.326, Rotation2d.kZero)
+            : new Pose2d(7.265, 5.326, Rotation2d.k180deg);
+    /** {@link Pose2d} of the right starting line pose for autos */
+    public static final Pose2d STARTING_LINE_RIGHT =
+        RobotStateConstants.isRed()
+            ? new Pose2d(10.266, 4.041, Rotation2d.kZero)
+            : new Pose2d(7.265, 2.874, Rotation2d.k180deg);
+
     /* Pathfinding */
     /** Max translational and rotational velocity and acceleration used for Pathfinding */
     public static final PathConstraints DEFAULT_PATH_CONSTRAINTS =
-        new PathConstraints(5, 5, Units.degreesToRadians(515.65), Units.degreesToRadians(262.82));
+        new PathConstraints(3, 2, Units.degreesToRadians(515.65), Units.degreesToRadians(262.82));
     /** Default distance away from any wall when the robot is Pathfinding towards one */
-    public static final double DEFAULT_WALL_DISTANCE_M = Units.inchesToMeters(12);
+    public static final double DEFAULT_WALL_DISTANCE_M = Units.inchesToMeters(3);
+    /** Distance from the center of the robot to the center of the Superstructure */
+    public static final double ROBOT_MIDPOINT_TO_INTAKE = Units.inchesToMeters(9);
   }
 }
