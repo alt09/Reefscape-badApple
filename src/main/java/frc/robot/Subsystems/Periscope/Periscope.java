@@ -7,6 +7,8 @@ package frc.robot.Subsystems.Periscope;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
@@ -54,7 +56,7 @@ public class Periscope extends SubsystemBase {
     m_profiledPIDController.setGoal(0);
 
     // Tunable PID & Feedforward gains
-    SmartDashboard.putBoolean("PIDFF_Tuning/Periscope/EnableTuning", true);
+    SmartDashboard.putBoolean("PIDFF_Tuning/Periscope/EnableTuning", false);
     SmartDashboard.putNumber("PIDFF_Tuning/Periscope/KP", PeriscopeConstants.KP);
     SmartDashboard.putNumber("PIDFF_Tuning/Periscope/KI", PeriscopeConstants.KI);
     SmartDashboard.putNumber("PIDFF_Tuning/Periscope/KD", PeriscopeConstants.KD);
@@ -73,14 +75,33 @@ public class Periscope extends SubsystemBase {
     m_io.updateInputs(m_inputs);
     Logger.processInputs("Periscope", m_inputs);
 
+    if (m_inputs.isHallEffectSensorTriggered[0]
+        && m_inputs.heightMeters < Units.inchesToMeters(3)
+        && m_inputs.currentDraw[0] > 25) {
+      this.resetPosition(0);
+    }
+
+    // The feedforward calculates over 11 volts unless the a gain is changed with the tunable
+    // values. This is needed so that changes the gains doesn't have to be done every time
+    var feedforwardVolts =
+        m_feedforward.calculateWithVelocities(
+            m_profiledPIDController.getConstraints().maxVelocity,
+            m_profiledPIDController.getConstraints().maxVelocity);
+
+    if (DriverStation.isDisabled()) {
+      // Don't apply feedforward if disabled
+      feedforwardVolts = 0.0;
+    }
+
     if (m_enablePID) {
+      // Apply correct feedforward calculation if it's wrong (it should remain constant since max
+      // velocity doesn't change)
+      if (feedforwardVolts > 1) feedforwardVolts = 0.2496000000000002;
       // Calculate voltage based on PID and Feedforward controllers
-      this.setVoltage(
-          m_profiledPIDController.calculate(m_inputs.heightMeters)
-              + m_feedforward.calculate(m_profiledPIDController.getConstraints().maxVelocity));
+      this.setVoltage(m_profiledPIDController.calculate(m_inputs.heightMeters) + feedforwardVolts);
 
       // Enable and update tunable PID & Feedforward gains through SmartDashboard
-      if (SmartDashboard.getBoolean("PIDFF_Tuning/Periscope/EnableTuning", true)) {
+      if (SmartDashboard.getBoolean("PIDFF_Tuning/Periscope/EnableTuning", false)) {
         this.updatePID();
         this.updateFF();
       }
@@ -95,7 +116,6 @@ public class Periscope extends SubsystemBase {
   public void enableBrakeMode(boolean enable) {
     m_io.enableBrakeMode(enable);
   }
-  
 
   /**
    * Sets the position of the Periscope motors in meters.
@@ -133,15 +153,17 @@ public class Periscope extends SubsystemBase {
    */
   public void setPosition(double heightMeters) {
     // Compare new setpoint to previous to determine whether to lower acceleration or not
-    this.setMaxAcceleration(
+    var acceleration =
         (heightMeters < m_prevSetpoint)
             ? PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2 / 6
-            : PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2);
+            : PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2;
 
     // Record and update setpoint
     m_prevSetpoint = heightMeters;
     Logger.recordOutput("Superstructure/Setpoints/PeriscopeHeight", m_prevSetpoint);
     m_profiledPIDController.setGoal(heightMeters);
+    m_profiledPIDController.setConstraints(
+        new TrapezoidProfile.Constraints(PeriscopeConstants.MAX_VELOCITY_M_PER_SEC, acceleration));
   }
 
   /**
@@ -181,7 +203,7 @@ public class Periscope extends SubsystemBase {
 
   /**
    * Sets the maximum acceleration of the {@link ProfiledPIDController}.
-   * 
+   *
    * @param acceleration Maximum acceleration in m/s²
    */
   public void setMaxAcceleration(double acceleration) {
@@ -191,7 +213,7 @@ public class Periscope extends SubsystemBase {
 
   /**
    * Toggle closed loop {@link ProfiledPIDController} and Feedforward and open loop voltage control.
-   * 
+   *
    * @param enable {@code true} for closed loop control, {@code false} for open loop.
    */
   public void enablePID(boolean enable) {
@@ -255,5 +277,5 @@ public class Periscope extends SubsystemBase {
           PeriscopeConstants.KV,
           PeriscopeConstants.KA);
     }
-  }  
+  }
 }

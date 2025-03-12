@@ -121,6 +121,14 @@ public class SuperstructureCommands {
   public static Command score(AEE aee, CEE cee, Funnel funnel) {
     return SuperstructureCommands.setSpeeds(
         aee, cee, funnel, AEEConstants.SCORE_PERCENT_SPEED, CEEConstants.SCORE_PERCENT_SPEED, 0);
+
+    // return SuperstructureCommands.setSpeeds(
+    //     aee,
+    //     cee,
+    //     funnel,
+    //     SuperstructureState.AEESpeed,
+    //     SuperstructureState.CEESpeed,
+    //     SuperstructureState.funnelSpeed);
   }
 
   /* ~~~~~~~~~~~~~~~~~~~~ CORAL ~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -148,14 +156,16 @@ public class SuperstructureCommands {
    * @param algaePivot {@link AlgaePivot} subsystem
    * @return {@link Command} that sets the positions to score CORAL in L2.
    */
-  public static Command positionsToL2Coral(Periscope periscope, AlgaePivot algaePivot) {
+  public static Command positionsToL2Coral(Periscope periscope, AlgaePivot algaePivot, AEE aee) {
 
     SuperstructureState.objective(SuperstructureState.Objective.L2_CORAL);
     return SuperstructureCommands.setPositions(
-        periscope,
-        algaePivot,
-        SuperstructureState.periscopeHeight,
-        SuperstructureState.algaePivotAngle);
+            periscope,
+            algaePivot,
+            SuperstructureState.periscopeHeight,
+            SuperstructureState.algaePivotAngle)
+        .alongWith(
+            Commands.runOnce(() -> aee.setPercentSpeed(AEEConstants.DEALGAE_PERCENT_SPEED), aee));
   }
 
   /**
@@ -165,17 +175,20 @@ public class SuperstructureCommands {
    * @param algaePivot {@link AlgaePivot} subsystem
    * @return {@link Command} that sets the positions to score CORAL in L3.
    */
-  public static Command positionsToL3Coral(Periscope periscope, AlgaePivot algaePivot) {
+  public static Command positionsToL3Coral(Periscope periscope, AlgaePivot algaePivot, AEE aee) {
     SuperstructureState.objective(SuperstructureState.Objective.L3_CORAL);
     return SuperstructureCommands.setPositions(
-        periscope,
-        algaePivot,
-        SuperstructureState.periscopeHeight,
-        SuperstructureState.algaePivotAngle);
+            periscope,
+            algaePivot,
+            SuperstructureState.periscopeHeight,
+            SuperstructureState.algaePivotAngle)
+        .alongWith(
+            Commands.runOnce(() -> aee.setPercentSpeed(AEEConstants.DEALGAE_PERCENT_SPEED), aee));
   }
 
   /**
-   * Sets the position of the Periscope height and ALGAE Pivot angle to score CORAL in L4. Reverses CORAL at the top so that it is not poking out too far.
+   * Sets the position of the Periscope height and ALGAE Pivot angle to score CORAL in L4. Reverses
+   * CORAL at the top so that it is not poking out too far.
    *
    * @param periscope {@link Periscope} subsystem
    * @param algaePivot {@link AlgaePivot} subsystem
@@ -221,8 +234,7 @@ public class SuperstructureCommands {
                 SuperstructureState.AEESpeed,
                 SuperstructureState.CEESpeed,
                 SuperstructureState.funnelSpeed))
-        .andThen(
-            Commands.waitUntil(() -> cee.isBeamBreakTriggered(CEEConstants.EXIT_BEAM_BREAK_PORT)))
+        .andThen(Commands.waitUntil(() -> cee.isBeamBreakTriggered()))
         .andThen(Commands.waitSeconds(CEEConstants.BEAM_BREAK_DELAY))
         .andThen(Commands.runOnce(() -> cee.setVoltage(0), cee));
   }
@@ -249,12 +261,7 @@ public class SuperstructureCommands {
             SuperstructureState.algaePivotAngle)
         .alongWith(
             SuperstructureCommands.setSpeeds(
-                aee,
-                cee,
-                funnel,
-                SuperstructureState.AEESpeed,
-                SuperstructureState.CEESpeed,
-                SuperstructureState.funnelSpeed));
+                aee, cee, funnel, AEEConstants.INTAKE_PERCENT_SPEED, 0, 0));
   }
 
   /**
@@ -277,12 +284,7 @@ public class SuperstructureCommands {
             SuperstructureState.algaePivotAngle)
         .alongWith(
             SuperstructureCommands.setSpeeds(
-                aee,
-                cee,
-                funnel,
-                SuperstructureState.AEESpeed,
-                SuperstructureState.CEESpeed,
-                SuperstructureState.funnelSpeed));
+                aee, cee, funnel, AEEConstants.INTAKE_PERCENT_SPEED, 0, 0));
   }
 
   /**
@@ -386,10 +388,10 @@ public class SuperstructureCommands {
 
         case L2_CORAL:
           periscopeHeight = PeriscopeConstants.L2_HEIGHT_M;
-          algaePivotAngle = AlgaePivotConstants.DEFAULT_ANGLE_RAD;
+          algaePivotAngle = AlgaePivotConstants.DEALGAE_ANGLE_RAD;
           funnelSpeed = 0.0;
           CEESpeed = CEEConstants.SCORE_PERCENT_SPEED;
-          AEESpeed = 0.0;
+          AEESpeed = AEEConstants.DEALGAE_PERCENT_SPEED;
           break;
 
         case L2_ALGAE:
@@ -402,10 +404,10 @@ public class SuperstructureCommands {
 
         case L3_CORAL:
           periscopeHeight = PeriscopeConstants.L3_HEIGHT_M;
-          algaePivotAngle = AlgaePivotConstants.DEFAULT_ANGLE_RAD;
+          algaePivotAngle = AlgaePivotConstants.DEALGAE_ANGLE_RAD;
           funnelSpeed = 0.0;
           CEESpeed = CEEConstants.SCORE_PERCENT_SPEED;
-          AEESpeed = 0.0;
+          AEESpeed = AEEConstants.DEALGAE_PERCENT_SPEED;
           break;
 
         case L3_ALGAE:

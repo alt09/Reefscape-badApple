@@ -31,6 +31,7 @@ import frc.robot.Subsystems.Drive.DriveConstants;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * This class defines the runtime mode used by AdvantageKit. The mode is always "real" when running
@@ -89,7 +90,7 @@ public final class Constants {
     public static final double MAX_VOLTAGE = 12;
 
     /** Weight of the robot with bumpers and battery */
-    public static final double ROBOT_WEIGHT_KG = Units.lbsToKilograms(135);
+    public static final double ROBOT_WEIGHT_KG = Units.lbsToKilograms(142);
     /** Rough moment of inertia calculation of the robot in kilograms * meters squared */
     public static final double ROBOT_MOI_KG_M2 =
         (1.0 / 12.0)
@@ -108,22 +109,22 @@ public final class Constants {
     public static final int AUX_XBOX_CONTROLLER = 2;
     /** Map button board button names to their numbers on the controller circut board */
     public enum BUTTON_BOARD {
-      L1_PROCESSOR(1),
-      L2(2),
-      L3(3),
-      L4_NET(4),
+      L1_PROCESSOR(12),
+      L2(11),
+      L3(10),
+      L4_NET(9),
       SWITCH_CORAL_ALGAE(1), // Axis number
-      REEF_AB(8),
-      REEF_CD(7),
-      REEF_EF(6),
-      REEF_GH(5),
-      REEF_IJ(10),
-      REEF_KL(9),
+      REEF_AB(5),
+      REEF_CD(6),
+      REEF_EF(7),
+      REEF_GH(8),
+      REEF_IJ(3),
+      REEF_KL(4),
       SWITCH_BRANCH(0), // Axis number
-      ZERO(0), // Axis number
-      CLIMB(1), // Axis number
-      SCORE(11),
-      GROUND_ALGAE(12);
+      CLIMB_DEPLOY(0), // Axis number
+      CLIMB_RETRACT(1), // Axis number
+      SCORE(2),
+      GROUND_ALGAE(1);
 
       public final int BUTTON_ID;
 
@@ -244,6 +245,11 @@ public final class Constants {
         // Map poses to corresponding BRANCH letter
         BRANCH_POSES.put(BRANCH_LETTERS.substring(i, i + 1), leftBranch);
         BRANCH_POSES.put(BRANCH_LETTERS.substring(i + 6, i + 7), rightBranch);
+
+        // Log poses
+        Logger.recordOutput("FieldPoses/Reef/" + BRANCH_LETTERS.substring(i, i + 1), leftBranch);
+        Logger.recordOutput(
+            "FieldPoses/Reef/" + BRANCH_LETTERS.substring(i + 6, i + 7), rightBranch);
       }
       // Initialize the locations of the center of the CORAL STATIONS
       CENTER_CORAL_STATION[0] = APRILTAG_FIELD_LAYOUT.getTagPose(13).get().toPose2d();
@@ -279,10 +285,20 @@ public final class Constants {
                             -Math.PI / 2 + CENTER_CORAL_STATION[i].getRotation().getRadians())),
                 CENTER_CORAL_STATION[i].getRotation());
 
+        // CS Names
+        String center = "CS" + (i + 1) + "C";
+        String left = "CS" + (i + 1) + "L";
+        String right = "CS" + (i + 1) + "R";
+
         // Map poses to names
-        CORAL_STATION_POSES.put("CS" + (i + 1) + "C", CENTER_CORAL_STATION[i]);
-        CORAL_STATION_POSES.put("CS" + (i + 1) + "L", leftCS);
-        CORAL_STATION_POSES.put("CS" + (i + 1) + "R", rightCS);
+        CORAL_STATION_POSES.put(center, CENTER_CORAL_STATION[i]);
+        CORAL_STATION_POSES.put(left, leftCS);
+        CORAL_STATION_POSES.put(right, rightCS);
+
+        // Log poses
+        Logger.recordOutput("FieldPoses/CoralStation/" + center, CENTER_CORAL_STATION[i]);
+        Logger.recordOutput("FieldPoses/CoralStation/" + left, leftCS);
+        Logger.recordOutput("FieldPoses/CoralStation/" + right, rightCS);
       }
     }
   }
@@ -337,8 +353,8 @@ public final class Constants {
     public static final PathConstraints DEFAULT_PATH_CONSTRAINTS =
         new PathConstraints(3, 2, Units.degreesToRadians(515.65), Units.degreesToRadians(262.82));
     /** Default distance away from any wall when the robot is Pathfinding towards one */
-    public static final double DEFAULT_WALL_DISTANCE_M = Units.inchesToMeters(3);
+    public static final double DEFAULT_WALL_DISTANCE_M = Units.inchesToMeters(6);
     /** Distance from the center of the robot to the center of the Superstructure */
-    public static final double ROBOT_MIDPOINT_TO_INTAKE = Units.inchesToMeters(9);
+    public static final double ROBOT_MIDPOINT_TO_SUPERSTRUCTURE = Units.inchesToMeters(5);
   }
 }

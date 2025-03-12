@@ -41,7 +41,7 @@ public class PeriscopeConstants {
    * Height difference from the bottom position and the new resting position from the spacers in
    * inches
    */
-  public static final double SPACER_HEIGHT_DIFF_IN = 2;
+  public static final double SPACER_HEIGHT_DIFF_IN = 2.4375;
   /** Minimum height of the Periscope, resting/default position */
   public static final double MIN_HEIGHT_M = 0.0;
   /** Max height of the Periscope in meters */
@@ -51,13 +51,13 @@ public class PeriscopeConstants {
   /** Height position of the Periscope for reaching L2 */
   public static final double L2_HEIGHT_M = Units.inchesToMeters(19.57 - SPACER_HEIGHT_DIFF_IN);
   /** Height position of the Periscope for reaching L3 */
-  public static final double L3_HEIGHT_M = Units.inchesToMeters(33.33 - SPACER_HEIGHT_DIFF_IN);
+  public static final double L3_HEIGHT_M = Units.inchesToMeters(34.83 - SPACER_HEIGHT_DIFF_IN);
   /** Height position of the Periscope for reaching L4 */
   public static final double L4_HEIGHT_M = MAX_HEIGHT_M;
   /** Height position of the Periscope for aligning with the Funnel at the CORAL STATION */
   public static final double CORAL_STATION_HEIGHT_M = MIN_HEIGHT_M;
   /** Height position of the Periscope for reaching the PROCCESOR */
-  public static final double PROCESSOR_HEIGHT_M = Units.inchesToMeters(12.3456789); // TODO: Update
+  public static final double PROCESSOR_HEIGHT_M = Units.inchesToMeters(12);
   /** Height position of the Periscope for reaching the NET */
   public static final double NET_HEIGHT_M = MAX_HEIGHT_M;
 
