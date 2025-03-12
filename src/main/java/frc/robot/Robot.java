@@ -13,7 +13,9 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.RobotStateConstants;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -30,7 +32,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * project.
  */
 public class Robot extends LoggedRobot {
-  private RobotContainer robotContainer;
+  private RobotContainer m_robotContainer;
+  private Command m_autonomousCommand;
 
   public Robot() {
     // Record metadata
@@ -76,11 +79,23 @@ public class Robot extends LoggedRobot {
     // Start AdvantageKit logger
     Logger.start();
 
-    // Version Number (Issue #, Commit #, Functionality 0 = working, 1 = WIP, 2 = doesn't work)
-    SmartDashboard.putString("Version Number", "0.6.1");
+    /*
+     * Version Number
+     * 1: Number of pushes (commits) to Dev,
+     * 2: Issue number,
+     * 3: Commit number (of this branch),
+     * 4: Functionality: 0 = working, 1 = WIP, 2 = doesn't work
+     */
+
+    SmartDashboard.putString("Version Number", "30.0.30.0");
+
     SmartDashboard.putString("Last Deployed: ", BuildConstants.BUILD_DATE);
 
-    robotContainer = new RobotContainer();
+    // Run a warmup command for the Pathfinder because the first command can potentially have a
+    // higher delay to start compared to subsequent Pathfinding commands
+    PathfindingCommand.warmupCommand();
+
+    m_robotContainer = new RobotContainer();
   }
 
   /** This function is called periodically during all modes. */
@@ -91,7 +106,12 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.cancel();
+    }
+    m_robotContainer.allMechanismsBrakeMode(false);
+  }
 
   /** This function is called periodically when disabled. */
   @Override
@@ -99,7 +119,13 @@ public class Robot extends LoggedRobot {
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
-  public void autonomousInit() {}
+  public void autonomousInit() {
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
+    }
+  }
 
   /** This function is called periodically during autonomous. */
   @Override
@@ -107,7 +133,13 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    CommandScheduler.getInstance().cancelAll();
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.cancel();
+    }
+    m_robotContainer.allMechanismsBrakeMode(true);
+  }
 
   /** This function is called periodically during operator control. */
   @Override

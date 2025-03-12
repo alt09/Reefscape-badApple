@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.265,
+        "y": 5.325665983606557
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.340720627478838,
+        "y": 5.3434838542974825
+      },
+      "isLocked": false,
+      "linkedName": "SLL"
+    },
+    {
+      "anchor": {
+        "x": 5.322540983606557,
+        "y": 5.085911885245901
+      },
+      "prevControl": {
+        "x": 5.569057352469682,
+        "y": 5.044322464926067
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "I"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -121.42956561483864
+  },
+  "reversed": false,
+  "folder": "SLL",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": true
+}

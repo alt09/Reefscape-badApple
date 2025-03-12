@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.265,
+        "y": 2.8744999999999994
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.78065946652134,
+        "y": 2.8366998969021777
+      },
+      "isLocked": false,
+      "linkedName": "SLR"
+    },
+    {
+      "anchor": {
+        "x": 5.2065,
+        "y": 2.8257499999999993
+      },
+      "prevControl": {
+        "x": 6.415157013564241,
+        "y": 2.839001596751916
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "EF"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 119.99999999999999
+  },
+  "reversed": false,
+  "folder": "SLR",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": true
+}
