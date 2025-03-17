@@ -76,14 +76,7 @@ public class RobotContainer {
         m_funnelSubsystem = new Funnel(new FunnelIOSparkMax());
         m_AEESubsystem = new AEE(new AEEIOSparkMax() {});
         m_CEESubsystem = new CEE(new CEEIOSparkMax());
-        m_visionSubsystem =
-            new Vision(
-                m_driveSubsystem::addVisionMeasurement,
-                // new VisionIOPhotonVision(VisionConstants.CAMERA.FRONT.CAMERA_INDEX),
-                // new VisionIOPhotonVision(VisionConstants.CAMERA.BACK.CAMERA_INDEX)
-                new VisionIOLimelight(
-                    VisionConstants.CAMERA.LIMELIGHT.CAMERA_INDEX,
-                    m_driveSubsystem::getCurrentPose2d));
+        m_visionSubsystem = new Vision(m_driveSubsystem::addVisionMeasurement, new VisionIO() {});
         break;
         // Sim robot, instantiates physics sim IO implementations
       case SIM:
@@ -324,6 +317,7 @@ public class RobotContainer {
     // m_autoChooser.addOption("2P_SLR-F4-CS2R-B4", new PathPlannerAuto("2P_SLR-F4-CS2R-B4"));
     // m_autoChooser.addOption("2P_SLR-F4-CS2R-C4", new PathPlannerAuto("2P_SLR-F4-CS2R-C4"));
     // m_autoChooser.addOption("2P_SLR-F4-CS2R-D4", new PathPlannerAuto("2P_SLR-F4-CS2R-D4"));
+    m_autoChooser.addOption("2 Meter Test", new PathPlannerAuto("Forward"));
 
     /* Characterization Routines */
     m_autoChooser.addOption(

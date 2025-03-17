@@ -12,9 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.RobotStateConstants;
 import frc.robot.Subsystems.Drive.Drive;
 import java.util.LinkedList;
 import java.util.List;
@@ -143,11 +141,11 @@ public class Vision extends SubsystemBase {
     }
 
     // Update pose estimator from limelight
-    if (RobotStateConstants.getMode() != RobotStateConstants.Mode.SIM) {
-      var estimatedPose = m_inputs[0].limelightPose;
-      if (estimatedPose == null) return;
-      m_consumer.accept(estimatedPose, Timer.getFPGATimestamp(), m_stdDevs);
-    }
+    // if (RobotStateConstants.getMode() != RobotStateConstants.Mode.SIM) {
+    //   var estimatedPose = m_inputs[0].limelightPose;
+    //   if (estimatedPose == null) return;
+    //   m_consumer.accept(estimatedPose, Timer.getFPGATimestamp(), m_stdDevs);
+    // }
   }
 
   /**

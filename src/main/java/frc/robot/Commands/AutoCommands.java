@@ -353,8 +353,7 @@ public class AutoCommands {
                 Commands.runOnce(() -> drive.setRaw(0, 0, 0), drive)
                     .alongWith(
                         Commands.run(
-                                () -> cee.setPercentSpeed(CEEConstants.SCORE_PERCENT_SPEED), cee)
-                            )));
+                            () -> cee.setPercentSpeed(CEEConstants.SCORE_PERCENT_SPEED), cee))));
   }
 
   /**
