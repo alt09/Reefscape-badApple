@@ -3,7 +3,9 @@ package frc.robot;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -77,8 +79,11 @@ public class RobotContainer {
         m_visionSubsystem =
             new Vision(
                 m_driveSubsystem::addVisionMeasurement,
-                new VisionIOPhotonVision(VisionConstants.CAMERA.FRONT.CAMERA_INDEX),
-                new VisionIOPhotonVision(VisionConstants.CAMERA.BACK.CAMERA_INDEX));
+                // new VisionIOPhotonVision(VisionConstants.CAMERA.FRONT.CAMERA_INDEX),
+                // new VisionIOPhotonVision(VisionConstants.CAMERA.BACK.CAMERA_INDEX)
+                new VisionIOLimelight(
+                    VisionConstants.CAMERA.LIMELIGHT.CAMERA_INDEX,
+                    m_driveSubsystem::getCurrentPose2d));
         break;
         // Sim robot, instantiates physics sim IO implementations
       case SIM:
@@ -165,6 +170,8 @@ public class RobotContainer {
 
     /* Autonomous Routines */
     m_autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
+    // Leave
+    m_autoChooser.addOption("Leave", AutoCommands.leave(m_driveSubsystem, 0.4, 4));
     // Dynamic/Pathfinding Autos
     m_autoChooser.addOption(
         "Dynamic Pathfinding Auto",
@@ -513,11 +520,26 @@ public class RobotContainer {
                 m_CEESubsystem));
 
     /* Misc */
+    // Zero Periscope
     m_driverController
         .back()
         .onTrue(
             new InstantCommand(() -> m_periscopeSubsystem.resetPosition(0), m_periscopeSubsystem)
                 .ignoringDisable(true));
+    // Rumble when ready to auto align
+    m_auxButtonBoard
+        .button(OperatorConstants.BUTTON_BOARD.REEF_AB.BUTTON_ID)
+        .or(m_auxButtonBoard.button(OperatorConstants.BUTTON_BOARD.REEF_CD.BUTTON_ID))
+        .or(m_auxButtonBoard.button(OperatorConstants.BUTTON_BOARD.REEF_EF.BUTTON_ID))
+        .or(m_auxButtonBoard.button(OperatorConstants.BUTTON_BOARD.REEF_GH.BUTTON_ID))
+        .or(m_auxButtonBoard.button(OperatorConstants.BUTTON_BOARD.REEF_IJ.BUTTON_ID))
+        .or(m_auxButtonBoard.button(OperatorConstants.BUTTON_BOARD.REEF_KL.BUTTON_ID))
+        .onTrue(new InstantCommand(() -> m_driverController.setRumble(RumbleType.kBothRumble, 1)))
+        .onFalse(new InstantCommand(() -> m_driverController.setRumble(RumbleType.kBothRumble, 0)));
+    // Stop in X
+    m_driverController
+        .b()
+        .whileTrue(new InstantCommand(() -> m_driveSubsystem.stopWithX(), m_driveSubsystem));
   }
 
   /** Aux Button Board Controls */
@@ -525,7 +547,7 @@ public class RobotContainer {
     /* ~~~~~~~~~~~~~~~~~~~~ Superstructure ~~~~~~~~~~~~~~~~~~~~ */
     /* Score */
     m_auxButtonBoard
-        .button(OperatorConstants.BUTTON_BOARD.SCORE.BUTTON_ID)
+        .axisLessThan(OperatorConstants.BUTTON_BOARD.SCORE.BUTTON_ID, -0.5)
         .onTrue(SuperstructureCommands.score(m_AEESubsystem, m_CEESubsystem, m_funnelSubsystem));
 
     /* CORAL and ALGAE */
@@ -555,11 +577,15 @@ public class RobotContainer {
                 m_periscopeSubsystem, m_algaePivotSubsystem, m_AEESubsystem))
         .onFalse(
             SuperstructureCommands.zero(
-                m_periscopeSubsystem,
-                m_algaePivotSubsystem,
-                m_AEESubsystem,
-                m_CEESubsystem,
-                m_funnelSubsystem))
+                    m_periscopeSubsystem,
+                    m_algaePivotSubsystem,
+                    m_AEESubsystem,
+                    m_CEESubsystem,
+                    m_funnelSubsystem)
+                .andThen(
+                    new InstantCommand(
+                        () -> m_AEESubsystem.setPercentSpeed(AEEConstants.INTAKE_PERCENT_SPEED),
+                        m_AEESubsystem)))
         .and(
             m_auxButtonBoard.axisGreaterThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID,
@@ -579,11 +605,15 @@ public class RobotContainer {
                 m_periscopeSubsystem, m_algaePivotSubsystem, m_AEESubsystem))
         .onFalse(
             SuperstructureCommands.zero(
-                m_periscopeSubsystem,
-                m_algaePivotSubsystem,
-                m_AEESubsystem,
-                m_CEESubsystem,
-                m_funnelSubsystem))
+                    m_periscopeSubsystem,
+                    m_algaePivotSubsystem,
+                    m_AEESubsystem,
+                    m_CEESubsystem,
+                    m_funnelSubsystem)
+                .andThen(
+                    new InstantCommand(
+                        () -> m_AEESubsystem.setPercentSpeed(AEEConstants.INTAKE_PERCENT_SPEED),
+                        m_AEESubsystem)))
         .and(
             m_auxButtonBoard.axisGreaterThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID,
@@ -615,7 +645,7 @@ public class RobotContainer {
         .onTrue(SuperstructureCommands.positionsToNet(m_periscopeSubsystem, m_algaePivotSubsystem));
     // Ground ALGAE
     m_auxButtonBoard
-        .button(OperatorConstants.BUTTON_BOARD.GROUND_ALGAE.BUTTON_ID)
+        .axisGreaterThan(OperatorConstants.BUTTON_BOARD.GROUND_ALGAE.BUTTON_ID, 0.5)
         .onTrue(
             SuperstructureCommands.intakeGroundAlgae(
                 m_periscopeSubsystem,
@@ -634,38 +664,52 @@ public class RobotContainer {
                     Commands.runOnce(
                         () -> m_AEESubsystem.setPercentSpeed(AEEConstants.INTAKE_PERCENT_SPEED),
                         m_AEESubsystem)));
-    // Zero mechanisms
+    // Adjust Periscope Height
     m_auxButtonBoard
-        .axisGreaterThan(OperatorConstants.BUTTON_BOARD.CLIMB_DEPLOY.BUTTON_ID, 0.5)
+        .button(OperatorConstants.BUTTON_BOARD.CLIMB_DEPLOY.BUTTON_ID)
         .onTrue(
-            SuperstructureCommands.zero(
-                m_periscopeSubsystem,
-                m_algaePivotSubsystem,
-                m_AEESubsystem,
-                m_CEESubsystem,
-                m_funnelSubsystem));
+            new InstantCommand(
+                () -> m_periscopeSubsystem.adjustHeight(Units.inchesToMeters(1)),
+                m_periscopeSubsystem));
+    m_auxButtonBoard
+        .button(OperatorConstants.BUTTON_BOARD.CLIMB_RETRACT.BUTTON_ID)
+        .onTrue(
+            new InstantCommand(
+                () -> m_periscopeSubsystem.adjustHeight(Units.inchesToMeters(-1)),
+                m_periscopeSubsystem));
+    // Zero mechanisms
+    // m_auxButtonBoard
+    //     .button(OperatorConstants.BUTTON_BOARD.CLIMB_DEPLOY.BUTTON_ID)
+    //     .onTrue(
+    //         SuperstructureCommands.zero(
+    //             m_periscopeSubsystem,
+    //             m_algaePivotSubsystem,
+    //             m_AEESubsystem,
+    //             m_CEESubsystem,
+    //             m_funnelSubsystem));
 
     /* ~~~~~~~~~~~~~~~~~~~~ Climb ~~~~~~~~~~~~~~~~~~~~ */
     // Deploy Climber
-    m_auxButtonBoard
-        .axisGreaterThan(OperatorConstants.BUTTON_BOARD.CLIMB_DEPLOY.BUTTON_ID, 0.5)
-        .onTrue(
-            new InstantCommand(
-                () ->
-                    m_climberSubsystem.setVoltage(
-                        RobotStateConstants.MAX_VOLTAGE * ClimberConstants.DEPLOY_PERCENT_SPEED),
-                m_climberSubsystem))
-        .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
-    // // Retract Climber
-    m_auxButtonBoard
-        .axisLessThan(OperatorConstants.BUTTON_BOARD.CLIMB_RETRACT.BUTTON_ID, -0.5)
-        .onTrue(
-            new InstantCommand(
-                () ->
-                    m_climberSubsystem.setVoltage(
-                        RobotStateConstants.MAX_VOLTAGE * ClimberConstants.RETRACT_PERCENT_SPEED),
-                m_climberSubsystem))
-        .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
+    // m_auxButtonBoard
+    //     .axisGreaterThan(OperatorConstants.BUTTON_BOARD.CLIMB_DEPLOY.BUTTON_ID, 0.5)
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //                 m_climberSubsystem.setVoltage(
+    //                     RobotStateConstants.MAX_VOLTAGE * ClimberConstants.DEPLOY_PERCENT_SPEED),
+    //             m_climberSubsystem))
+    //     .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
+    // // // Retract Climber
+    // m_auxButtonBoard
+    //     .axisLessThan(OperatorConstants.BUTTON_BOARD.CLIMB_RETRACT.BUTTON_ID, -0.5)
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //                 m_climberSubsystem.setVoltage(
+    //                     RobotStateConstants.MAX_VOLTAGE *
+    // ClimberConstants.RETRACT_PERCENT_SPEED),
+    //             m_climberSubsystem))
+    //     .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
 
     /* ~~~~~~~~~~~~~~~~~~~~ Pathfinding Selection ~~~~~~~~~~~~~~~~~~~~ */
     // REEF Face AB

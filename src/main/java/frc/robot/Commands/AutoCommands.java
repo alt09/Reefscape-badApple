@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.PathPlannerConstants;
+import frc.robot.Constants.RobotStateConstants;
 import frc.robot.Subsystems.Algae.EndEffector.AEE;
 import frc.robot.Subsystems.Algae.Pivot.AlgaePivot;
 import frc.robot.Subsystems.CoralEndEffector.CEE;
@@ -276,6 +277,19 @@ public class AutoCommands {
                 drive, PathPlannerConstants.DEFAULT_WALL_DISTANCE_M, () -> false));
   }
 
+  public static Command leave(Drive drive, double driveSpeed, double driveTime) {
+    return Commands.runOnce(() -> drive.zeroYaw(), drive)
+        .andThen(Commands.waitSeconds(0.5))
+        .andThen(
+            Commands.parallel(
+                DriveCommands.fieldRelativeDriveAtAngle(
+                        drive,
+                        () -> RobotStateConstants.isRed() ? -driveSpeed : driveSpeed,
+                        () -> 0,
+                        () -> Rotation2d.kZero)
+                    .withTimeout(driveTime)));
+  }
+
   /**
    * 1 Piece auto for scoring a specified CORAL on the G or H BRANCHES. Doesn't use Vision (only
    * percent speed of the DT) to move the robot.
@@ -324,17 +338,23 @@ public class AutoCommands {
     }
 
     return Commands.runOnce(() -> drive.zeroYaw(), drive)
+        .andThen(Commands.waitSeconds(0.5))
         .andThen(
             Commands.parallel(
-                DriveCommands.fieldRelativeDriveAtAngle(
-                        drive, () -> driveSpeed, () -> 0, () -> Rotation2d.kZero)
-                    .withTimeout(DRIVE_TIME_SEC),
-                coralPosition))
+                    DriveCommands.fieldRelativeDriveAtAngle(
+                        drive,
+                        () -> RobotStateConstants.isRed() ? -driveSpeed : driveSpeed,
+                        () -> 0,
+                        () -> Rotation2d.kZero),
+                    coralPosition)
+                .withDeadline(Commands.waitSeconds(4)))
         .andThen(
-            Commands.parallel(
-                Commands.runOnce(() -> drive.setRaw(0, 0, 0), drive),
-                Commands.runOnce(
-                    () -> cee.setPercentSpeed(CEEConstants.SCORE_PERCENT_SPEED), cee)));
+            Commands.sequence(
+                Commands.runOnce(() -> drive.setRaw(0, 0, 0), drive)
+                    .alongWith(
+                        Commands.run(
+                                () -> cee.setPercentSpeed(CEEConstants.SCORE_PERCENT_SPEED), cee)
+                            )));
   }
 
   /**
