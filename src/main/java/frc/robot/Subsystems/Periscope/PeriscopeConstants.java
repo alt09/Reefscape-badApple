@@ -45,13 +45,13 @@ public class PeriscopeConstants {
   /** Minimum height of the Periscope, resting/default position */
   public static final double MIN_HEIGHT_M = 0.0;
   /** Max height of the Periscope in meters */
-  public static final double MAX_HEIGHT_M = Units.inchesToMeters(60);
+  public static final double MAX_HEIGHT_M = Units.inchesToMeters(58);
   /** Height position of the Periscope for reaching L1 */
   public static final double L1_HEIGHT_M = Units.inchesToMeters(8.18 - SPACER_HEIGHT_DIFF_IN);
   /** Height position of the Periscope for reaching L2 */
   public static final double L2_HEIGHT_M = Units.inchesToMeters(19.57 - SPACER_HEIGHT_DIFF_IN);
   /** Height position of the Periscope for intaking L2 ALGAE */
-  public static final double L2_ALGAE_HEIGHT_M = Units.inchesToMeters(24.06998575818367);
+  public static final double L2_ALGAE_HEIGHT_M = Units.inchesToMeters(22.06998575818367);
   /** Height position of the Periscope for reaching L3 */
   public static final double L3_HEIGHT_M =
       Units.inchesToMeters(34.83 - SPACER_HEIGHT_DIFF_IN); // 29.513407287422694
