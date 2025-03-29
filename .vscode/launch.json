@@ -2,6 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "java",
+      "name": "BadApple",
+      "request": "launch",
+      "mainClass": "frc.robot.Subsystems.BrainRoot.BadApple",
+      "projectName": "Reefscape-badApple"
+    },
+    {
       "type": "wpilib",
       "name": "WPILib Desktop Debug",
       "request": "launch",
