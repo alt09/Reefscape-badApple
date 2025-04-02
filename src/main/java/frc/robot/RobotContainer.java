@@ -20,6 +20,7 @@ import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.Constants.RobotStateConstants;
 import frc.robot.Subsystems.Algae.EndEffector.*;
 import frc.robot.Subsystems.Algae.Pivot.*;
+import frc.robot.Subsystems.BrainRoot.Music;
 import frc.robot.Subsystems.Climber.*;
 import frc.robot.Subsystems.CoralEndEffector.*;
 import frc.robot.Subsystems.Drive.*;
@@ -38,6 +39,9 @@ public class RobotContainer {
 //   private final Periscope m_periscopeSubsystem;
 //   private final Climber m_climberSubsystem;
 //   private final Funnel m_funnelSubsystem;
+
+ private final Music music;
+
 //   private final AEE m_AEESubsystem;
 //   private final CEE m_CEESubsystem;
 
@@ -79,6 +83,7 @@ public class RobotContainer {
         //         m_driveSubsystem::addVisionMeasurement,
         //         new VisionIOPhotonVision(VisionConstants.CAMERA.FRONT.CAMERA_INDEX),
         //         new VisionIOPhotonVision(VisionConstants.CAMERA.BACK.CAMERA_INDEX));
+        music = new Music();
         break;
         // Sim robot, instantiates physics sim IO implementations
       case SIM:
@@ -105,6 +110,7 @@ public class RobotContainer {
         //         //     VisionConstants.CAMERA.BACK.CAMERA_INDEX,
         //         // m_driveSubsystem::getCurrentPose2d))
         //         new VisionIO() {});
+        music = null;
         break;
         // Replayed robot, disables all IO implementations
       default:
@@ -121,6 +127,7 @@ public class RobotContainer {
         // m_funnelSubsystem = new Funnel(new FunnelIO() {});
         // m_AEESubsystem = new AEE(new AEEIO() {});
         // m_CEESubsystem = new CEE(new CEEIO() {});
+        music = null;
         // m_visionSubsystem = new Vision(m_driveSubsystem::addVisionMeasurement, new VisionIO() {});
         break;
     }
@@ -144,6 +151,10 @@ public class RobotContainer {
 
   /** Driver Controls */
   private void driverControllerBindings() {
+    m_driverController
+    .a()
+    .onTrue(new InstantCommand(() -> music.setVelocity(0.8)));
+
   }
 
   /** Aux Button Board Controls */
@@ -152,6 +163,7 @@ public class RobotContainer {
 
   /** Aux Xbox Controls */
   public void auxControllerBindings() {
+
   }
 
   /**
