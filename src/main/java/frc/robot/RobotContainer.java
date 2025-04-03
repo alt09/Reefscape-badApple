@@ -1,22 +1,12 @@
 package frc.robot;
 
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Commands.AutoCommands;
-import frc.robot.Commands.DriveCommands;
-import frc.robot.Commands.PathfindingCommands;
-import frc.robot.Commands.SuperstructureCommands;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.Constants.RobotStateConstants;
 import frc.robot.Subsystems.Algae.EndEffector.*;
 import frc.robot.Subsystems.Algae.Pivot.*;
@@ -32,21 +22,21 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   // Chassis
-//   private final Drive m_driveSubsystem;
+  //   private final Drive m_driveSubsystem;
 
-//   // Mechanisms
-//   private final AlgaePivot m_algaePivotSubsystem;
-//   private final Periscope m_periscopeSubsystem;
-//   private final Climber m_climberSubsystem;
-//   private final Funnel m_funnelSubsystem;
+  //   // Mechanisms
+  //   private final AlgaePivot m_algaePivotSubsystem;
+  //   private final Periscope m_periscopeSubsystem;
+  //   private final Climber m_climberSubsystem;
+  //   private final Funnel m_funnelSubsystem;
 
- private final Music music;
+  private final Music music;
 
-//   private final AEE m_AEESubsystem;
-//   private final CEE m_CEESubsystem;
+  //   private final AEE m_AEESubsystem;
+  //   private final CEE m_CEESubsystem;
 
   // Utils
-//   private final Vision m_visionSubsystem;
+  //   private final Vision m_visionSubsystem;
 
   // Controllers
   private final CommandXboxController m_driverController =
@@ -128,7 +118,8 @@ public class RobotContainer {
         // m_AEESubsystem = new AEE(new AEEIO() {});
         // m_CEESubsystem = new CEE(new CEEIO() {});
         music = null;
-        // m_visionSubsystem = new Vision(m_driveSubsystem::addVisionMeasurement, new VisionIO() {});
+        // m_visionSubsystem = new Vision(m_driveSubsystem::addVisionMeasurement, new VisionIO()
+        // {});
         break;
     }
 
@@ -151,20 +142,14 @@ public class RobotContainer {
 
   /** Driver Controls */
   private void driverControllerBindings() {
-    m_driverController
-    .a()
-    .onTrue(new InstantCommand(() -> music.setVelocity(0.8)));
-
+    m_driverController.a().onTrue(new InstantCommand(() -> music.setDriveVelocity(0.8)));
   }
 
   /** Aux Button Board Controls */
-  public void auxButtonBoardBindings() {
-  }
+  public void auxButtonBoardBindings() {}
 
   /** Aux Xbox Controls */
-  public void auxControllerBindings() {
-
-  }
+  public void auxControllerBindings() {}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
