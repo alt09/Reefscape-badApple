@@ -685,7 +685,7 @@ public class RobotContainer {
                     new InstantCommand(
                         () -> m_AEESubsystem.setPercentSpeed(AEEConstants.INTAKE_PERCENT_SPEED),
                         m_AEESubsystem)));
-    // L4 or NET
+    // L4 or NET // TODO: modify net socre command to swing arm to score the ALGAE
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.L4_NET.BUTTON_ID)
         .onTrue(
@@ -729,24 +729,31 @@ public class RobotContainer {
     // Adjust Periscope Height
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.CLIMB_DEPLOY.BUTTON_ID)
-        .and(m_auxButtonBoard.axisLessThan(OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
+        .and(
+            m_auxButtonBoard.axisLessThan(
+                OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
         .onTrue(
             new InstantCommand(
                 () -> m_periscopeSubsystem.adjustHeight(Units.inchesToMeters(1)),
                 m_periscopeSubsystem));
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.CLIMB_RETRACT.BUTTON_ID)
-        .and(m_auxButtonBoard.axisLessThan(OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
+        .and(
+            m_auxButtonBoard.axisLessThan(
+                OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
         .onTrue(
             new InstantCommand(
                 () -> m_periscopeSubsystem.adjustHeight(Units.inchesToMeters(-1)),
                 m_periscopeSubsystem));
 
     /* ~~~~~~~~~~~~~~~~~~~~ Climb ~~~~~~~~~~~~~~~~~~~~ */
+    // TODO: test and adjust voltage
     // Deploy Climber
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.CLIMB_DEPLOY.BUTTON_ID)
-        .and(m_auxButtonBoard.axisGreaterThan(OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
+        .and(
+            m_auxButtonBoard.axisGreaterThan(
+                OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
         .onTrue(
             new InstantCommand(
                 () ->
@@ -756,14 +763,15 @@ public class RobotContainer {
         .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
     // Retract Climber
     m_auxButtonBoard
-    .button(OperatorConstants.BUTTON_BOARD.CLIMB_DEPLOY.BUTTON_ID)
-    .and(m_auxButtonBoard.axisGreaterThan(OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
+        .button(OperatorConstants.BUTTON_BOARD.CLIMB_DEPLOY.BUTTON_ID)
+        .and(
+            m_auxButtonBoard.axisGreaterThan(
+                OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
         .onTrue(
             new InstantCommand(
                 () ->
                     m_climberSubsystem.setVoltage(
-                        RobotStateConstants.MAX_VOLTAGE *
-    ClimberConstants.RETRACT_PERCENT_SPEED),
+                        RobotStateConstants.MAX_VOLTAGE * ClimberConstants.RETRACT_PERCENT_SPEED),
                 m_climberSubsystem))
         .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
 
