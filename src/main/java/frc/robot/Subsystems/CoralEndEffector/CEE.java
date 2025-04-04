@@ -141,6 +141,7 @@ public class CEE extends SubsystemBase {
    */
   public boolean isBeamBreakEntranceTriggered() {
     return m_inputs.isBeamBreakEntranceTriggered;
+    // return SmartDashboard.getBoolean("BeamBreak", false); // for sim
   }
 
   /**
@@ -150,5 +151,6 @@ public class CEE extends SubsystemBase {
    */
   public boolean isBeamBreakExitTriggered() {
     return m_inputs.isBeamBreakExitTriggered;
+    // return SmartDashboard.getBoolean("BeamBreak", false); // for sim
   }
 }
