@@ -181,6 +181,9 @@ public class AutoCommands {
               .andThen(
                   SuperstructureCommands.score(aee, cee, funnel)
                       .alongWith(Commands.print("Scoring second CORAL")))
+              .andThen(Commands.waitSeconds(DELAY_BETWEEN_ACTIONS))
+              .andThen(DriveCommands.robotRelativeDrive(drive, ()-> -0.5, ()-> 0.0, ()-> 0.0).withTimeout(DELAY_BETWEEN_ACTIONS))
+              .andThen(SuperstructureCommands.zero(periscope, algaePivot, aee, cee, funnel))
               .schedule();
         },
         drive);
