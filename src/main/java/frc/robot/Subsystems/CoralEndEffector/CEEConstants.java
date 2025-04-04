@@ -1,7 +1,5 @@
 package frc.robot.Subsystems.CoralEndEffector;
 
-import edu.wpi.first.math.util.Units;
-
 public class CEEConstants {
   // REAL CONSTANTS
   /** CAN ID of the CEE SPARK MAX */
@@ -12,7 +10,7 @@ public class CEEConstants {
   public static final int BEAM_BREAK_ENTRANCE_DIO_PORT =
       (int) (Math.random() * 5) + 2; // TODO: Find the actual port
   /** DIO port of the Beam Break Exit, on the roboRIO */
-  public static final int BEAM_BREAK_EXIT_DIO_PORT = 2;
+  public static final int[] BEAM_BREAK_EXIT_DIO_PORTS = {2, (int) Math.random() * 10}; // TODO: Find the actual port
 
   /**
    * Set the inversion status of the CEE to false, making Counterclockwise the positive direction
@@ -20,13 +18,7 @@ public class CEEConstants {
   public static final boolean IS_INVERTED = false;
   /** Current limit, in amps for the CEE motor */
   public static final int CUR_LIM_A = 40;
-  // Velocities
-  /** Scoring velocity in radians per second */
-  public static final double SCORE_VELOCITY_RAD_PER_SEC =
-      Units.rotationsPerMinuteToRadiansPerSecond(-1000);
-  /** Intaking velocity in radians per second */
-  public static final double INTAKE_VELOCITY_RAD_PER_SEC =
-      Units.rotationsPerMinuteToRadiansPerSecond(1000);
+  // Speeds
   /** Scoring speed, open loop voltage control */
   public static final double SCORE_PERCENT_SPEED = 0.6;
   /** Scoring speed, open loop voltage control */

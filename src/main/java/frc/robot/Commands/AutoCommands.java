@@ -170,7 +170,7 @@ public class AutoCommands {
                       Commands.waitSeconds(CORAL_STATION_TIMEOUT),
                       Commands.waitUntil(
                           () ->
-                              cee.isBeamBreakExitTriggered()
+                              cee.isBeamBreaksExitTriggered()
                                   && !cee.isBeamBreakEntranceTriggered())))
               .andThen(
                   Commands.parallel(
@@ -421,7 +421,7 @@ public class AutoCommands {
                 Commands.deadline(
                     Commands.waitUntil(
                         () ->
-                            cee.isBeamBreakExitTriggered() && !cee.isBeamBreakEntranceTriggered()),
+                            cee.isBeamBreaksExitTriggered() && !cee.isBeamBreakEntranceTriggered()),
                     coralStation.finishAtGoal()),
                 SuperstructureCommands.intakeCoral(periscope, algaePivot, aee, cee, funnel)))
         .andThen(

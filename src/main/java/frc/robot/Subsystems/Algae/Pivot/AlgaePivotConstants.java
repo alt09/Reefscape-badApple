@@ -17,12 +17,12 @@ public class AlgaePivotConstants {
   /** Current limit for the NEO motor of the ALGAE Pivot */
   public static final int CUR_LIM_A = 40;
   /** Offset to zero Absolute Encoder to be parallel with the Drivetraion belly pan, in rotations */
-  public static final double ZERO_OFFSET_ROT = Units.radiansToRotations(4.039338805897648);
+  public static final double ZERO_OFFSET_ROT = Units.radiansToRotations(0); // TODO: Redo offset
   /** Length of the ALGAE Pivot in meters */
-  public static final double LENGTH_M = Units.inchesToMeters(10.151);
+  public static final double LENGTH_M = Units.inchesToMeters(10.151); // TODO: outdated
   /** Weight of the ALGAE Pivot in kilograms */
-  public static final double MASS_KG = Units.lbsToKilograms(6.8);
-  // Angle positions
+  public static final double MASS_KG = Units.lbsToKilograms(6.8); // TODO: outdated
+  // Angle positions // TODO: Update all
   /** Starting angle of the ALGAE Pivot in radians */
   public static final double DEFAULT_ANGLE_RAD = Units.degreesToRadians(65);
   /** Minimum angle of the ALGAE Pivot in radians */
@@ -40,7 +40,7 @@ public class AlgaePivotConstants {
   /** Angle (radians) of the ALGAE Pivot when removing ALGAE from the REEF */
   public static final double DEALGAE_ANGLE_RAD = Units.degreesToRadians(35);
 
-  // PID CONSTANTS
+  // PID CONSTANTS // TODO: Re-tune
   /**
    * KP represents the constant multiplied by the current error from setpoint (Proportional Error)
    */

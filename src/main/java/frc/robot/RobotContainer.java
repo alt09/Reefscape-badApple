@@ -343,11 +343,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    SmartDashboard.putNumber("PIDFF_Tuning/DriveToPose/kP", 0);
-    SmartDashboard.putNumber("PIDFF_Tuning/DriveToPose/kI", 0);
-    SmartDashboard.putNumber("PIDFF_Tuning/DriveToPose/kD", 0);
-    SmartDashboard.putNumber("PIDFF_Tuning/DriveToPose/Velocity", 0);
-    SmartDashboard.putNumber("PIDFF_Tuning/DriveToPose/Acceleration", 0);
+    SmartDashboard.putNumber("SetVoltage/ClimberPercentSpeed", 0.0);
   }
 
   /**
@@ -496,7 +492,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> m_CEESubsystem.setPercentSpeed(CEEConstants.SCORE_PERCENT_SPEED),
-                m_CEESubsystem))
+                m_CEESubsystem).withName("CORALRelease"))
         .onFalse(
             new InstantCommand(
                 () -> {
@@ -504,7 +500,7 @@ public class RobotContainer {
                   m_AEESubsystem.setPercentSpeed(0);
                 },
                 m_AEESubsystem,
-                m_CEESubsystem))
+                m_CEESubsystem).withName("EndEffectorsStop"))
         .and(
             m_auxButtonBoard.axisGreaterThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
@@ -515,7 +511,7 @@ public class RobotContainer {
                   m_AEESubsystem.setPercentSpeed(AEEConstants.SCORE_PERCENT_SPEED);
                 },
                 m_AEESubsystem,
-                m_CEESubsystem));
+                m_CEESubsystem).withName("ALGAERelease"));
     // L1 Score
     m_driverController
         .rightBumper()
@@ -523,7 +519,7 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> m_CEESubsystem.setPercentSpeed(CEEConstants.SCORE_L1_PERCENT_SPEED),
-                m_CEESubsystem));
+                m_CEESubsystem).withName("CORALReleaseL1"));
     // Intaking
     m_driverController
         .rightTrigger()
@@ -542,7 +538,7 @@ public class RobotContainer {
                 m_algaePivotSubsystem,
                 m_AEESubsystem,
                 m_CEESubsystem,
-                m_funnelSubsystem));
+                m_funnelSubsystem).withName("ZeroSuperstructure"));
     // Outtake
     m_driverController
         .x()
@@ -553,7 +549,7 @@ public class RobotContainer {
                   m_CEESubsystem.setPercentSpeed(CEEConstants.OUTTAKE_PERCENT_SPEED);
                 },
                 m_funnelSubsystem,
-                m_CEESubsystem))
+                m_CEESubsystem).withName("CORALOuttake"))
         .onFalse(
             new InstantCommand(
                 () -> {
@@ -561,7 +557,7 @@ public class RobotContainer {
                   m_CEESubsystem.setPercentSpeed(0);
                 },
                 m_funnelSubsystem,
-                m_CEESubsystem));
+                m_CEESubsystem).withName("CEEFunnelStop"));
 
     /* Misc */
     // Zero Periscope
@@ -569,7 +565,7 @@ public class RobotContainer {
         .back()
         .onTrue(
             new InstantCommand(() -> m_periscopeSubsystem.resetPosition(0), m_periscopeSubsystem)
-                .ignoringDisable(true));
+                .ignoringDisable(true).withName("ZeroPeriscope"));
     // Rumble when ready to auto align
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.REEF_AB.BUTTON_ID)
@@ -578,22 +574,12 @@ public class RobotContainer {
         .or(m_auxButtonBoard.button(OperatorConstants.BUTTON_BOARD.REEF_GH.BUTTON_ID))
         .or(m_auxButtonBoard.button(OperatorConstants.BUTTON_BOARD.REEF_IJ.BUTTON_ID))
         .or(m_auxButtonBoard.button(OperatorConstants.BUTTON_BOARD.REEF_KL.BUTTON_ID))
-        .onTrue(new InstantCommand(() -> m_driverController.setRumble(RumbleType.kBothRumble, 1)))
+        .onTrue(new InstantCommand(() -> m_driverController.setRumble(RumbleType.kBothRumble, 1)).withName("Controller Rumble"))
         .onFalse(new InstantCommand(() -> m_driverController.setRumble(RumbleType.kBothRumble, 0)));
     // Stop in X
     m_driverController
         .b()
-        // .whileTrue(new InstantCommand(() -> m_driveSubsystem.stopWithX(), m_driveSubsystem));
-        .onTrue(
-            Commands.runOnce(
-                () ->
-                    System.out.println(
-                        FieldConstants.APRILTAG_FIELD_LAYOUT
-                            .getTagPose(22)
-                            .get()
-                            .toPose2d()
-                            .getTranslation()
-                            .getDistance(new Translation2d(5.39, 3.17)))));
+        .whileTrue(new InstantCommand(() -> m_driveSubsystem.stopWithX(), m_driveSubsystem).withName("StopWithX"));
   }
 
   /** Aux Button Board Controls */
@@ -605,43 +591,43 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> m_CEESubsystem.setPercentSpeed(CEEConstants.SCORE_PERCENT_SPEED),
-                m_CEESubsystem))
+                m_CEESubsystem).withName("CORALRelease"))
         .onFalse(
             SuperstructureCommands.setSpeeds(
-                m_AEESubsystem, m_CEESubsystem, m_funnelSubsystem, 0, 0, 0));
+                m_AEESubsystem, m_CEESubsystem, m_funnelSubsystem, 0, 0, 0).withName("ZeroFlywheels"));
 
     /* CORAL and ALGAE */
     // L1 or PROCESSOR
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.L1_PROCESSOR.BUTTON_ID)
-        .onTrue(SuperstructureCommands.positionsToL1(m_periscopeSubsystem, m_algaePivotSubsystem))
+        .onTrue(SuperstructureCommands.positionsToL1(m_periscopeSubsystem, m_algaePivotSubsystem).withName("SuperstructureToL1"))
         .onFalse(
             SuperstructureCommands.zero(
                 m_periscopeSubsystem,
                 m_algaePivotSubsystem,
                 m_AEESubsystem,
                 m_CEESubsystem,
-                m_funnelSubsystem))
+                m_funnelSubsystem).withName("ZeroSuperstructure"))
         .and(
             m_auxButtonBoard.axisGreaterThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID,
                 0.5)) // Run ALGAE position if switch is toggled
         .onTrue(
             SuperstructureCommands.positionsToProcessor(
-                m_periscopeSubsystem, m_algaePivotSubsystem));
+                m_periscopeSubsystem, m_algaePivotSubsystem).withName("SuperstructureToProcessor"));
     // L2 CORAL or ALGAE
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.L2.BUTTON_ID)
         .onTrue(
             SuperstructureCommands.positionsToL2Coral(
-                m_periscopeSubsystem, m_algaePivotSubsystem, m_AEESubsystem))
+                m_periscopeSubsystem, m_algaePivotSubsystem, m_AEESubsystem).withName("SuperstructureToL2CORAL"))
         .onFalse(
             SuperstructureCommands.zero(
                 m_periscopeSubsystem,
                 m_algaePivotSubsystem,
                 m_AEESubsystem,
                 m_CEESubsystem,
-                m_funnelSubsystem))
+                m_funnelSubsystem).withName("ZeroSuperstructure"))
         .and(
             m_auxButtonBoard.axisGreaterThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID,
@@ -656,20 +642,20 @@ public class RobotContainer {
                 .andThen(
                     new InstantCommand(
                         () -> m_AEESubsystem.setPercentSpeed(AEEConstants.INTAKE_PERCENT_SPEED),
-                        m_AEESubsystem)));
+                        m_AEESubsystem)).withName("SuperstructureToL2ALGAE"));
     // L3 CORAL or ALGAE
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.L3.BUTTON_ID)
         .onTrue(
             SuperstructureCommands.positionsToL3Coral(
-                m_periscopeSubsystem, m_algaePivotSubsystem, m_AEESubsystem))
+                m_periscopeSubsystem, m_algaePivotSubsystem, m_AEESubsystem).withName("SuperstructureToL3CORAL"))
         .onFalse(
             SuperstructureCommands.zero(
                 m_periscopeSubsystem,
                 m_algaePivotSubsystem,
                 m_AEESubsystem,
                 m_CEESubsystem,
-                m_funnelSubsystem))
+                m_funnelSubsystem).withName("ZeroSuperstructure"))
         .and(
             m_auxButtonBoard.axisGreaterThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID,
@@ -684,27 +670,27 @@ public class RobotContainer {
                 .andThen(
                     new InstantCommand(
                         () -> m_AEESubsystem.setPercentSpeed(AEEConstants.INTAKE_PERCENT_SPEED),
-                        m_AEESubsystem)));
+                        m_AEESubsystem)).withName("SuperstructureToL3ALGAE"));
     // L4 or NET // TODO: modify net socre command to swing arm to score the ALGAE
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.L4_NET.BUTTON_ID)
         .onTrue(
             SuperstructureCommands.positionsToL4(
-                m_periscopeSubsystem, m_algaePivotSubsystem, m_CEESubsystem))
+                m_periscopeSubsystem, m_algaePivotSubsystem, m_CEESubsystem).withName("SuperstructureToL4"))
         .onFalse(
             SuperstructureCommands.zero(
                 m_periscopeSubsystem,
                 m_algaePivotSubsystem,
                 m_AEESubsystem,
                 m_CEESubsystem,
-                m_funnelSubsystem))
+                m_funnelSubsystem).withName("ZeroSuperstructure"))
         .and(
             m_auxButtonBoard.axisGreaterThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID,
                 0.5)) // Run ALGAE position if switch is toggled
         .onTrue(
             SuperstructureCommands.positionsToNet(
-                m_periscopeSubsystem, m_algaePivotSubsystem, m_AEESubsystem));
+                m_periscopeSubsystem, m_algaePivotSubsystem, m_AEESubsystem).withName("SuperstructureToNET"));
     // Ground ALGAE
     m_auxButtonBoard
         .axisGreaterThan(OperatorConstants.BUTTON_BOARD.GROUND_ALGAE.BUTTON_ID, 0.5)
@@ -714,18 +700,18 @@ public class RobotContainer {
                 m_algaePivotSubsystem,
                 m_AEESubsystem,
                 m_CEESubsystem,
-                m_funnelSubsystem))
+                m_funnelSubsystem).withName("SuperstructureToGroundALGAE"))
         .onFalse(
             SuperstructureCommands.zero(
                     m_periscopeSubsystem,
                     m_algaePivotSubsystem,
                     m_AEESubsystem,
                     m_CEESubsystem,
-                    m_funnelSubsystem)
+                    m_funnelSubsystem).withName("ZeroSuperstructure")
                 .andThen(
                     Commands.runOnce(
                         () -> m_AEESubsystem.setPercentSpeed(AEEConstants.INTAKE_PERCENT_SPEED),
-                        m_AEESubsystem)));
+                        m_AEESubsystem)).withName("HoldALGAE"));
     // Adjust Periscope Height
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.CLIMB_DEPLOY.BUTTON_ID)
@@ -758,7 +744,7 @@ public class RobotContainer {
             new InstantCommand(
                 () ->
                     m_climberSubsystem.setVoltage(
-                        RobotStateConstants.MAX_VOLTAGE * ClimberConstants.DEPLOY_PERCENT_SPEED),
+                        RobotStateConstants.MAX_VOLTAGE * SmartDashboard.getNumber("SetVoltage/ClimberPercentSpeed", 0)),
                 m_climberSubsystem))
         .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
     // Retract Climber
@@ -771,7 +757,7 @@ public class RobotContainer {
             new InstantCommand(
                 () ->
                     m_climberSubsystem.setVoltage(
-                        RobotStateConstants.MAX_VOLTAGE * ClimberConstants.RETRACT_PERCENT_SPEED),
+                        RobotStateConstants.MAX_VOLTAGE * -SmartDashboard.getNumber("SetVoltage/ClimberPercentSpeed", 0)),
                 m_climberSubsystem))
         .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
 

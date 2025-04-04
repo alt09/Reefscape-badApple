@@ -66,7 +66,7 @@ public class PeriscopeConstants {
   /** Height position of the Periscope for reaching the NET */
   public static final double NET_HEIGHT_M = MAX_HEIGHT_M;
 
-  // PROFILED PID & FEEDFORWARD CONSTANTS
+  // PROFILED PID & FEEDFORWARD CONSTANTS // TODO: Re-tune PID
   /**
    * KP represents the constant multiplied by the current error from setpoint (Proportional Error)
    */

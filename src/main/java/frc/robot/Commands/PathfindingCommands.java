@@ -166,7 +166,7 @@ public class PathfindingCommands {
         drive,
         FieldConstants.APRILTAG_FIELD_LAYOUT.getTagPose(tagID).get().toPose2d(),
         wallDistanceMeters,
-        0,
+        Units.inchesToMeters(6), // TODO: Change once new cameras are mounted and in use
         isFront);
   }
 
@@ -185,7 +185,7 @@ public class PathfindingCommands {
         drive,
         FieldConstants.APRILTAG_FIELD_LAYOUT.getTagPose(tagID).get().toPose2d(),
         wallDistanceMeters,
-        0,
+        Units.inchesToMeters(6), // TODO: Change once new cameras are mounted and in use
         isFront);
   }
 
@@ -428,8 +428,7 @@ public class PathfindingCommands {
    * @param branch String of the BRANCH to algin to
    * @return {@link Command} that carries out the auto alignment driving sequence.
    */
-  public static Command alignToBranch(
-      Drive drive, String branch) { // TODO: optimize alignment if possible with new camera mounts
+  public static Command alignToBranch(Drive drive, String branch) {
     final int reefAprilTagID;
     if (branch == "A" || branch == "B") {
       reefAprilTagID = 18;
