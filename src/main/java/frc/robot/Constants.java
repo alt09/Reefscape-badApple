@@ -80,8 +80,8 @@ public final class Constants {
           && RobotStateConstants.getAlliance().get() == DriverStation.Alliance.Red;
     }
 
-    /** After 500 seconds, the CAN times out */
-    public static final int CAN_CONFIG_TIMEOUT_SEC = 500;
+    /** After 30 seconds, the CAN times out */
+    public static final int CAN_CONFIG_TIMEOUT_SEC = 30;
 
     /** Every 20 ms, periodic commands loop */
     public static final double LOOP_PERIODIC_SEC = 0.02;

@@ -66,7 +66,6 @@ public class CEE extends SubsystemBase {
     m_io.setVoltage(percent * RobotStateConstants.MAX_VOLTAGE);
   }
 
-  
   /**
    * Triggered means that the beam break is broken (an object is in between the sensor).
    *
