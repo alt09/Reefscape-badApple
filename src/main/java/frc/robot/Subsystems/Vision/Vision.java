@@ -82,9 +82,9 @@ public class Vision extends SubsystemBase {
         continue; // Move to next camera update iteration if no position is estimated
       var estimatedPose = optionalEstimatedPose.get().estimatedPose.toPose2d();
       double ambiguity =
-          (currentResult.targets.size() == 1)
-              ? currentResult.getBestTarget().getPoseAmbiguity()
-              : currentResult.getMultiTagResult().get().estimatedPose.ambiguity;
+          (currentResult.targets.size() > 1 && currentResult.getMultiTagResult().isPresent())
+              ? currentResult.getMultiTagResult().get().estimatedPose.ambiguity
+              : currentResult.getBestTarget().getPoseAmbiguity();
       if (
       // Ensure pose is trustworthy and within field bounds in order to be used
       ambiguity >= 0.0

@@ -2,9 +2,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -18,10 +16,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Commands.AutoCommands;
 import frc.robot.Commands.DriveCommands;
-import frc.robot.Commands.DriveToPose;
 import frc.robot.Commands.PathfindingCommands;
 import frc.robot.Commands.SuperstructureCommands;
-import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.Constants.RobotStateConstants;
@@ -343,12 +339,13 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    SmartDashboard.putNumber("SetVoltage/ClimberPercentSpeed", 0.0);
-    SmartDashboard.putNumber("SetVoltage/PeriscopePercentSpeed", 0.0);
+    SmartDashboard.putNumber("SetVoltage/ClimberVolts", 0.0);
+    SmartDashboard.putNumber("SetVoltage/PeriscopeVolts", 0.0);
     SmartDashboard.putNumber("SetVoltage/AEEPivotPercentSpeed", 0.0);
     SmartDashboard.putNumber("SetVoltage/AEEPercentSpeed", 1.0);
     SmartDashboard.putNumber("SetVoltage/CEEPercentSpeed", 1.0);
     SmartDashboard.putNumber("SetVoltage/FunnelPercentSpeed", 1.0);
+    SmartDashboard.putNumber("Setpoints/PeriscopeHeightInch", 0.0);
   }
 
   /**
@@ -442,47 +439,31 @@ public class RobotContainer {
     m_driverController
         .a()
         .onTrue(
-            new InstantCommand(
-                    () ->
-                        m_driveSubsystem.resetPose(
-                            new Pose2d(
-                                m_driveSubsystem.getCurrentPose2d().getTranslation(),
-                                Rotation2d.kZero)),
-                    m_driveSubsystem)
+            new InstantCommand(() -> m_driveSubsystem.zeroYaw(), m_driveSubsystem)
                 .withName("ZeroYaw"));
+    // m_driverController
+    //     .a()
+    //     .onTrue(
+    //         new InstantCommand(
+    //                 () ->
+    //                     m_driveSubsystem.resetPose(
+    //                         new Pose2d(
+    //                             m_driveSubsystem.getCurrentPose2d().getTranslation(),
+    //                             Rotation2d.kZero)),
+    //                 m_driveSubsystem)
+    //             .withName("ZeroYaw"));
 
     /* Pathfinding */
     // Closest REEF BRANCH
-    // m_driverController
-    //     .y()
-    //     .onTrue(
-    //         PathfindingCommands.driveToClosestBranch(
-    //                 m_driveSubsystem,
-    //                 PathPlannerConstants.DEFAULT_WALL_DISTANCE_M,
-    //                 m_driverController.y().negate())
-    //             .withName("PathfindToBranch"));
     m_driverController
         .y()
         .onTrue(
-            new DriveToPose(
+            PathfindingCommands.driveToClosestBranch(
                     m_driveSubsystem,
-                    () ->
-                        new Pose2d(
-                            FieldConstants.APRILTAG_FIELD_LAYOUT
-                                .getTagPose(18)
-                                .get()
-                                .getTranslation()
-                                .toTranslation2d()
-                                .plus(new Translation2d(-1, 0)),
-                            Rotation2d.kZero))
-                .withLinearPID(
-                    SmartDashboard.getNumber("PIDFF_Tuning/DriveToPose/kP", 0),
-                    SmartDashboard.getNumber("PIDFF_Tuning/DriveToPose/kI", 0),
-                    SmartDashboard.getNumber("PIDFF_Tuning/DriveToPose/kD", 0))
-                .withLinearMovement(
-                    SmartDashboard.getNumber("PIDFF_Tuning/DriveToPose/Velocity", 0),
-                    SmartDashboard.getNumber("PIDFF_Tuning/DriveToPose/Acceleration", 0))
-                .until(m_driverController.y().negate()));
+                    PathPlannerConstants.DEFAULT_WALL_DISTANCE_M,
+                    m_driverController.y().negate())
+                .withName("PathfindToBranch"));
+
     // Closest CORAL STATION
     m_driverController
         .leftBumper()
@@ -719,7 +700,7 @@ public class RobotContainer {
                 OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID,
                 0.5)) // Run ALGAE position if switch is toggled
         .onTrue(
-            SuperstructureCommands.positionsToNet(
+            SuperstructureCommands.scoreNet(
                     m_periscopeSubsystem, m_algaePivotSubsystem, m_AEESubsystem)
                 .withName("SuperstructureToNET"));
     // Ground ALGAE
@@ -766,36 +747,34 @@ public class RobotContainer {
                 () -> m_periscopeSubsystem.adjustHeight(Units.inchesToMeters(-1)),
                 m_periscopeSubsystem));
 
-    // /* ~~~~~~~~~~~~~~~~~~~~ Climb ~~~~~~~~~~~~~~~~~~~~ */
-    // // TODO: test and adjust voltage
-    // // Deploy Climber
-    // m_auxButtonBoard
-    //     .button(OperatorConstants.BUTTON_BOARD.CLIMB_DEPLOY.BUTTON_ID)
-    //     .and(
-    //         m_auxButtonBoard.axisGreaterThan(
-    //             OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //                 m_climberSubsystem.setVoltage(
-    //                     RobotStateConstants.MAX_VOLTAGE *
-    // SmartDashboard.getNumber("SetVoltage/ClimberPercentSpeed", 0)),
-    //             m_climberSubsystem))
-    //     .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
-    // // Retract Climber
-    // m_auxButtonBoard
-    //     .button(OperatorConstants.BUTTON_BOARD.CLIMB_DEPLOY.BUTTON_ID)
-    //     .and(
-    //         m_auxButtonBoard.axisGreaterThan(
-    //             OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
-    //     .onTrue(
-    //         new InstantCommand(
-    //             () ->
-    //                 m_climberSubsystem.setVoltage(
-    //                     RobotStateConstants.MAX_VOLTAGE *
-    // -SmartDashboard.getNumber("SetVoltage/ClimberPercentSpeed", 0)),
-    //             m_climberSubsystem))
-    //     .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
+    /* ~~~~~~~~~~~~~~~~~~~~ Climb ~~~~~~~~~~~~~~~~~~~~ */
+    // TODO: test and adjust voltage
+    // Deploy Climber
+    m_auxButtonBoard
+        .button(OperatorConstants.BUTTON_BOARD.CLIMB_DEPLOY.BUTTON_ID)
+        .and(
+            m_auxButtonBoard.axisGreaterThan(
+                OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    m_climberSubsystem.setVoltage(
+                        SmartDashboard.getNumber("SetVoltage/ClimberVolts", 0)),
+                m_climberSubsystem))
+        .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
+    // Retract Climber
+    m_auxButtonBoard
+        .button(OperatorConstants.BUTTON_BOARD.CLIMB_RETRACT.BUTTON_ID)
+        .and(
+            m_auxButtonBoard.axisGreaterThan(
+                OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    m_climberSubsystem.setVoltage(
+                        -SmartDashboard.getNumber("SetVoltage/ClimberVolts", 0)),
+                m_climberSubsystem))
+        .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
 
     /* ~~~~~~~~~~~~~~~~~~~~ Pathfinding Selection ~~~~~~~~~~~~~~~~~~~~ */
     // REEF Face AB
@@ -1030,7 +1009,10 @@ public class RobotContainer {
         .a()
         .onTrue(
             new InstantCommand(
-                () -> m_periscopeSubsystem.setPosition(Units.inchesToMeters(18)),
+                () ->
+                    m_periscopeSubsystem.setPosition(
+                        Units.inchesToMeters(
+                            SmartDashboard.getNumber("Setpoints/PeriscopeHeightInch", 0.0))),
                 m_periscopeSubsystem))
         .onFalse(
             new InstantCommand(
@@ -1043,7 +1025,7 @@ public class RobotContainer {
                 () -> {
                   m_periscopeSubsystem.enablePID(false);
                   m_periscopeSubsystem.setVoltage(
-                      SmartDashboard.getNumber("SetVoltage/PeriscopePercentSpeed", 0.0));
+                      SmartDashboard.getNumber("SetVoltage/PeriscopeVolts", 0.0));
                 },
                 m_periscopeSubsystem))
         .onFalse(
@@ -1063,12 +1045,12 @@ public class RobotContainer {
 
     /* Climb */
     // Joystick to move
-    m_climberSubsystem.setDefaultCommand(
-        new InstantCommand(
-            () ->
-                m_climberSubsystem.setVoltage(
-                    RobotStateConstants.MAX_VOLTAGE * m_auxController.getLeftY()),
-            m_climberSubsystem));
+    // m_climberSubsystem.setDefaultCommand(
+    //     new InstantCommand(
+    //         () ->
+    //             m_climberSubsystem.setVoltage(
+    //                 RobotStateConstants.MAX_VOLTAGE * m_auxController.getLeftY()),
+    //         m_climberSubsystem));
     // Deploy
     m_auxController
         .povUp()
@@ -1076,7 +1058,7 @@ public class RobotContainer {
             new InstantCommand(
                 () ->
                     m_climberSubsystem.setVoltage(
-                        12 * SmartDashboard.getNumber("SetVoltage/ClimberPercentSpeed", 0.0)),
+                        SmartDashboard.getNumber("SetVoltage/ClimberVolts", 0.0)),
                 m_climberSubsystem))
         .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
     // Retract
@@ -1086,7 +1068,7 @@ public class RobotContainer {
             new InstantCommand(
                 () ->
                     m_climberSubsystem.setVoltage(
-                        -12 * SmartDashboard.getNumber("SetVoltage/ClimberPercentSpeed", 0.0)),
+                        SmartDashboard.getNumber("SetVoltage/ClimberVolts", 0.0)),
                 m_climberSubsystem))
         .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
 

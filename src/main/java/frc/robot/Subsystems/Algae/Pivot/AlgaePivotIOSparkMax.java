@@ -44,7 +44,7 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
     m_config
         .absoluteEncoder
         .zeroOffset(AlgaePivotConstants.ZERO_OFFSET_ROT)
-        .inverted(AlgaePivotConstants.IS_INVERTED);
+        .inverted(!AlgaePivotConstants.IS_INVERTED);
 
     // Apply configuration
     m_sparkmax.configure(m_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

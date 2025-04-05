@@ -9,7 +9,7 @@ public final class ClimberConstants {
   /** CAN ID for the second Climber motor */
   public static final int FOLLOWER_CAN_ID = 22;
   /** Gear reduction of 9:1 for the Climber */
-  public static final double GEAR_RATIO = 9.0 / 1.0;
+  public static final double GEAR_RATIO = 9.0 / 1.0; // TODO: Update
   /**
    * Set the inversion of the Climber motor to false, making Counterclockwise the positive direction
    */

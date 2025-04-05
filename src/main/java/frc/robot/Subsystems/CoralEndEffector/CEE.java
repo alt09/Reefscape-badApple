@@ -81,8 +81,8 @@ public class CEE extends SubsystemBase {
    *
    * @return {@code true} if either sensor has been triggered, {@code false} if not.
    */
-  public boolean isBeamBreaksExitTriggered() {
-    return m_inputs.isBeamBreaksExitTriggered;
+  public boolean isBeamBreakExitTriggered() {
+    return m_inputs.isBeamBreakExitTriggered;
     // return SmartDashboard.getBoolean("Sim/BeamBreak_Exit", false);
   }
 }

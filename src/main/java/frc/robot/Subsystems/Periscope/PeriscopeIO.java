@@ -23,7 +23,7 @@ public interface PeriscopeIO {
     /** Rotational velocity of the Periscope drum in radians per second */
     public double velocityRadPerSec = 0.0;
     /** If the Hall effect (magnetic limit switch) sensor is triggered */
-    public boolean[] isHallEffectSensorTriggered = {false, false};
+    public boolean isHallEffectSensorTriggered = false;
   }
 
   /**

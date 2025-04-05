@@ -75,8 +75,7 @@ public class Periscope extends SubsystemBase {
     m_io.updateInputs(m_inputs);
     Logger.processInputs("Periscope", m_inputs);
 
-    if (m_inputs.isHallEffectSensorTriggered[0]
-        && m_inputs.heightMeters < Units.inchesToMeters(3)) {
+    if (m_inputs.isHallEffectSensorTriggered && m_inputs.heightMeters < Units.inchesToMeters(3)) {
       this.resetPosition(0);
     }
 
@@ -148,8 +147,8 @@ public class Periscope extends SubsystemBase {
    * @param index Port of the desired Hall Effect sensor to get the triggered status of.
    * @return {@code true} if the specified Hall Effect sensor triggered, {@code false} if not.
    */
-  public boolean isHallEffectSensorTriggered(int index) {
-    return m_inputs.isHallEffectSensorTriggered[index];
+  public boolean isHallEffectSensorTriggered() {
+    return m_inputs.isHallEffectSensorTriggered;
   }
 
   /**

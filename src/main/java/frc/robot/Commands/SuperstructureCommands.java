@@ -1,5 +1,6 @@
 package frc.robot.Commands;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -85,7 +86,12 @@ public class SuperstructureCommands {
                 funnel,
                 SuperstructureState.AEESpeed,
                 SuperstructureState.CEESpeed,
-                SuperstructureState.funnelSpeed));
+                SuperstructureState.funnelSpeed))
+        .andThen(
+            Commands.waitUntil(
+                () ->
+                    periscope.isHallEffectSensorTriggered() && periscope.getHeightMeters() == 0.0))
+        .andThen(Commands.runOnce(() -> periscope.setPosition(0.0), periscope));
   }
 
   /**
@@ -189,7 +195,10 @@ public class SuperstructureCommands {
       Periscope periscope, AlgaePivot algaePivot, AEE aee, CEE cee, Funnel funnel) {
     SuperstructureState.objective(SuperstructureState.Objective.CORAL_INTAKE);
     return SuperstructureCommands.setPositions(
-            periscope, algaePivot, Units.inchesToMeters(-1.5), SuperstructureState.algaePivotAngle)
+            periscope,
+            algaePivot,
+            SuperstructureState.periscopeHeight,
+            SuperstructureState.algaePivotAngle)
         .alongWith(
             setSpeeds(
                 aee,
@@ -200,7 +209,7 @@ public class SuperstructureCommands {
                 SuperstructureState.funnelSpeed))
         .andThen(
             Commands.waitUntil(
-                () -> cee.isBeamBreaksExitTriggered() && !cee.isBeamBreakEntranceTriggered()))
+                () -> cee.isBeamBreakExitTriggered() && !cee.isBeamBreakEntranceTriggered()))
         .andThen(Commands.runOnce(() -> cee.setVoltage(0), cee));
   }
 
@@ -259,20 +268,33 @@ public class SuperstructureCommands {
    * @param algaePivot {@link AlgaePivot} subsystem
    * @return {@link Command} that sets the positions to score ALGAE in the NET.
    */
-  public static Command positionsToNet(Periscope periscope, AlgaePivot algaePivot, AEE aee) {
+  public static Command scoreNet(Periscope periscope, AlgaePivot algaePivot, AEE aee) {
     SuperstructureState.objective(SuperstructureState.Objective.NET);
+    // return Commands.runOnce(
+    //         () -> periscope.setPosition(SuperstructureState.periscopeHeight), periscope)
+    //     .andThen(
+    //         Commands.waitUntil(
+    //             () -> periscope.getHeightMeters() > PeriscopeConstants.MAX_HEIGHT_M / 2))
+    //     .andThen(
+    //         Commands.runOnce(
+    //             () -> algaePivot.setAngle(SuperstructureState.algaePivotAngle), algaePivot))
     return SuperstructureCommands.setPositions(
             periscope,
             algaePivot,
             SuperstructureState.periscopeHeight,
             SuperstructureState.algaePivotAngle)
-        .alongWith(
-            Commands.runOnce(() -> aee.setPercentSpeed(AEEConstants.SCORE_PERCENT_SPEED), aee)
-                .beforeStarting(
-                    Commands.waitUntil(
-                        () ->
-                            periscope.getHeightMeters()
-                                > PeriscopeConstants.MAX_HEIGHT_M - Units.inchesToMeters(4))));
+        .andThen(
+            Commands.waitUntil(() -> periscope.atSetpointHeight() && algaePivot.atSetpointAngle()))
+        .andThen(
+            Commands.runOnce(
+                () ->
+                    algaePivot.setSetpoint(
+                        new TrapezoidProfile.State(
+                            AlgaePivotConstants.NET_LAUNCH_ANGLE_RAD, Units.degreesToRadians(30))),
+                algaePivot))
+        .andThen(Commands.waitUntil(() -> algaePivot.atSetpointAngle()))
+        .andThen(
+            Commands.runOnce(() -> aee.setPercentSpeed(AEEConstants.SCORE_PERCENT_SPEED), aee));
   }
 
   /**
@@ -416,7 +438,7 @@ public class SuperstructureCommands {
 
         case NET:
           periscopeHeight = PeriscopeConstants.L4_HEIGHT_M;
-          algaePivotAngle = AlgaePivotConstants.DEFAULT_ANGLE_RAD;
+          algaePivotAngle = AlgaePivotConstants.NET_ANGLE_RAD;
           funnelSpeed = 0.0;
           CEESpeed = 0.0;
           AEESpeed = AEEConstants.SCORE_PERCENT_SPEED;
@@ -431,7 +453,7 @@ public class SuperstructureCommands {
           break;
 
         case ZERO:
-          periscopeHeight = PeriscopeConstants.MIN_HEIGHT_M;
+          periscopeHeight = Units.inchesToMeters(-1.5);
           funnelSpeed = 0.0;
           CEESpeed = 0.0;
           AEESpeed = 0.0;

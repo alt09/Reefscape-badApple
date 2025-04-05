@@ -17,7 +17,7 @@ public interface CEEIO {
     /** If the beam break entrance sensor is broken, an object is in between the sensor */
     public boolean isBeamBreakEntranceTriggered = false;
     /** If the beam break exit sensor is broken, an object is in between the sensor */
-    public boolean isBeamBreaksExitTriggered = false;
+    public boolean isBeamBreakExitTriggered = false;
   }
 
   /**

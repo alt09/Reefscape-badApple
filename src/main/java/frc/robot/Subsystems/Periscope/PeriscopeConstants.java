@@ -9,12 +9,10 @@ public class PeriscopeConstants {
   /** CAN ID for the second Periscope motor. This motor will use index 1 in any array */
   public static final int CAN_ID_RIGHT = 16;
   /**
-   * DIO ports of the 2 Hall Effect sensors on the Periscope. These sensor will serve as magnetic
-   * limit switches
-   *
-   * <p>4 - Bottom, 5 - Top
+   * DIO ports of the Hall Effect sensor on the Periscope. These sensor will serve as magnetic limit
+   * switches
    */
-  public static final int[] HALL_EFFECT_SENSORS_PORTS = {4, 5};
+  public static final int HALL_EFFECT_SENSORS_PORT = 4;
   /** Gear reduction of 38:12 for the Periscope */
   public static final double GEAR_RATIO = 38.0 / 12.0;
   /**
@@ -41,7 +39,8 @@ public class PeriscopeConstants {
    * Height difference from the bottom position and the new resting position from the spacers in
    * inches
    */
-  public static final double SPACER_HEIGHT_DIFF_IN = 0; // TODO: find new values :((((
+  public static final double SPACER_HEIGHT_DIFF_IN =
+      Units.inchesToMeters(0.5); // TODO: find new values :((((
   /** Minimum height of the Periscope, resting/default position */
   public static final double MIN_HEIGHT_M = 0.0;
   /** Max height of the Periscope in meters */
@@ -60,7 +59,7 @@ public class PeriscopeConstants {
   /** Height position of the Periscope for reaching L4 */
   public static final double L4_HEIGHT_M = MAX_HEIGHT_M;
   /** Height position of the Periscope for aligning with the Funnel at the CORAL STATION */
-  public static final double CORAL_STATION_HEIGHT_M = MIN_HEIGHT_M;
+  public static final double CORAL_STATION_HEIGHT_M = Units.inchesToMeters(6.824964567438523);
   /** Height position of the Periscope for reaching the PROCCESOR */
   public static final double PROCESSOR_HEIGHT_M = Units.inchesToMeters(12);
   /** Height position of the Periscope for reaching the NET */
