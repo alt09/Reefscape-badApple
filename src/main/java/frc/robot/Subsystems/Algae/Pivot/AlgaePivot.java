@@ -19,7 +19,7 @@ public class AlgaePivot extends SubsystemBase {
   // PID controller
   private final ProfiledPIDController m_PIDController;
   private final ArmFeedforward m_feedforward;
-  private boolean m_enablePID = false;
+  private boolean m_enablePID = true;
 
   /**
    * Constructs a new {@link AlgaePivot} instance.
@@ -77,7 +77,7 @@ public class AlgaePivot extends SubsystemBase {
     if (SmartDashboard.getBoolean("PIDFF_Tuning/ALGAE_Pivot/EnablePID", m_enablePID)) {
       // Calculate voltage based on PID controller
       this.setVoltage(
-          m_PIDController.calculate(m_inputs.absPositionRad)
+          m_PIDController.calculate(m_inputs.relativePositionRad)
               + m_feedforward.calculate(
                   m_PIDController.getSetpoint().position, m_PIDController.getSetpoint().velocity));
 
@@ -102,6 +102,10 @@ public class AlgaePivot extends SubsystemBase {
    */
   public void enableBrakeMode(boolean enable) {
     m_io.enableBrakeMode(enable);
+  }
+
+  public void resetRelativeEncoder() {
+    m_io.resetRelativeEncoder();
   }
 
   /**

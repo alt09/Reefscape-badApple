@@ -648,7 +648,12 @@ public class RobotContainer {
                     new InstantCommand(
                         () -> m_AEESubsystem.setPercentSpeed(AEEConstants.INTAKE_PERCENT_SPEED),
                         m_AEESubsystem))
-                .withName("SuperstructureToL2ALGAE"));
+                .withName("SuperstructureToL2ALGAE"))
+        .onFalse(
+            Commands.runOnce(
+                    () -> m_AEESubsystem.setPercentSpeed(AEEConstants.ALGAE_HOLD_PERCENT_SPEED),
+                    m_AEESubsystem)
+                .withName("HoldALGAE"));
     // L3 CORAL or ALGAE
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.L3.BUTTON_ID)
@@ -679,7 +684,12 @@ public class RobotContainer {
                     new InstantCommand(
                         () -> m_AEESubsystem.setPercentSpeed(AEEConstants.INTAKE_PERCENT_SPEED),
                         m_AEESubsystem))
-                .withName("SuperstructureToL3ALGAE"));
+                .withName("SuperstructureToL3ALGAE"))
+        .onFalse(
+            Commands.runOnce(
+                    () -> m_AEESubsystem.setPercentSpeed(AEEConstants.ALGAE_HOLD_PERCENT_SPEED),
+                    m_AEESubsystem)
+                .withName("HoldALGAE"));
     // L4 or NET // TODO: modify net socre command to swing arm to score the ALGAE
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.L4_NET.BUTTON_ID)
@@ -724,7 +734,7 @@ public class RobotContainer {
                 .withName("ZeroSuperstructure")
                 .andThen(
                     Commands.runOnce(
-                        () -> m_AEESubsystem.setPercentSpeed(AEEConstants.INTAKE_PERCENT_SPEED),
+                        () -> m_AEESubsystem.setPercentSpeed(AEEConstants.ALGAE_HOLD_PERCENT_SPEED),
                         m_AEESubsystem))
                 .withName("HoldALGAE"));
     // Adjust Periscope Height
@@ -784,7 +794,7 @@ public class RobotContainer {
         .onTrue(
             // PathfindingCommands.driveToBranch(
             //         m_driveSubsystem, "A", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-            PathfindingCommands.alignToBranch(m_driveSubsystem, "A")
+            PathfindingCommands.alignToBranch(m_driveSubsystem, "A", true)
                 .until(m_driverController.leftTrigger().negate())
                 .withName("PathfindToA"))
         .and(
@@ -794,7 +804,7 @@ public class RobotContainer {
         .onTrue(
             // PathfindingCommands.driveToBranch(
             //         m_driveSubsystem, "B", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-            PathfindingCommands.alignToBranch(m_driveSubsystem, "B")
+            PathfindingCommands.alignToBranch(m_driveSubsystem, "B", false)
                 .until(m_driverController.leftTrigger().negate())
                 .withName("PathfindToB"));
     // REEF Face CD
@@ -804,7 +814,7 @@ public class RobotContainer {
         .onTrue(
             // PathfindingCommands.driveToBranch(
             //         m_driveSubsystem, "C", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-            PathfindingCommands.alignToBranch(m_driveSubsystem, "C")
+            PathfindingCommands.alignToBranch(m_driveSubsystem, "C", true)
                 .until(m_driverController.leftTrigger().negate())
                 .withName("PathfindToC"))
         .and(
@@ -814,7 +824,7 @@ public class RobotContainer {
         .onTrue(
             // PathfindingCommands.driveToBranch(
             //         m_driveSubsystem, "D", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-            PathfindingCommands.alignToBranch(m_driveSubsystem, "D")
+            PathfindingCommands.alignToBranch(m_driveSubsystem, "D", false)
                 .until(m_driverController.leftTrigger().negate())
                 .withName("PathfindToD"));
     // REEF Face EF
@@ -824,7 +834,7 @@ public class RobotContainer {
         .onTrue(
             // PathfindingCommands.driveToBranch(
             //         m_driveSubsystem, "F", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-            PathfindingCommands.alignToBranch(m_driveSubsystem, "F")
+            PathfindingCommands.alignToBranch(m_driveSubsystem, "F", false)
                 .until(m_driverController.leftTrigger().negate())
                 .withName("PathfindToF"))
         .and(
@@ -834,7 +844,7 @@ public class RobotContainer {
         .onTrue(
             // PathfindingCommands.driveToBranch(
             //         m_driveSubsystem, "E", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-            PathfindingCommands.alignToBranch(m_driveSubsystem, "E")
+            PathfindingCommands.alignToBranch(m_driveSubsystem, "E", true)
                 .until(m_driverController.leftTrigger().negate())
                 .withName("PathfindToE"));
     // REEF Face GH
@@ -844,7 +854,7 @@ public class RobotContainer {
         .onTrue(
             // PathfindingCommands.driveToBranch(
             //         m_driveSubsystem, "H", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-            PathfindingCommands.alignToBranch(m_driveSubsystem, "H")
+            PathfindingCommands.alignToBranch(m_driveSubsystem, "H", false)
                 .until(m_driverController.leftTrigger().negate())
                 .withName("PathfindToH"))
         .and(
@@ -854,7 +864,7 @@ public class RobotContainer {
         .onTrue(
             // PathfindingCommands.driveToBranch(
             //         m_driveSubsystem, "G", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-            PathfindingCommands.alignToBranch(m_driveSubsystem, "G")
+            PathfindingCommands.alignToBranch(m_driveSubsystem, "G", true)
                 .until(m_driverController.leftTrigger().negate())
                 .withName("PathfindToG"));
     // REEF Face IJ
@@ -864,7 +874,7 @@ public class RobotContainer {
         .onTrue(
             // PathfindingCommands.driveToBranch(
             //         m_driveSubsystem, "J", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-            PathfindingCommands.alignToBranch(m_driveSubsystem, "J")
+            PathfindingCommands.alignToBranch(m_driveSubsystem, "J", false)
                 .until(m_driverController.leftTrigger().negate())
                 .withName("PathfindToJ"))
         .and(
@@ -874,7 +884,7 @@ public class RobotContainer {
         .onTrue(
             // PathfindingCommands.driveToBranch(
             //         m_driveSubsystem, "I", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-            PathfindingCommands.alignToBranch(m_driveSubsystem, "I")
+            PathfindingCommands.alignToBranch(m_driveSubsystem, "I", true)
                 .until(m_driverController.leftTrigger().negate())
                 .withName("PathfindToI"));
     // REEF Face KL
@@ -884,7 +894,7 @@ public class RobotContainer {
         .onTrue(
             // PathfindingCommands.driveToBranch(
             //         m_driveSubsystem, "K", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-            PathfindingCommands.alignToBranch(m_driveSubsystem, "K")
+            PathfindingCommands.alignToBranch(m_driveSubsystem, "K", true)
                 .until(m_driverController.leftTrigger().negate())
                 .withName("PathfindToK"))
         .and(
@@ -894,7 +904,7 @@ public class RobotContainer {
         .onTrue(
             // PathfindingCommands.driveToBranch(
             //         m_driveSubsystem, "L", PathPlannerConstants.DEFAULT_WALL_DISTANCE_M)
-            PathfindingCommands.alignToBranch(m_driveSubsystem, "L")
+            PathfindingCommands.alignToBranch(m_driveSubsystem, "L", false)
                 .until(m_driverController.leftTrigger().negate())
                 .withName("PathfindToL"));
   }

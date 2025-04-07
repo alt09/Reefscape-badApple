@@ -8,12 +8,10 @@ public class AEEConstants {
   public static final int CAN_ID = 21;
   /** Gear reduction of 6:1 for the AEE motor */
   public static final double GEAR_RATIO = 6.0 / 1.0;
-  /**
-   * Set the inversion status of the AEE to false, making Counterclockwise the positive direction
-   */
-  public static final boolean IS_INVERTED = false;
+  /** Set the inversion status of the AEE to true, making clockwise the positive direction */
+  public static final boolean IS_INVERTED = true;
   /** Current limit for the NEO motor of the AEE */
-  public static final int CUR_LIM_A = 20;
+  public static final int CUR_LIM_A = 7;
   // Velocities
   /** Scoring velocity in radians per second */
   public static final double SCORE_VELOCITY_RAD_PER_SEC =

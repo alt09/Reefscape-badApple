@@ -44,16 +44,16 @@ public class PeriscopeConstants {
   /** Minimum height of the Periscope, resting/default position */
   public static final double MIN_HEIGHT_M = 0.0;
   /** Max height of the Periscope in meters */
-  public static final double MAX_HEIGHT_M = Units.inchesToMeters(58);
+  public static final double MAX_HEIGHT_M = Units.inchesToMeters(65);
   /** Height position of the Periscope for reaching L1 */
-  public static final double L1_HEIGHT_M = Units.inchesToMeters(9.242499999999998);
+  public static final double L1_HEIGHT_M = Units.inchesToMeters(14.242499999999998);
   /** Height position of the Periscope for reaching L2 */
-  public static final double L2_HEIGHT_M = Units.inchesToMeters(19.57 - SPACER_HEIGHT_DIFF_IN);
+  public static final double L2_HEIGHT_M = Units.inchesToMeters(24.48727733017911);
   /** Height position of the Periscope for intaking L2 ALGAE */
   public static final double L2_ALGAE_HEIGHT_M = Units.inchesToMeters(22.06998575818367);
   /** Height position of the Periscope for reaching L3 */
   public static final double L3_HEIGHT_M =
-      Units.inchesToMeters(34.83 - SPACER_HEIGHT_DIFF_IN); // 29.513407287422694
+      Units.inchesToMeters(40.308153793068136); // 29.513407287422694
   /** Height position of the Periscope for intaking L3 ALGAE */
   public static final double L3_ALGAE_HEIGHT_M = L2_ALGAE_HEIGHT_M + Units.inchesToMeters(15.26);
   /** Height position of the Periscope for reaching L4 */
@@ -61,7 +61,7 @@ public class PeriscopeConstants {
   /** Height position of the Periscope for aligning with the Funnel at the CORAL STATION */
   public static final double CORAL_STATION_HEIGHT_M = Units.inchesToMeters(6.824964567438523);
   /** Height position of the Periscope for reaching the PROCCESOR */
-  public static final double PROCESSOR_HEIGHT_M = Units.inchesToMeters(12);
+  public static final double PROCESSOR_HEIGHT_M = MIN_HEIGHT_M;
   /** Height position of the Periscope for reaching the NET */
   public static final double NET_HEIGHT_M = MAX_HEIGHT_M;
 

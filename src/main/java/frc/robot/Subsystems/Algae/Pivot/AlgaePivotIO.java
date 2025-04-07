@@ -12,6 +12,8 @@ public interface AlgaePivotIO {
     public double currentAmps = 0.0;
     /** Temperature of the ALGAE Pivot motor in celsius */
     public double tempCelsius = 0.0;
+    /** Angular position of the Pivot from the relative encoder in radians */
+    public double relativePositionRad;
     /** Angular position of the Pivot from the absolute encoder in radians */
     public double absPositionRad = 0.0;
     /** Velocity of the ALGAE Pivot in radians per second */
@@ -39,4 +41,6 @@ public interface AlgaePivotIO {
    * @param volts A value between -12 (full reverse speed) to 12 (full forward speed).
    */
   public default void setVoltage(double volts) {}
+
+  public default void resetRelativeEncoder() {}
 }

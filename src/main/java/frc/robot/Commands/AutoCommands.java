@@ -42,13 +42,13 @@ public class AutoCommands {
     startingPose.addOption("SLL", PathPlannerConstants.STARTING_LINE_LEFT);
     startingPose.addDefaultOption("SLC", PathPlannerConstants.STARTING_LINE_CENTER);
     startingPose.addOption("SLR", PathPlannerConstants.STARTING_LINE_RIGHT);
-    LoggedDashboardChooser<String> firstBranch = new LoggedDashboardChooser<>("First BRANCH");
-    firstBranch.addOption("E", "E");
-    firstBranch.addOption("F", "F");
-    firstBranch.addDefaultOption("G", "G");
-    firstBranch.addOption("H", "H");
-    firstBranch.addOption("I", "I");
-    firstBranch.addOption("J", "J");
+    LoggedDashboardChooser<Command> firstBranch = new LoggedDashboardChooser<>("First BRANCH");
+    firstBranch.addOption("E", PathfindingCommands.alignToBranch(drive, "E", true));
+    firstBranch.addOption("F", PathfindingCommands.alignToBranch(drive, "F", false));
+    firstBranch.addDefaultOption("G", PathfindingCommands.alignToBranch(drive, "G", true));
+    firstBranch.addOption("H", PathfindingCommands.alignToBranch(drive, "H", false));
+    firstBranch.addOption("I", PathfindingCommands.alignToBranch(drive, "I", true));
+    firstBranch.addOption("J", PathfindingCommands.alignToBranch(drive, "J", false));
     LoggedDashboardChooser<Command> firstCoralLevel =
         new LoggedDashboardChooser<>("First CORAL Level");
     firstCoralLevel.addOption("L1", SuperstructureCommands.positionsToL1(periscope, algaePivot));
@@ -91,12 +91,12 @@ public class AutoCommands {
         "None (1.5P)",
         Commands.waitSeconds(15)
             .alongWith(Commands.print("1.5P").andThen(Commands.waitSeconds(1)).repeatedly()));
-    secondBranch.addOption("L", PathfindingCommands.alignToBranch(drive, "L"));
-    secondBranch.addOption("K", PathfindingCommands.alignToBranch(drive, "K"));
-    secondBranch.addOption("A", PathfindingCommands.alignToBranch(drive, "A"));
-    secondBranch.addOption("B", PathfindingCommands.alignToBranch(drive, "B"));
-    secondBranch.addOption("C", PathfindingCommands.alignToBranch(drive, "C"));
-    secondBranch.addOption("D", PathfindingCommands.alignToBranch(drive, "D"));
+    secondBranch.addOption("L", PathfindingCommands.alignToBranch(drive, "L", false));
+    secondBranch.addOption("K", PathfindingCommands.alignToBranch(drive, "K", true));
+    secondBranch.addOption("A", PathfindingCommands.alignToBranch(drive, "A", true));
+    secondBranch.addOption("B", PathfindingCommands.alignToBranch(drive, "B", false));
+    secondBranch.addOption("C", PathfindingCommands.alignToBranch(drive, "C", true));
+    secondBranch.addOption("D", PathfindingCommands.alignToBranch(drive, "D", false));
     LoggedDashboardChooser<Command> secondCoralLevel =
         new LoggedDashboardChooser<>("Second CORAL Level");
     secondCoralLevel.addOption("L1", SuperstructureCommands.positionsToL1(periscope, algaePivot));
@@ -140,7 +140,7 @@ public class AutoCommands {
 
           // Schedule the auto command
           Commands.parallel(
-                  PathfindingCommands.alignToBranch(drive, firstBranch.get()),
+                  firstBranch.get(),
                   firstCoralLevel.get(),
                   Commands.print("Aligning to first CORAL"))
               .andThen(Commands.waitSeconds(DELAY_BETWEEN_ACTIONS))

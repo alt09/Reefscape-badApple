@@ -166,7 +166,7 @@ public class PathfindingCommands {
         drive,
         FieldConstants.APRILTAG_FIELD_LAYOUT.getTagPose(tagID).get().toPose2d(),
         wallDistanceMeters,
-        Units.inchesToMeters(6), // TODO: Change once new cameras are mounted and in use
+        0,
         isFront);
   }
 
@@ -180,12 +180,16 @@ public class PathfindingCommands {
    * @return {@link Command} that makes the robot follow a trajectory to in front of the AprilTag.
    */
   public static DriveToPose driveToAprilTag(
-      Drive drive, int tagID, double wallDistanceMeters, boolean isFront) {
+      Drive drive,
+      int tagID,
+      double wallDistanceMeters,
+      double strafeOffsetMeters,
+      boolean isFront) {
     return driveToFieldElement(
         drive,
         FieldConstants.APRILTAG_FIELD_LAYOUT.getTagPose(tagID).get().toPose2d(),
         wallDistanceMeters,
-        Units.inchesToMeters(6), // TODO: Change once new cameras are mounted and in use
+        0,
         isFront);
   }
 
@@ -424,11 +428,11 @@ public class PathfindingCommands {
    * transformed to the red side.
    *
    * @param drive {@link Drive} subsystem
-   * @param reefTag Integer of the REEF face's AprilTag number (blue side)
    * @param branch String of the BRANCH to algin to
+   * @param isLeft If its the left BRANCH relative to the REEF face
    * @return {@link Command} that carries out the auto alignment driving sequence.
    */
-  public static Command alignToBranch(Drive drive, String branch) {
+  public static Command alignToBranch(Drive drive, String branch, boolean isLeft) {
     final int reefAprilTagID;
     if (branch == "A" || branch == "B") {
       reefAprilTagID = 18;
@@ -444,17 +448,18 @@ public class PathfindingCommands {
       reefAprilTagID = 19;
     }
 
-    return PathfindingCommands.driveToAprilTag(drive, reefAprilTagID, 0.75, true)
-        .withLinearPID(2, 0, 0)
-        .withTolerance(0.15, Units.degreesToRadians(5))
-        .finishAtGoal()
-        .andThen(
-            Commands.waitUntil(
-                () ->
-                    drive.getChassisSpeeds().vxMetersPerSecond < 0.2
-                        && drive.getChassisSpeeds().vyMetersPerSecond < 0.2))
-        .andThen(
-            PathfindingCommands.driveToBranch(drive, branch, 0)
-                .finishAtGoal()); // TODO: test with finish at goal
+    return Commands.either(
+        PathfindingCommands.driveToAprilTag(
+                drive, reefAprilTagID, 0.75, Units.inchesToMeters(-12), true)
+            .withTolerance(0.15, Units.degreesToRadians(5))
+            .finishAtGoal()
+            .andThen(
+                Commands.waitUntil(
+                    () ->
+                        drive.getChassisSpeeds().vxMetersPerSecond < 0.2
+                            && drive.getChassisSpeeds().vyMetersPerSecond < 0.2))
+            .andThen(PathfindingCommands.driveToBranch(drive, branch, 0).finishAtGoal()),
+        PathfindingCommands.driveToBranch(drive, branch, 0).finishAtGoal(),
+        () -> isLeft);
   }
 }
