@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
@@ -71,6 +72,11 @@ public class AlgaePivot extends SubsystemBase {
     // Update and log inputs
     m_io.updateInputs(m_inputs);
     Logger.processInputs("Algae Pivot", m_inputs);
+
+    if (DriverStation.isDisabled()) {
+      this.setAngle(m_inputs.absPositionRad);
+      this.setVoltage(0);
+    }
 
     // Control the ALGAE Pivot through the PID controller if enabled, open loop voltage control if
     // disabled

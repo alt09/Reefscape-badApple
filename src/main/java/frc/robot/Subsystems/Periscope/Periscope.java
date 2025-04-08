@@ -89,6 +89,8 @@ public class Periscope extends SubsystemBase {
     if (DriverStation.isDisabled()) {
       // Don't apply feedforward if disabled
       feedforwardVolts = 0.0;
+      this.setPosition(m_inputs.heightMeters);
+      this.stop();
     }
 
     if (m_enablePID) {
@@ -120,6 +122,10 @@ public class Periscope extends SubsystemBase {
    */
   public void enableBrakeMode(boolean enable) {
     m_io.enableBrakeMode(enable);
+  }
+
+  public void stop() {
+    m_io.stop();
   }
 
   /**

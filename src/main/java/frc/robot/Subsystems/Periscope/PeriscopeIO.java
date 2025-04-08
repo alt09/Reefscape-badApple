@@ -40,6 +40,8 @@ public interface PeriscopeIO {
    */
   public default void enableBrakeMode(boolean enable) {}
 
+  public default void stop() {}
+
   /**
    * Sets the position of the Periscope motors in meters.
    *

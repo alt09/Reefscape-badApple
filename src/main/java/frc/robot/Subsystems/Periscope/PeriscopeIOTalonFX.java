@@ -151,6 +151,11 @@ public class PeriscopeIOTalonFX implements PeriscopeIO {
   }
 
   @Override
+  public void stop() {
+    m_leadTalonFX.stopMotor();
+  }
+
+  @Override
   public void resetPosition(double heightMeters) {
     double positionRot = Units.radiansToRotations(heightMeters / PeriscopeConstants.SPOOL_RADIUS_M);
     m_leadTalonFX.setPosition(positionRot);

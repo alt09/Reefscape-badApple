@@ -11,7 +11,7 @@ public class AEEConstants {
   /** Set the inversion status of the AEE to true, making clockwise the positive direction */
   public static final boolean IS_INVERTED = true;
   /** Current limit for the NEO motor of the AEE */
-  public static final int CUR_LIM_A = 7;
+  public static final int CUR_LIM_A = 14;
   // Velocities
   /** Scoring velocity in radians per second */
   public static final double SCORE_VELOCITY_RAD_PER_SEC =

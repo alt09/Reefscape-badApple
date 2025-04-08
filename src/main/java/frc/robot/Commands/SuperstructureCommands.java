@@ -27,13 +27,16 @@ public class SuperstructureCommands {
    */
   public static Command setPositions(
       Periscope periscope, AlgaePivot algaePivot, double periscopeHeight, double pivotAngle) {
-    return Commands.runOnce(
-        () -> {
-          periscope.setPosition(periscopeHeight);
-          algaePivot.setAngle(pivotAngle);
-        },
-        periscope,
-        algaePivot);
+    return Commands.runOnce(() -> algaePivot.resetRelativeEncoder(), algaePivot)
+        .andThen(
+            Commands.runOnce(
+                () -> {
+                  periscope.setPosition(periscopeHeight);
+                  algaePivot.setAngle(pivotAngle);
+                },
+                periscope,
+                algaePivot))
+        .andThen(Commands.runOnce(() -> algaePivot.resetRelativeEncoder(), algaePivot));
   }
 
   /**
@@ -294,15 +297,15 @@ public class SuperstructureCommands {
     //     .andThen(
     //         Commands.runOnce(() -> aee.setPercentSpeed(AEEConstants.SCORE_PERCENT_SPEED), aee));
     /* Drop ALGAE in */
-    return Commands.runOnce(() -> algaePivot.resetRelativeEncoder(), algaePivot)
+    return SuperstructureCommands.setPositions(
+            periscope,
+            algaePivot,
+            SuperstructureState.periscopeHeight,
+            SuperstructureState.algaePivotAngle)
         .andThen(
-            SuperstructureCommands.setPositions(
-                periscope,
-                algaePivot,
-                SuperstructureState.periscopeHeight,
-                SuperstructureState.algaePivotAngle))
-        .andThen(
-            Commands.waitUntil(() -> periscope.atSetpointHeight() && algaePivot.atSetpointAngle()));
+            Commands.waitUntil(() -> periscope.atSetpointHeight() && algaePivot.atSetpointAngle())
+                .withTimeout(5))
+        .andThen(Commands.runOnce(() -> algaePivot.resetRelativeEncoder(), algaePivot));
   }
 
   /**
@@ -336,13 +339,11 @@ public class SuperstructureCommands {
   public static Command intakeGroundAlgae(
       Periscope periscope, AlgaePivot algaePivot, AEE aee, CEE cee, Funnel funnel) {
     SuperstructureState.objective(SuperstructureState.Objective.ALGAE_GROUND);
-    return Commands.runOnce(() -> algaePivot.resetRelativeEncoder(), algaePivot)
-        .andThen(
-            SuperstructureCommands.setPositions(
-                periscope,
-                algaePivot,
-                SuperstructureState.periscopeHeight,
-                SuperstructureState.algaePivotAngle))
+    return SuperstructureCommands.setPositions(
+            periscope,
+            algaePivot,
+            SuperstructureState.periscopeHeight,
+            SuperstructureState.algaePivotAngle)
         .alongWith(
             SuperstructureCommands.setSpeeds(
                 aee,

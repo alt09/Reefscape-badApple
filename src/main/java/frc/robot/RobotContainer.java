@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -436,22 +437,22 @@ public class RobotContainer {
 
     /* Gyro */
     // Reset Gyro heading, making the front side of the robot the new 0 degree angle
-    m_driverController
-        .a()
-        .onTrue(
-            new InstantCommand(() -> m_driveSubsystem.zeroYaw(), m_driveSubsystem)
-                .withName("ZeroYaw"));
     // m_driverController
     //     .a()
     //     .onTrue(
-    //         new InstantCommand(
-    //                 () ->
-    //                     m_driveSubsystem.resetPose(
-    //                         new Pose2d(
-    //                             m_driveSubsystem.getCurrentPose2d().getTranslation(),
-    //                             Rotation2d.kZero)),
-    //                 m_driveSubsystem)
+    //         new InstantCommand(() -> m_driveSubsystem.zeroYaw(), m_driveSubsystem)
     //             .withName("ZeroYaw"));
+    m_driverController
+        .a()
+        .onTrue(
+            new InstantCommand(
+                    () ->
+                        m_driveSubsystem.resetPose(
+                            new Pose2d(
+                                m_driveSubsystem.getCurrentPose2d().getTranslation(),
+                                Rotation2d.kZero)),
+                    m_driveSubsystem)
+                .withName("ZeroYaw"));
 
     /* Pathfinding */
     // Closest REEF BRANCH
@@ -514,13 +515,26 @@ public class RobotContainer {
     m_driverController
         .rightTrigger()
         .onTrue(
-            SuperstructureCommands.intakeCoral(
-                    m_periscopeSubsystem,
-                    m_algaePivotSubsystem,
-                    m_AEESubsystem,
-                    m_CEESubsystem,
-                    m_funnelSubsystem)
-                .until(m_driverController.rightTrigger().negate())
+            // SuperstructureCommands.intakeCoral(
+            //         m_periscopeSubsystem,
+            //         m_algaePivotSubsystem,
+            //         m_AEESubsystem,
+            //         m_CEESubsystem,
+            //         m_funnelSubsystem)
+            Commands.parallel(
+                    Commands.runOnce(
+                        () ->
+                            m_periscopeSubsystem.setPosition(
+                                Units.inchesToMeters(
+                                    SmartDashboard.getNumber("Setpoints/PeriscopeHeightInch", 0))),
+                        m_periscopeSubsystem),
+                    Commands.runOnce(
+                        () ->
+                            m_funnelSubsystem.setPercentSpeed(FunnelConstants.INTAKE_PERCENT_SPEED),
+                        m_funnelSubsystem),
+                    Commands.runOnce(
+                        () -> m_CEESubsystem.setPercentSpeed(CEEConstants.INTAKE_PERCENT_SPEED),
+                        m_CEESubsystem))
                 .withName("CoralIntake"))
         .onFalse(
             SuperstructureCommands.zero(
@@ -690,7 +704,7 @@ public class RobotContainer {
                     () -> m_AEESubsystem.setPercentSpeed(AEEConstants.ALGAE_HOLD_PERCENT_SPEED),
                     m_AEESubsystem)
                 .withName("HoldALGAE"));
-    // L4 or NET // TODO: modify net socre command to swing arm to score the ALGAE
+    // L4 or NET
     m_auxButtonBoard
         .button(OperatorConstants.BUTTON_BOARD.L4_NET.BUTTON_ID)
         .onTrue(

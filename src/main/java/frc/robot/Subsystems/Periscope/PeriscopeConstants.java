@@ -40,11 +40,11 @@ public class PeriscopeConstants {
    * inches
    */
   public static final double SPACER_HEIGHT_DIFF_IN =
-      Units.inchesToMeters(0.5); // TODO: find new values :((((
+      Units.inchesToMeters(0.5);
   /** Minimum height of the Periscope, resting/default position */
   public static final double MIN_HEIGHT_M = 0.0;
   /** Max height of the Periscope in meters */
-  public static final double MAX_HEIGHT_M = Units.inchesToMeters(65);
+  public static final double MAX_HEIGHT_M = Units.inchesToMeters(67);
   /** Height position of the Periscope for reaching L1 */
   public static final double L1_HEIGHT_M = Units.inchesToMeters(14.242499999999998);
   /** Height position of the Periscope for reaching L2 */
@@ -59,13 +59,13 @@ public class PeriscopeConstants {
   /** Height position of the Periscope for reaching L4 */
   public static final double L4_HEIGHT_M = MAX_HEIGHT_M;
   /** Height position of the Periscope for aligning with the Funnel at the CORAL STATION */
-  public static final double CORAL_STATION_HEIGHT_M = Units.inchesToMeters(6.824964567438523);
+  public static final double CORAL_STATION_HEIGHT_M = Units.inchesToMeters(6.193764022730197);
   /** Height position of the Periscope for reaching the PROCCESOR */
   public static final double PROCESSOR_HEIGHT_M = MIN_HEIGHT_M;
   /** Height position of the Periscope for reaching the NET */
   public static final double NET_HEIGHT_M = MAX_HEIGHT_M;
 
-  // PROFILED PID & FEEDFORWARD CONSTANTS // TODO: Re-tune PID
+  // PROFILED PID & FEEDFORWARD CONSTANTS
   /**
    * KP represents the constant multiplied by the current error from setpoint (Proportional Error)
    */

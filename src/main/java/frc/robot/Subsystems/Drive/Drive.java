@@ -374,7 +374,7 @@ public class Drive extends SubsystemBase {
    * @return {@link Rotation2d} of the current angle of the robot.
    */
   public Rotation2d getRobotHeading() {
-    return m_robotHeading;
+    return this.getCurrentPose2d().getRotation();
   }
 
   /* ~~~~~~~~~~~~~~~~~~ Gyro ~~~~~~~~~~~~~~~~~~ */

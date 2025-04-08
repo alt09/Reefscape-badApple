@@ -450,8 +450,8 @@ public class PathfindingCommands {
 
     return Commands.either(
         PathfindingCommands.driveToAprilTag(
-                drive, reefAprilTagID, 0.75, Units.inchesToMeters(-12), true)
-            .withTolerance(0.15, Units.degreesToRadians(5))
+                drive, reefAprilTagID, 0.5, Units.inchesToMeters(-12), true)
+            .withTolerance(0.30, Units.degreesToRadians(7))
             .finishAtGoal()
             .andThen(
                 Commands.waitUntil(

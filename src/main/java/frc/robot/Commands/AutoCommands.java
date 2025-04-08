@@ -133,10 +133,15 @@ public class AutoCommands {
           secondBranch.periodic();
           secondCoralLevel.periodic();
 
+          var robotPose = drive.getCurrentPose2d();
+
           // Reset odometry if not updated by Vision already
-          if (drive.getCurrentPose2d().getX() == 0.0) {
+          if (robotPose.getX() == 0.0) {
             drive.resetPose(startingPose.get());
           }
+
+          // Set starting angle
+          drive.resetPose(new Pose2d(robotPose.getTranslation(), startingPose.get().getRotation()));
 
           // Schedule the auto command
           Commands.parallel(
@@ -150,7 +155,7 @@ public class AutoCommands {
               .andThen(Commands.waitSeconds(DELAY_BETWEEN_ACTIONS))
               .andThen(
                   DriveCommands.robotRelativeDrive(drive, () -> -0.5, () -> 0.0, () -> 0.0)
-                      .withTimeout(DELAY_BETWEEN_ACTIONS)) // TODO: test if necessary
+                      .withTimeout(DELAY_BETWEEN_ACTIONS))
               .andThen(
                   Commands.parallel(
                       coralStation.get(),
@@ -256,10 +261,15 @@ public class AutoCommands {
 
     return Commands.runOnce(
             () -> {
-              // Update robot pose if it hasn't been updated by the Vision already
-              if (drive.getCurrentPose2d().getX() == 0.0) {
+              var robotPose = drive.getCurrentPose2d();
+
+              // Reset odometry if not updated by Vision already
+              if (robotPose.getX() == 0.0) {
                 drive.resetPose(startingPose);
               }
+
+              // Set starting angle
+              drive.resetPose(new Pose2d(robotPose.getTranslation(), startingPose.getRotation()));
             },
             drive)
         .andThen(

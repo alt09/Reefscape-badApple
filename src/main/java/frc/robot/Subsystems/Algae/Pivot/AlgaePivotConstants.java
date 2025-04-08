@@ -23,8 +23,8 @@ public class AlgaePivotConstants {
   /** Weight of the ALGAE Pivot in kilograms */
   public static final double MASS_KG = Units.lbsToKilograms(6.8); // TODO: outdated
   // Angle positions
-  /** Starting angle of the ALGAE Pivot in radians */
-  public static final double DEFAULT_ANGLE_RAD = Units.degreesToRadians(90);
+  /** Stowing angle of the ALGAE Pivot in radians */
+  public static final double DEFAULT_ANGLE_RAD = Units.degreesToRadians(135);
   /** Minimum angle of the ALGAE Pivot in radians */
   public static final double MIN_ANGLE_RAD = Units.degreesToRadians(-45);
   /** Maximum angle of the ALGAE Pivot in radians */
@@ -34,7 +34,7 @@ public class AlgaePivotConstants {
   /** Angle (radians) of the ALGAE Pivot when trying to pickup ALGAE off the ground */
   public static final double GROUND_ALGAE_ANGLE_RAD = Units.degreesToRadians(-30);
   /** Angle (radians) of the ALGAE Pivot when trying to score ALGAE at the NET */
-  public static final double NET_ANGLE_RAD = Units.degreesToRadians(67.5);
+  public static final double NET_ANGLE_RAD = Units.degreesToRadians(65);
 
   /** Angle (radians) of the ALGAE Pivot when trying to score ALGAE at PROCESSOR */
   public static final double PROCESSOR_ANGLE_RAD = 0;
