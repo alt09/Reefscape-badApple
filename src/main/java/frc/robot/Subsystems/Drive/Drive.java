@@ -430,6 +430,8 @@ public class Drive extends SubsystemBase {
         new Pose2d(visionPoseEstimation.getTranslation(), m_robotHeading),
         timestampSec,
         visionStdDevs);
+    // m_swervePoseEstimator.addVisionMeasurement(
+    //     visionPoseEstimation, timestampSec, visionStdDevs); // TODO: change to only gyro for comp
   }
 
   /* ~~~~~~~~~~~~~~~~~~ Wheel Radius Characterization ~~~~~~~~~~~~~~~~~~ */

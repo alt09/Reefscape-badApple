@@ -78,7 +78,8 @@ public class RobotContainer {
         m_periscopeSubsystem = new Periscope(new PeriscopeIOTalonFX());
         m_climberSubsystem = new Climber(new ClimberIOTalonFX());
         m_funnelSubsystem = new Funnel(new FunnelIOSparkMax());
-        m_AEESubsystem = new AEE(new AEEIOSparkMax() {});
+        // m_AEESubsystem = new AEE(new AEEIOSparkMax() {});
+        m_AEESubsystem = new AEE(new AEEIO() {});
         m_CEESubsystem = new CEE(new CEEIOSparkMax());
         m_visionSubsystem =
             new Vision(
@@ -779,12 +780,7 @@ public class RobotContainer {
         .and(
             m_auxButtonBoard.axisGreaterThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
-        .onTrue(
-            new InstantCommand(
-                () ->
-                    m_climberSubsystem.setVoltage(
-                        SmartDashboard.getNumber("SetVoltage/ClimberVolts", 0)),
-                m_climberSubsystem))
+        .onTrue(new InstantCommand(() -> m_climberSubsystem.setVoltage(-6), m_climberSubsystem))
         .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
     // Retract Climber
     m_auxButtonBoard
@@ -792,12 +788,7 @@ public class RobotContainer {
         .and(
             m_auxButtonBoard.axisGreaterThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
-        .onTrue(
-            new InstantCommand(
-                () ->
-                    m_climberSubsystem.setVoltage(
-                        -SmartDashboard.getNumber("SetVoltage/ClimberVolts", 0)),
-                m_climberSubsystem))
+        .onTrue(new InstantCommand(() -> m_climberSubsystem.setVoltage(6), m_climberSubsystem))
         .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
 
     /* ~~~~~~~~~~~~~~~~~~~~ Pathfinding Selection ~~~~~~~~~~~~~~~~~~~~ */
@@ -1076,25 +1067,25 @@ public class RobotContainer {
     //                 RobotStateConstants.MAX_VOLTAGE * m_auxController.getLeftY()),
     //         m_climberSubsystem));
     // Deploy
-    m_auxController
-        .povUp()
-        .onTrue(
-            new InstantCommand(
-                () ->
-                    m_climberSubsystem.setVoltage(
-                        SmartDashboard.getNumber("SetVoltage/ClimberVolts", 0.0)),
-                m_climberSubsystem))
-        .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
-    // Retract
-    m_auxController
-        .povDown()
-        .onTrue(
-            new InstantCommand(
-                () ->
-                    m_climberSubsystem.setVoltage(
-                        SmartDashboard.getNumber("SetVoltage/ClimberVolts", 0.0)),
-                m_climberSubsystem))
-        .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
+    // m_auxController
+    //     .povUp()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //                 m_climberSubsystem.setVoltage(
+    //                     SmartDashboard.getNumber("SetVoltage/ClimberVolts", 0.0)),
+    //             m_climberSubsystem))
+    //     .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
+    // // Retract
+    // m_auxController
+    //     .povDown()
+    //     .onTrue(
+    //         new InstantCommand(
+    //             () ->
+    //                 m_climberSubsystem.setVoltage(
+    //                     SmartDashboard.getNumber("SetVoltage/ClimberVolts", 0.0)),
+    //             m_climberSubsystem))
+    //     .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
 
     // /* ~~~~~~~~~~~~~~~~~~~~ Superstructure ~~~~~~~~~~~~~~~~~~~~ */
     // /* Score */

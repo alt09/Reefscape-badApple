@@ -124,13 +124,13 @@ public class ClimberIOTalonFX implements ClimberIO {
   }
 
   @Override
-  public void enableBrakeMode(boolean enable) {
-    m_leadTalonFX.setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast);
-  }
-
-  @Override
   public void setVoltage(double volts) {
     m_leadTalonFX.setVoltage(
         MathUtil.clamp(volts, -RobotStateConstants.MAX_VOLTAGE, RobotStateConstants.MAX_VOLTAGE));
+  }
+
+  @Override
+  public void enableBrakeMode(boolean enable) {
+    m_leadTalonFX.setNeutralMode(enable ? NeutralModeValue.Brake : NeutralModeValue.Coast);
   }
 }
