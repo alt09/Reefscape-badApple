@@ -358,6 +358,11 @@ public final class Constants {
             ? new Pose2d(10.266, 4.041, Rotation2d.fromDegrees(-45))
             : new Pose2d(7.265, 2.874, Rotation2d.fromDegrees(135));
 
+    public static final Pose2d STARTING_LINE_FAR_RIGHT =
+        RobotStateConstants.isRed()
+            ? new Pose2d(10.266, 7.450, Rotation2d.fromDegrees(-45))
+            : new Pose2d(7.265, 0.660, Rotation2d.fromDegrees(135));
+
     /* Pathfinding */
     /** Max translational and rotational velocity and acceleration used for Pathfinding */
     public static final PathConstraints DEFAULT_PATH_CONSTRAINTS =

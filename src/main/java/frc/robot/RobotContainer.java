@@ -323,6 +323,19 @@ public class RobotContainer {
             new String[] {"E", "C"},
             new int[] {4, 4},
             "CS2L"));
+    m_autoChooser.addOption(
+        "2P_SLR-B4-CS2L-A4",
+        AutoCommands.pathfindingTwoPiece(
+            m_driveSubsystem,
+            m_periscopeSubsystem,
+            m_algaePivotSubsystem,
+            m_AEESubsystem,
+            m_CEESubsystem,
+            m_funnelSubsystem,
+            PathPlannerConstants.STARTING_LINE_FAR_RIGHT,
+            new String[] {"B", "A"},
+            new int[] {4, 4},
+            "CS2L"));
 
     /* Test Routines */
     m_autoChooser.addOption("2 Meter Test", new PathPlannerAuto("Forward"));
