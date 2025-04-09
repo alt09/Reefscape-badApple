@@ -29,7 +29,7 @@ public class Vision extends SubsystemBase {
   // Vision pose estimation
   private final PhotonPoseEstimator[] m_photonPoseEstimators;
   private List<Pose2d> m_estimatedPoses = new LinkedList<>();
-  private Matrix<N3, N1> m_stdDevs = VecBuilder.fill(0.5, 0.5, 0.7);
+  private Matrix<N3, N1> m_stdDevs = VecBuilder.fill(0.5, 0.5, 1000000);
 
   /**
    * Constructs a new {@link Vision} instance.

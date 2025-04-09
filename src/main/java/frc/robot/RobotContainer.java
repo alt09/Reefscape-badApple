@@ -516,26 +516,29 @@ public class RobotContainer {
     m_driverController
         .rightTrigger()
         .onTrue(
-            // SuperstructureCommands.intakeCoral(
-            //         m_periscopeSubsystem,
-            //         m_algaePivotSubsystem,
-            //         m_AEESubsystem,
-            //         m_CEESubsystem,
-            //         m_funnelSubsystem)
-            Commands.parallel(
-                    Commands.runOnce(
-                        () ->
-                            m_periscopeSubsystem.setPosition(
-                                Units.inchesToMeters(
-                                    SmartDashboard.getNumber("Setpoints/PeriscopeHeightInch", 0))),
-                        m_periscopeSubsystem),
-                    Commands.runOnce(
-                        () ->
-                            m_funnelSubsystem.setPercentSpeed(FunnelConstants.INTAKE_PERCENT_SPEED),
-                        m_funnelSubsystem),
-                    Commands.runOnce(
-                        () -> m_CEESubsystem.setPercentSpeed(CEEConstants.INTAKE_PERCENT_SPEED),
-                        m_CEESubsystem))
+            SuperstructureCommands.intakeCoral(
+                    m_periscopeSubsystem,
+                    m_algaePivotSubsystem,
+                    m_AEESubsystem,
+                    m_CEESubsystem,
+                    m_funnelSubsystem)
+                // Commands.parallel(
+                //         Commands.runOnce(
+                //             () ->
+                //                 m_periscopeSubsystem.setPosition(
+                //                     Units.inchesToMeters(
+                //                         SmartDashboard.getNumber("Setpoints/PeriscopeHeightInch",
+                // 0))),
+                //             m_periscopeSubsystem),
+                //         Commands.runOnce(
+                //             () ->
+                //
+                // m_funnelSubsystem.setPercentSpeed(FunnelConstants.INTAKE_PERCENT_SPEED),
+                //             m_funnelSubsystem),
+                //         Commands.runOnce(
+                //             () ->
+                // m_CEESubsystem.setPercentSpeed(CEEConstants.INTAKE_PERCENT_SPEED),
+                //             m_CEESubsystem))
                 .withName("CoralIntake"))
         .onFalse(
             SuperstructureCommands.zero(
@@ -780,7 +783,7 @@ public class RobotContainer {
         .and(
             m_auxButtonBoard.axisGreaterThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
-        .onTrue(new InstantCommand(() -> m_climberSubsystem.setVoltage(-6), m_climberSubsystem))
+        .onTrue(new InstantCommand(() -> m_climberSubsystem.setVoltage(-12), m_climberSubsystem))
         .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
     // Retract Climber
     m_auxButtonBoard
@@ -788,7 +791,7 @@ public class RobotContainer {
         .and(
             m_auxButtonBoard.axisGreaterThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
-        .onTrue(new InstantCommand(() -> m_climberSubsystem.setVoltage(6), m_climberSubsystem))
+        .onTrue(new InstantCommand(() -> m_climberSubsystem.setVoltage(12), m_climberSubsystem))
         .onFalse(new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem));
 
     /* ~~~~~~~~~~~~~~~~~~~~ Pathfinding Selection ~~~~~~~~~~~~~~~~~~~~ */
