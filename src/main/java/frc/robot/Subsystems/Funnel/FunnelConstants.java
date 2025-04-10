@@ -11,7 +11,7 @@ public class FunnelConstants {
   /**
    * Set the inversion status of the Funnel to false, making Counterclockwise the positive direction
    */
-  public static final boolean IS_INVERTED = true;
+  public static final boolean IS_INVERTED = false;
   /** Current limit for the NEO motor of the Funnel */
   public static final int CUR_LIM_A = 40;
   // Velocities

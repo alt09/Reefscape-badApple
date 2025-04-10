@@ -8,6 +8,7 @@ public interface AlgaePivotIO {
   public static class AlgaePivotIOInputs {
     /** Voltage applied to the ALGAE Pivot motor in volts */
     public double appliedVoltage = 0.0;
+
     /** Current draws of the ALGAE Pivot motor in amps */
     public double currentAmps = 0.0;
     /** Temperature of the ALGAE Pivot motor in celsius */

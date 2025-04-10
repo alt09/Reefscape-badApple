@@ -3,6 +3,7 @@ package frc.robot.Commands;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.Subsystems.Algae.EndEffector.AEE;
 import frc.robot.Subsystems.Algae.EndEffector.AEEConstants;
 import frc.robot.Subsystems.Algae.Pivot.AlgaePivot;
@@ -235,6 +236,7 @@ public class SuperstructureCommands {
             algaePivot,
             SuperstructureState.periscopeHeight,
             SuperstructureState.algaePivotAngle)
+        .alongWith(new PrintCommand("running L2 ALGAE intake"))
         .alongWith(
             SuperstructureCommands.setSpeeds(
                 aee, cee, funnel, AEEConstants.INTAKE_PERCENT_SPEED, 0, 0));
@@ -327,7 +329,6 @@ public class SuperstructureCommands {
 
   /**
    * Sets the position of the Periscope height and ALGAE Pivot angle to pick up ALGAE from the
-   * ground.
    *
    * @param periscope {@link Periscope} subsystem
    * @param algaePivot {@link AlgaePivot} subsystem

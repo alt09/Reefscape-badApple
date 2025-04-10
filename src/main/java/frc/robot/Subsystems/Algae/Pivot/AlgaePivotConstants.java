@@ -24,15 +24,15 @@ public class AlgaePivotConstants {
   public static final double MASS_KG = Units.lbsToKilograms(6.8); // TODO: outdated
   // Angle positions
   /** Stowing angle of the ALGAE Pivot in radians */
-  public static final double DEFAULT_ANGLE_RAD = Units.degreesToRadians(135);
+  public static final double DEFAULT_ANGLE_RAD = Units.degreesToRadians(27);
   /** Minimum angle of the ALGAE Pivot in radians */
-  public static final double MIN_ANGLE_RAD = Units.degreesToRadians(-45);
+  public static final double MIN_ANGLE_RAD = Units.degreesToRadians(-148.37682008743286);
   /** Maximum angle of the ALGAE Pivot in radians */
-  public static final double MAX_ANGLE_RAD = Units.degreesToRadians(180);
+  public static final double MAX_ANGLE_RAD = Units.degreesToRadians(23.013267517089844);
   /** Angle (radians) of the ALGAE Pivot when trying to pickup ALGAE off the REEF */
-  public static final double REEF_ALGAE_ANGLE_RAD = Units.degreesToRadians(-5.0);
+  public static final double REEF_ALGAE_ANGLE_RAD = Units.degreesToRadians(0);
   /** Angle (radians) of the ALGAE Pivot when trying to pickup ALGAE off the ground */
-  public static final double GROUND_ALGAE_ANGLE_RAD = Units.degreesToRadians(-30);
+  public static final double GROUND_ALGAE_ANGLE_RAD = Units.degreesToRadians(-148.37682008743286);
   /** Angle (radians) of the ALGAE Pivot when trying to score ALGAE at the NET */
   public static final double NET_ANGLE_RAD = Units.degreesToRadians(65);
 
@@ -64,6 +64,9 @@ public class AlgaePivotConstants {
    * at the setpoint
    */
   public static final double ERROR_TOLERANCE_RAD = Units.degreesToRadians(2.5);
+
+  /** How long until the PID loop is considered at the setpoint */
+  public static final double PID_LOOP_TIMEOUT_S = 2;
 
   // SIM CONSTANTS
   /** Moment of inertia for the ALGAE Pivot in kilograms * meters squared */

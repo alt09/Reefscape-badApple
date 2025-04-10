@@ -58,7 +58,7 @@ public class PeriscopeConstants {
   /** Height position of the Periscope for reaching L4 */
   public static final double L4_HEIGHT_M = MAX_HEIGHT_M;
   /** Height position of the Periscope for aligning with the Funnel at the CORAL STATION */
-  public static final double CORAL_STATION_HEIGHT_M = Units.inchesToMeters(6.193764022730197);
+  public static final double CORAL_STATION_HEIGHT_M = 0; //Units.inchesToMeters(6.193764022730197);
   /** Height position of the Periscope for reaching the PROCCESOR */
   public static final double PROCESSOR_HEIGHT_M = MIN_HEIGHT_M;
   /** Height position of the Periscope for reaching the NET */
@@ -96,6 +96,9 @@ public class PeriscopeConstants {
    * at the setpoint
    */
   public static final double ERROR_TOLERANCE_M = Units.inchesToMeters(1.5);
+
+  /** How long until the PID loop is considered at the setpoint */
+  public static final double PID_LOOP_TIMEOUT_S = 2;
 
   // SIM CONSTANTS
   /** Simulate the pull of gravity in the elevator simulation */
