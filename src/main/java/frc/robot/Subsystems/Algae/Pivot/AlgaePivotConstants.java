@@ -24,7 +24,7 @@ public class AlgaePivotConstants {
   public static final double MASS_KG = Units.lbsToKilograms(6.8); // TODO: outdated
   // Angle positions
   /** Stowing angle of the ALGAE Pivot in radians */
-  public static final double DEFAULT_ANGLE_RAD = Units.degreesToRadians(27);
+  public static final double DEFAULT_ANGLE_RAD = Units.degreesToRadians(4.715237617492664);
   /** Minimum angle of the ALGAE Pivot in radians */
   public static final double MIN_ANGLE_RAD = Units.degreesToRadians(-148.37682008743286);
   /** Maximum angle of the ALGAE Pivot in radians */

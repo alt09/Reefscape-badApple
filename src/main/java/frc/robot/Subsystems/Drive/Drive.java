@@ -144,7 +144,8 @@ public class Drive extends SubsystemBase {
             builder.addDoubleProperty(
                 "Back Right Velocity", () -> m_modules[3].getVelocityMetersPerSec(), null);
 
-            builder.addDoubleProperty("Robot Angle", () -> m_robotHeading.getRadians(), null);
+            builder.addDoubleProperty(
+                "Robot Angle", () -> getCurrentPose2d().getRotation().getRadians(), null);
           }
         });
     m_field.setRobotPose(this.getCurrentPose2d());

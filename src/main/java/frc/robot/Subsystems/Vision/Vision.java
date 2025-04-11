@@ -58,10 +58,11 @@ public class Vision extends SubsystemBase {
           new PhotonPoseEstimator(
               FieldConstants.APRILTAG_FIELD_LAYOUT,
               PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-              VisionConstants.CAMERA_ROBOT_OFFSETS[i]);
+              VisionConstants.CAMERA_OFFSETS.get(io[i].getCameraName()));
       m_photonPoseEstimators[i].setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
       Logger.recordOutput(
-          "Camera/" + VisionConstants.CAMERA_NAMES[i], VisionConstants.CAMERA_ROBOT_OFFSETS[i]);
+          "Camera/" + m_io[i].getCameraName(),
+          VisionConstants.CAMERA_OFFSETS.get(io[i].getCameraName()));
     }
   }
 
@@ -71,7 +72,7 @@ public class Vision extends SubsystemBase {
     for (int i = 0; i < m_inputs.length; i++) {
       // Update and log inputs
       m_io[i].updateInputs(m_inputs[i]);
-      Logger.processInputs("Vision/" + VisionConstants.CAMERA_NAMES[i], m_inputs[i]);
+      Logger.processInputs("Vision/" + m_io[i].getCameraName(), m_inputs[i]);
 
       // Check results and add available and unambiguous Vision measurements to list
       var currentResult = m_inputs[i].pipelineResult;
@@ -97,7 +98,7 @@ public class Vision extends SubsystemBase {
         m_estimatedPoses.add(estimatedPose);
         // Record estimated pose
         Logger.recordOutput(
-            "Odometry/Vision/EstimatedPoses/" + VisionConstants.CAMERA_NAMES[i], estimatedPose);
+            "Odometry/Vision/EstimatedPoses/" + m_io[i].getCameraName(), estimatedPose);
       }
     }
 

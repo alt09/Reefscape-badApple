@@ -5,6 +5,8 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Constant values for the Vision subsystem. Index 0 refers to the Front Left camera (on Module 0),
@@ -61,10 +63,14 @@ public class VisionConstants {
           new Translation3d(
               Units.inchesToMeters(13), Units.inchesToMeters(-4.5), Units.inchesToMeters(5.5)),
           new Rotation3d(Math.PI, Units.degreesToRadians(20.42), 0));
-  /** Array of 3d transformations from the center of the robot to each camera location */
-  public static final Transform3d[] CAMERA_ROBOT_OFFSETS = {
-    LEFT_CAMERA_ROBOT_OFFSET, RIGHT_CAMERA_ROBOT_OFFSET, LIMELIGHT_ROBOT_OFFSET
-  };
+  /** A hashmap of 3d transformations from the center of the robot to each camera location */
+  public static final Map<String, Transform3d> CAMERA_OFFSETS = new HashMap<>();
+
+  static {
+    CAMERA_OFFSETS.put(CAMERA_NAMES[0], LEFT_CAMERA_ROBOT_OFFSET);
+    CAMERA_OFFSETS.put(CAMERA_NAMES[1], RIGHT_CAMERA_ROBOT_OFFSET);
+    CAMERA_OFFSETS.put(CAMERA_NAMES[2], LIMELIGHT_ROBOT_OFFSET);
+  }
 
   // SIM CONSTANTS
   /** Pixel width of resolution real cameras are set to */

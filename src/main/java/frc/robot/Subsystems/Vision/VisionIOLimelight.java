@@ -18,18 +18,18 @@ public class VisionIOLimelight implements VisionIO {
    * @param index Number corresponding to camera that is to be initilized (0 - Front, 1 - Back, 2 -
    *     Limelight)
    */
-  public VisionIOLimelight(int index, Supplier<Pose2d> robotPoseSupplier) {
-    System.out.println("[Init] Creating VisionIOLimelight " + VisionConstants.CAMERA_NAMES[index]);
+  public VisionIOLimelight(String camera, Supplier<Pose2d> robotPoseSupplier) {
+    System.out.println("[Init] Creating VisionIOLimelight " + camera);
 
     // Configure limelight
     LimelightHelpers.setCameraPose_RobotSpace(
         "limelight",
-        VisionConstants.CAMERA_ROBOT_OFFSETS[index].getX(),
-        VisionConstants.CAMERA_ROBOT_OFFSETS[index].getY(),
-        VisionConstants.CAMERA_ROBOT_OFFSETS[index].getZ(),
-        Units.radiansToDegrees(VisionConstants.CAMERA_ROBOT_OFFSETS[index].getRotation().getX()),
-        Units.radiansToDegrees(VisionConstants.CAMERA_ROBOT_OFFSETS[index].getRotation().getY()),
-        Units.radiansToDegrees(VisionConstants.CAMERA_ROBOT_OFFSETS[index].getRotation().getZ()));
+        VisionConstants.CAMERA_OFFSETS.get(camera).getX(),
+        VisionConstants.CAMERA_OFFSETS.get(camera).getY(),
+        VisionConstants.CAMERA_OFFSETS.get(camera).getZ(),
+        Units.radiansToDegrees(VisionConstants.CAMERA_OFFSETS.get(camera).getRotation().getX()),
+        Units.radiansToDegrees(VisionConstants.CAMERA_OFFSETS.get(camera).getRotation().getY()),
+        Units.radiansToDegrees(VisionConstants.CAMERA_OFFSETS.get(camera).getRotation().getZ()));
     LimelightHelpers.setPipelineIndex("limelight", 0);
     LimelightHelpers.setLEDMode_ForceOff("limelight");
 

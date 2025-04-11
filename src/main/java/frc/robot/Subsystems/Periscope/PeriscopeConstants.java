@@ -51,14 +51,13 @@ public class PeriscopeConstants {
   /** Height position of the Periscope for intaking L2 ALGAE */
   public static final double L2_ALGAE_HEIGHT_M = Units.inchesToMeters(22.06998575818367);
   /** Height position of the Periscope for reaching L3 */
-  public static final double L3_HEIGHT_M =
-      Units.inchesToMeters(40.308153793068136); // 29.513407287422694
+  public static final double L3_HEIGHT_M = Units.inchesToMeters(40.308153793068136);
   /** Height position of the Periscope for intaking L3 ALGAE */
   public static final double L3_ALGAE_HEIGHT_M = L2_ALGAE_HEIGHT_M + Units.inchesToMeters(15.26);
   /** Height position of the Periscope for reaching L4 */
   public static final double L4_HEIGHT_M = MAX_HEIGHT_M;
   /** Height position of the Periscope for aligning with the Funnel at the CORAL STATION */
-  public static final double CORAL_STATION_HEIGHT_M = 0; //Units.inchesToMeters(6.193764022730197);
+  public static final double CORAL_STATION_HEIGHT_M = 0;
   /** Height position of the Periscope for reaching the PROCCESOR */
   public static final double PROCESSOR_HEIGHT_M = MIN_HEIGHT_M;
   /** Height position of the Periscope for reaching the NET */
@@ -96,7 +95,6 @@ public class PeriscopeConstants {
    * at the setpoint
    */
   public static final double ERROR_TOLERANCE_M = Units.inchesToMeters(1.5);
-
   /** How long until the PID loop is considered at the setpoint */
   public static final double PID_LOOP_TIMEOUT_S = 2;
 

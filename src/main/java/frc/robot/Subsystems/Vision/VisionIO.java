@@ -42,4 +42,8 @@ public interface VisionIO {
   public default LimelightResults getLimeLightResults() {
     return null;
   }
+
+  public default String getCameraName() {
+    return null;
+  }
 }

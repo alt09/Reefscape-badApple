@@ -20,9 +20,9 @@ public final class ClimberConstants {
    */
   public static final boolean INVERT_FOLLOWER = false;
   /** Current limit of 60 amps for the Climber motor */
-  public static final int STALL_CUR_LIM_A = 100;
+  public static final int STALL_CUR_LIM_A = 80;
   /** Current limit of 120 amps for the Climber motor */
-  public static final int MAX_CURRENT_A = 120;
+  public static final int MAX_CURRENT_A = 100;
   /** Enable current limiting for the Climber motor */
   public static final boolean ENABLE_CUR_LIM = true;
   /** Refresh signals of the TalonFX 50 times a second (every 0.02 second) */
@@ -36,6 +36,10 @@ public final class ClimberConstants {
   public static final double DEPLOY_PERCENT_SPEED = 0.2;
   /** Percent speed for retracting the Climber to pull up the robot */
   public static final double RETRACT_PERCENT_SPEED = -0.2;
+  /** Voltage to deploy the Climber */
+  public static final double DEPLOY_VOLTAGE = -12;
+  /** Voltage to retract the Climber to pull up the robot */
+  public static final double RETRACT_VOLTAGE = 12;
   // Angle positions
   /** Minimum (default) angle of the Climber in radians */
   public static final double MIN_ANGLE_RAD = Units.degreesToRadians(10);

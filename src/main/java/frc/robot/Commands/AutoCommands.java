@@ -43,12 +43,12 @@ public class AutoCommands {
     startingPose.addDefaultOption("SLC", PathPlannerConstants.STARTING_LINE_CENTER);
     startingPose.addOption("SLR", PathPlannerConstants.STARTING_LINE_RIGHT);
     LoggedDashboardChooser<Command> firstBranch = new LoggedDashboardChooser<>("First BRANCH");
-    firstBranch.addOption("E", PathfindingCommands.alignToBranch(drive, "E", true));
-    firstBranch.addOption("F", PathfindingCommands.alignToBranch(drive, "F", false));
-    firstBranch.addDefaultOption("G", PathfindingCommands.alignToBranch(drive, "G", true));
-    firstBranch.addOption("H", PathfindingCommands.alignToBranch(drive, "H", false));
-    firstBranch.addOption("I", PathfindingCommands.alignToBranch(drive, "I", true));
-    firstBranch.addOption("J", PathfindingCommands.alignToBranch(drive, "J", false));
+    firstBranch.addOption("E", PathfindingCommands.alignToBranch(drive, "E", 0.0));
+    firstBranch.addOption("F", PathfindingCommands.alignToBranch(drive, "F", 0.0));
+    firstBranch.addDefaultOption("G", PathfindingCommands.alignToBranch(drive, "G", 0.0));
+    firstBranch.addOption("H", PathfindingCommands.alignToBranch(drive, "H", 0.0));
+    firstBranch.addOption("I", PathfindingCommands.alignToBranch(drive, "I", 0.0));
+    firstBranch.addOption("J", PathfindingCommands.alignToBranch(drive, "J", 0.0));
     LoggedDashboardChooser<Command> firstCoralLevel =
         new LoggedDashboardChooser<>("First CORAL Level");
     firstCoralLevel.addOption("L1", SuperstructureCommands.positionsToL1(periscope, algaePivot));
@@ -91,12 +91,12 @@ public class AutoCommands {
         "None (1.5P)",
         Commands.waitSeconds(15)
             .alongWith(Commands.print("1.5P").andThen(Commands.waitSeconds(1)).repeatedly()));
-    secondBranch.addOption("L", PathfindingCommands.alignToBranch(drive, "L", false));
-    secondBranch.addOption("K", PathfindingCommands.alignToBranch(drive, "K", true));
-    secondBranch.addOption("A", PathfindingCommands.alignToBranch(drive, "A", true));
-    secondBranch.addOption("B", PathfindingCommands.alignToBranch(drive, "B", false));
-    secondBranch.addOption("C", PathfindingCommands.alignToBranch(drive, "C", true));
-    secondBranch.addOption("D", PathfindingCommands.alignToBranch(drive, "D", false));
+    secondBranch.addOption("L", PathfindingCommands.alignToBranch(drive, "L", 0.0));
+    secondBranch.addOption("K", PathfindingCommands.alignToBranch(drive, "K", 0.0));
+    secondBranch.addOption("A", PathfindingCommands.alignToBranch(drive, "A", 0.0));
+    secondBranch.addOption("B", PathfindingCommands.alignToBranch(drive, "B", 0.0));
+    secondBranch.addOption("C", PathfindingCommands.alignToBranch(drive, "C", 0.0));
+    secondBranch.addOption("D", PathfindingCommands.alignToBranch(drive, "D", 0.0));
     LoggedDashboardChooser<Command> secondCoralLevel =
         new LoggedDashboardChooser<>("Second CORAL Level");
     secondCoralLevel.addOption("L1", SuperstructureCommands.positionsToL1(periscope, algaePivot));
@@ -219,6 +219,7 @@ public class AutoCommands {
       Funnel funnel,
       Pose2d startingPose,
       String branch,
+      double branchOffset,
       int coralLevel) {
     final double TIME_BETWEEN_ACTIONS = 0.5;
     final Command coralPosition;
@@ -244,21 +245,6 @@ public class AutoCommands {
         break;
     }
 
-    final int reefAprilTagID;
-    if (branch == "A" || branch == "B") {
-      reefAprilTagID = 18;
-    } else if (branch == "C" || branch == "D") {
-      reefAprilTagID = 17;
-    } else if (branch == "E" || branch == "F") {
-      reefAprilTagID = 22;
-    } else if (branch == "G" || branch == "H") {
-      reefAprilTagID = 21;
-    } else if (branch == "I" || branch == "J") {
-      reefAprilTagID = 20;
-    } else {
-      reefAprilTagID = 19;
-    }
-
     return Commands.runOnce(
             () -> {
               var robotPose = drive.getCurrentPose2d();
@@ -275,9 +261,8 @@ public class AutoCommands {
         .andThen(
             Commands.sequence(
                     // Algin to the BRANCH and raise the Periscope
-                    PathfindingCommands.pathfindToAprilTag(drive, reefAprilTagID, 0.75, true),
                     Commands.parallel(
-                        PathfindingCommands.driveToBranch(drive, branch, 0).finishAtGoal(),
+                        PathfindingCommands.alignToBranch(drive, branch, branchOffset),
                         coralPosition.withTimeout(0.5)))
                 .withTimeout(10) // TODO: Test timout with side autos
             )
@@ -321,6 +306,7 @@ public class AutoCommands {
       Funnel funnel,
       Pose2d startingPose,
       String[] branches,
+      double branchOffset,
       int[] coralLevels,
       String coralStationName) {
     final DriveToPose[] driveToBranches = new DriveToPose[2];
@@ -357,21 +343,6 @@ public class AutoCommands {
     coralStation =
         PathfindingCommands.driveToFieldElement(
             drive, FieldConstants.CORAL_STATION_POSES.get(coralStationName), 0, 0, false);
-
-    final int reefAprilTagID;
-    if (branches[1] == "A" || branches[1] == "B") {
-      reefAprilTagID = 18;
-    } else if (branches[1] == "C" || branches[1] == "D") {
-      reefAprilTagID = 17;
-    } else if (branches[1] == "E" || branches[1] == "F") {
-      reefAprilTagID = 22;
-    } else if (branches[1] == "G" || branches[1] == "H") {
-      reefAprilTagID = 21;
-    } else if (branches[1] == "I" || branches[1] == "J") {
-      reefAprilTagID = 20;
-    } else {
-      reefAprilTagID = 19;
-    }
 
     // return Commands.runOnce(
     //         () -> {
@@ -427,6 +398,7 @@ public class AutoCommands {
             funnel,
             startingPose,
             branches[0],
+            branchOffset,
             coralLevels[0])
         .andThen(
             Commands.parallel(
@@ -436,10 +408,7 @@ public class AutoCommands {
                             cee.isBeamBreakExitTriggered() && !cee.isBeamBreakEntranceTriggered()),
                     coralStation.finishAtGoal()),
                 SuperstructureCommands.intakeCoral(periscope, algaePivot, aee, cee, funnel)))
-        .andThen(
-            Commands.sequence(
-                PathfindingCommands.pathfindToAprilTag(drive, reefAprilTagID, 1.5, true),
-                Commands.parallel(positionToCoral[1], driveToBranches[1].finishAtGoal())))
+        .andThen(Commands.parallel(positionToCoral[1], driveToBranches[1].finishAtGoal()))
         .andThen(Commands.waitSeconds(0.5))
         .andThen(Commands.runOnce(() -> cee.setPercentSpeed(CEEConstants.SCORE_PERCENT_SPEED), cee))
         .andThen(Commands.waitSeconds(0.5))

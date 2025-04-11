@@ -14,12 +14,11 @@ public class VisionIOPhotonVision implements VisionIO {
    *
    * @param index Number corresponding to camera that is to be initilized (0 - Front, 1 - Back)
    */
-  public VisionIOPhotonVision(int index) {
-    System.out.println(
-        "[Init] Creating VisionIOPhotonVision " + VisionConstants.CAMERA_NAMES[index]);
+  public VisionIOPhotonVision(String camera) {
+    System.out.println("[Init] Creating VisionIOPhotonVision " + camera);
 
     // Initialize camera
-    m_camera = new PhotonCamera(VisionConstants.CAMERA_NAMES[index]);
+    m_camera = new PhotonCamera(camera);
   }
 
   @Override
@@ -41,5 +40,10 @@ public class VisionIOPhotonVision implements VisionIO {
         inputs.poseAmbiguity = 0.0;
       }
     }
+  }
+
+  @Override
+  public String getCameraName() {
+    return m_camera.getName();
   }
 }
