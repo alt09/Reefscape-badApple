@@ -78,15 +78,16 @@ public class RobotContainer {
         m_periscopeSubsystem = new Periscope(new PeriscopeIOTalonFX());
         m_climberSubsystem = new Climber(new ClimberIOTalonFX());
         m_funnelSubsystem = new Funnel(new FunnelIOSparkMax());
-        // m_AEESubsystem = new AEE(new AEEIOSparkMax() {}); // TODO: Comment back in when AEE is
+        m_AEESubsystem = new AEE(new AEEIOSparkMax() {}); // TODO: Comment back in when AEE is
         // ready
-        m_AEESubsystem = new AEE(new AEEIO() {});
+        // m_AEESubsystem = new AEE(new AEEIO() {});
         m_CEESubsystem = new CEE(new CEEIOSparkMax());
         m_visionSubsystem =
             new Vision(
                 m_driveSubsystem::addVisionMeasurement,
-                // new
-                // VisionIOPhotonVision(VisionConstants.CAMERA_NAMES[VisionConstants.CAMERA.LEFT.CAMERA_INDEX]), // TODO: Add
+                new VisionIOPhotonVision(
+                    VisionConstants.CAMERA_NAMES[
+                        VisionConstants.CAMERA.LEFT.CAMERA_INDEX]), // TODO: Add
                 // back when camera is remounted
                 new VisionIOPhotonVision(
                     VisionConstants.CAMERA_NAMES[VisionConstants.CAMERA.RIGHT.CAMERA_INDEX]));
@@ -217,7 +218,6 @@ public class RobotContainer {
             m_funnelSubsystem,
             PathPlannerConstants.STARTING_LINE_CENTER,
             "G",
-            0.0,
             4));
     m_autoChooser.addOption(
         "1P_SLC-H4",
@@ -230,7 +230,6 @@ public class RobotContainer {
             m_funnelSubsystem,
             PathPlannerConstants.STARTING_LINE_CENTER,
             "H",
-            Units.inchesToMeters(4),
             4));
     m_autoChooser.addOption(
         "1P_SLR-E4",
@@ -243,7 +242,6 @@ public class RobotContainer {
             m_funnelSubsystem,
             PathPlannerConstants.STARTING_LINE_RIGHT,
             "E",
-            0,
             4));
     m_autoChooser.addOption(
         "1P_SLR-F4",
@@ -256,7 +254,6 @@ public class RobotContainer {
             m_funnelSubsystem,
             PathPlannerConstants.STARTING_LINE_RIGHT,
             "F",
-            0,
             4));
     m_autoChooser.addOption(
         "1P_SLL-I4",
@@ -269,7 +266,6 @@ public class RobotContainer {
             m_funnelSubsystem,
             PathPlannerConstants.STARTING_LINE_LEFT,
             "I",
-            0,
             4));
     m_autoChooser.addOption(
         "1P_SLL-J4",
@@ -282,8 +278,7 @@ public class RobotContainer {
             m_funnelSubsystem,
             PathPlannerConstants.STARTING_LINE_LEFT,
             "J",
-            0,
-            4));
+            0));
     m_autoChooser.addOption(
         "Unethical 1.5P L4",
         AutoCommands.unethicalOneAndHalfPiece(
@@ -307,7 +302,6 @@ public class RobotContainer {
             m_funnelSubsystem,
             PathPlannerConstants.STARTING_LINE_CENTER,
             new String[] {"G", "C"},
-            0,
             new int[] {4, 4},
             "CS2L"));
     m_autoChooser.addOption(
@@ -321,7 +315,6 @@ public class RobotContainer {
             m_funnelSubsystem,
             PathPlannerConstants.STARTING_LINE_CENTER,
             new String[] {"H", "L"},
-            0,
             new int[] {4, 4},
             "CS1R"));
     m_autoChooser.addOption(
@@ -335,7 +328,6 @@ public class RobotContainer {
             m_funnelSubsystem,
             PathPlannerConstants.STARTING_LINE_CENTER,
             new String[] {"E", "C"},
-            0,
             new int[] {4, 4},
             "CS2L"));
     m_autoChooser.addOption(
@@ -349,7 +341,6 @@ public class RobotContainer {
             m_funnelSubsystem,
             PathPlannerConstants.STARTING_LINE_FAR_RIGHT,
             new String[] {"B", "A"},
-            0,
             new int[] {4, 4},
             "CS2L"));
 
@@ -814,9 +805,12 @@ public class RobotContainer {
             m_auxButtonBoard.axisGreaterThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
         .onTrue(
-            new InstantCommand(
-                    () -> m_climberSubsystem.setVoltage(ClimberConstants.DEPLOY_VOLTAGE),
-                    m_climberSubsystem)
+            Commands.parallel(
+                    Commands.runOnce(
+                        () -> m_climberSubsystem.setVoltage(ClimberConstants.DEPLOY_VOLTAGE),
+                        m_climberSubsystem),
+                    Commands.runOnce(
+                        () -> m_algaePivotSubsystem.setAngle(0.0), m_algaePivotSubsystem))
                 .withName("ClimberDeploy"))
         .onFalse(
             new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem)
@@ -828,9 +822,15 @@ public class RobotContainer {
             m_auxButtonBoard.axisGreaterThan(
                 OperatorConstants.BUTTON_BOARD.SWITCH_CORAL_ALGAE.BUTTON_ID, 0.5))
         .onTrue(
-            new InstantCommand(
+            Commands.run(
                     () -> m_climberSubsystem.setVoltage(ClimberConstants.RETRACT_VOLTAGE),
                     m_climberSubsystem)
+                .until(() -> m_climberSubsystem.isLimitSwitchTriggered())
+                .andThen(
+                    Commands.repeatingSequence(
+                        m_climberSubsystem
+                            .holdClimb()
+                            .until(() -> m_climberSubsystem.isLimitSwitchTriggered())))
                 .withName("ClimberRetract"))
         .onFalse(
             new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem)
@@ -952,7 +952,7 @@ public class RobotContainer {
                 OperatorConstants.BUTTON_BOARD.SWITCH_BRANCH.BUTTON_ID,
                 -0.5)) // Pathfind to right branch (Driver POV) if switch is toggled
         .onTrue(
-            PathfindingCommands.driveToBranch(m_driveSubsystem, "L", Units.inchesToMeters(3))
+            PathfindingCommands.driveToBranch(m_driveSubsystem, "L", 0.0)
                 // PathfindingCommands.alignToBranch(m_driveSubsystem, "L", false)
                 .until(m_driverController.leftTrigger().negate())
                 .withName("PathfindToL"));

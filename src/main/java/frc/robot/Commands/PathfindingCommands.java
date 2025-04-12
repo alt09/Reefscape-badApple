@@ -218,15 +218,67 @@ public class PathfindingCommands {
    * @param drive {@link Drive} subsystem
    * @param branchLetter Letter corresponding to BRANCH to pathfind to.
    * @param wallDistanceMeters Distance from the REEF wall in meters.
+   * @param strafeOffsetMeters Left/Right distance from the REEF BRANCH
    * @return {@link Command} that makes the robot follow a trajectory to in front of the BRANCH.
    */
   public static DriveToPose driveToBranch(
       Drive drive, String branchLetter, double strafeOffsetMeters) {
+    double branchOffset = 0.0;
+    switch (branchLetter) { // TODO: update based on a real field
+      case "A":
+        branchOffset = 0.0;
+        break;
+
+      case "B":
+        branchOffset = 0.0;
+        break;
+
+      case "C":
+        branchOffset = 0.0;
+        break;
+
+      case "D":
+        branchOffset = 0.0;
+        break;
+
+      case "F":
+        branchOffset = 0.0;
+        break;
+
+      case "E":
+        branchOffset = 0.0;
+        break;
+
+      case "G":
+        branchOffset = 0.0;
+        break;
+
+      case "H":
+        branchOffset = 0.0;
+        break;
+
+      case "I":
+        branchOffset = 0.0;
+        break;
+
+      case "J":
+        branchOffset = 0.0;
+        break;
+
+      case "K":
+        branchOffset = 0.0;
+        break;
+
+      case "L":
+        branchOffset = Units.inchesToMeters(4.0);
+        break;
+    }
+
     return PathfindingCommands.driveToFieldElement(
             drive,
             FieldConstants.BRANCH_POSES.get(branchLetter),
             FieldConstants.BRANCH_TO_WALL_M,
-            strafeOffsetMeters + PathPlannerConstants.SUPERSTRUCTURE_OFFSET,
+            strafeOffsetMeters + branchOffset + PathPlannerConstants.SUPERSTRUCTURE_OFFSET,
             true)
         .withLinearMovement(
             DriveConstants.AUTO_ALIGN_BRANCH_VELOCITY_M_PER_S,
@@ -432,7 +484,7 @@ public class PathfindingCommands {
    * @param isLeft If its the left BRANCH relative to the REEF face
    * @return {@link Command} that carries out the auto alignment driving sequence.
    */
-  public static Command alignToBranch(Drive drive, String branch, double branchOffset) {
+  public static Command alignToBranch(Drive drive, String branch) {
     final int reefAprilTagID;
     if (branch == "A" || branch == "B") {
       reefAprilTagID = 18;
@@ -457,6 +509,6 @@ public class PathfindingCommands {
                 () ->
                     drive.getChassisSpeeds().vxMetersPerSecond < 0.2
                         && drive.getChassisSpeeds().vyMetersPerSecond < 0.2))
-        .andThen(PathfindingCommands.driveToBranch(drive, branch, branchOffset).finishAtGoal());
+        .andThen(PathfindingCommands.driveToBranch(drive, branch, 0.0).finishAtGoal());
   }
 }

@@ -8,6 +8,8 @@ public final class ClimberConstants {
   public static final int LEAD_CAN_ID = 18;
   /** CAN ID for the second Climber motor */
   public static final int FOLLOWER_CAN_ID = 22;
+  /** DIO port of the limit switch */
+  public static final int LIMIT_SWITCH_PORT = 9;
   /** Gear reduction of 9:1 for the Climber */
   public static final double GEAR_RATIO = 9.0 / 1.0; // TODO: Update
   /**
@@ -40,6 +42,8 @@ public final class ClimberConstants {
   public static final double DEPLOY_VOLTAGE = -12;
   /** Voltage to retract the Climber to pull up the robot */
   public static final double RETRACT_VOLTAGE = 12;
+  /** Voltage to hold the robot up when climbed */
+  public static final double HOLDING_VOLTAGE = 1;
   // Angle positions
   /** Minimum (default) angle of the Climber in radians */
   public static final double MIN_ANGLE_RAD = Units.degreesToRadians(10);

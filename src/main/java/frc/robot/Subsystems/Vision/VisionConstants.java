@@ -37,7 +37,7 @@ public class VisionConstants {
       new Transform3d(
           new Translation3d(
               Units.inchesToMeters(12.447),
-              Units.inchesToMeters(10.297),
+              Units.inchesToMeters(11.297),
               Units.inchesToMeters(6.234)),
           new Rotation3d(0, 0, Units.degreesToRadians(-15)));
   /**

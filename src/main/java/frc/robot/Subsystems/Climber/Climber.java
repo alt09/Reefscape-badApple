@@ -1,5 +1,7 @@
 package frc.robot.Subsystems.Climber;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
@@ -21,6 +23,8 @@ public class Climber extends SubsystemBase {
 
     // Initialize the IO implementation
     m_io = io;
+
+    SmartDashboard.putBoolean("Sim/Climber_Limit_Switch", false);
   }
 
   @Override
@@ -47,5 +51,22 @@ public class Climber extends SubsystemBase {
    */
   public void setVoltage(double volts) {
     m_io.setVoltage(volts);
+  }
+
+  /**
+   * @return Triggered status of the limit switch. {@code True} means its pressed, {@code False}
+   *     means it's not pressed
+   */
+  public boolean isLimitSwitchTriggered() {
+    return m_inputs.limitSwitch;
+    // return SmartDashboard.getBoolean("Sim/Climber_Limit_Switch", false);
+  }
+
+  public Command holdClimb() {
+    return this.startEnd(
+        () -> this.setVoltage(ClimberConstants.HOLDING_VOLTAGE), () -> this.setVoltage(0.0));
+    // return Commands.repeatingSequence(
+    //   Commands.run(()-> this.setVoltage(ClimberConstants.HOLDING_VOLTAGE), this).until(()->
+    // this.isLimitSwitchTriggered()));
   }
 }

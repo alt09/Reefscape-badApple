@@ -43,12 +43,12 @@ public class AutoCommands {
     startingPose.addDefaultOption("SLC", PathPlannerConstants.STARTING_LINE_CENTER);
     startingPose.addOption("SLR", PathPlannerConstants.STARTING_LINE_RIGHT);
     LoggedDashboardChooser<Command> firstBranch = new LoggedDashboardChooser<>("First BRANCH");
-    firstBranch.addOption("E", PathfindingCommands.alignToBranch(drive, "E", 0.0));
-    firstBranch.addOption("F", PathfindingCommands.alignToBranch(drive, "F", 0.0));
-    firstBranch.addDefaultOption("G", PathfindingCommands.alignToBranch(drive, "G", 0.0));
-    firstBranch.addOption("H", PathfindingCommands.alignToBranch(drive, "H", 0.0));
-    firstBranch.addOption("I", PathfindingCommands.alignToBranch(drive, "I", 0.0));
-    firstBranch.addOption("J", PathfindingCommands.alignToBranch(drive, "J", 0.0));
+    firstBranch.addOption("E", PathfindingCommands.alignToBranch(drive, "E"));
+    firstBranch.addOption("F", PathfindingCommands.alignToBranch(drive, "F"));
+    firstBranch.addDefaultOption("G", PathfindingCommands.alignToBranch(drive, "G"));
+    firstBranch.addOption("H", PathfindingCommands.alignToBranch(drive, "H"));
+    firstBranch.addOption("I", PathfindingCommands.alignToBranch(drive, "I"));
+    firstBranch.addOption("J", PathfindingCommands.alignToBranch(drive, "J"));
     LoggedDashboardChooser<Command> firstCoralLevel =
         new LoggedDashboardChooser<>("First CORAL Level");
     firstCoralLevel.addOption("L1", SuperstructureCommands.positionsToL1(periscope, algaePivot));
@@ -91,12 +91,12 @@ public class AutoCommands {
         "None (1.5P)",
         Commands.waitSeconds(15)
             .alongWith(Commands.print("1.5P").andThen(Commands.waitSeconds(1)).repeatedly()));
-    secondBranch.addOption("L", PathfindingCommands.alignToBranch(drive, "L", 0.0));
-    secondBranch.addOption("K", PathfindingCommands.alignToBranch(drive, "K", 0.0));
-    secondBranch.addOption("A", PathfindingCommands.alignToBranch(drive, "A", 0.0));
-    secondBranch.addOption("B", PathfindingCommands.alignToBranch(drive, "B", 0.0));
-    secondBranch.addOption("C", PathfindingCommands.alignToBranch(drive, "C", 0.0));
-    secondBranch.addOption("D", PathfindingCommands.alignToBranch(drive, "D", 0.0));
+    secondBranch.addOption("L", PathfindingCommands.alignToBranch(drive, "L"));
+    secondBranch.addOption("K", PathfindingCommands.alignToBranch(drive, "K"));
+    secondBranch.addOption("A", PathfindingCommands.alignToBranch(drive, "A"));
+    secondBranch.addOption("B", PathfindingCommands.alignToBranch(drive, "B"));
+    secondBranch.addOption("C", PathfindingCommands.alignToBranch(drive, "C"));
+    secondBranch.addOption("D", PathfindingCommands.alignToBranch(drive, "D"));
     LoggedDashboardChooser<Command> secondCoralLevel =
         new LoggedDashboardChooser<>("Second CORAL Level");
     secondCoralLevel.addOption("L1", SuperstructureCommands.positionsToL1(periscope, algaePivot));
@@ -219,7 +219,6 @@ public class AutoCommands {
       Funnel funnel,
       Pose2d startingPose,
       String branch,
-      double branchOffset,
       int coralLevel) {
     final double TIME_BETWEEN_ACTIONS = 0.5;
     final Command coralPosition;
@@ -262,7 +261,7 @@ public class AutoCommands {
             Commands.sequence(
                     // Algin to the BRANCH and raise the Periscope
                     Commands.parallel(
-                        PathfindingCommands.alignToBranch(drive, branch, branchOffset),
+                        PathfindingCommands.alignToBranch(drive, branch),
                         coralPosition.withTimeout(0.5)))
                 .withTimeout(10) // TODO: Test timout with side autos
             )
@@ -306,7 +305,6 @@ public class AutoCommands {
       Funnel funnel,
       Pose2d startingPose,
       String[] branches,
-      double branchOffset,
       int[] coralLevels,
       String coralStationName) {
     final DriveToPose[] driveToBranches = new DriveToPose[2];
@@ -398,7 +396,6 @@ public class AutoCommands {
             funnel,
             startingPose,
             branches[0],
-            branchOffset,
             coralLevels[0])
         .andThen(
             Commands.parallel(

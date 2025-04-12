@@ -1,7 +1,5 @@
 package frc.robot.Subsystems.Algae.EndEffector;
 
-import edu.wpi.first.math.util.Units;
-
 public class AEEConstants {
   // REAL CONSTANTS
   /** CAN ID for the AEE SPARK MAX */
@@ -9,16 +7,9 @@ public class AEEConstants {
   /** Gear reduction of 6:1 for the AEE motor */
   public static final double GEAR_RATIO = 6.0 / 1.0;
   /** Set the inversion status of the AEE to true, making clockwise the positive direction */
-  public static final boolean IS_INVERTED = true;
+  public static final boolean IS_INVERTED = false;
   /** Current limit for the NEO motor of the AEE */
   public static final int CUR_LIM_A = 14;
-  // Velocities
-  /** Scoring velocity in radians per second */
-  public static final double SCORE_VELOCITY_RAD_PER_SEC =
-      Units.rotationsPerMinuteToRadiansPerSecond(-1000);
-  /** Intaking velocity in radians per second */
-  public static final double INTAKE_VELOCITY_RAD_PER_SEC =
-      Units.rotationsPerMinuteToRadiansPerSecond(1000);
   /** Scoring speed, open loop voltage control */
   public static final double SCORE_PERCENT_SPEED = 0.80;
   /** Intaking speed, open loop voltage control */
@@ -26,7 +17,7 @@ public class AEEConstants {
   /** Speed when removing ALGAE from the REEF, open loop voltage control */
   public static final double DEALGAE_PERCENT_SPEED = 0.90;
   /** Speed when holding an ALGAE in the AEE */
-  public static final double ALGAE_HOLD_PERCENT_SPEED = -0.20;
+  public static final double ALGAE_HOLD_PERCENT_SPEED = -0.40;
 
   // PID CONSTANTS
   /**
