@@ -8,11 +8,10 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants.RobotStateConstants;
 import java.io.File;
-import frc.robot.Subsystems.Drive.*;
 
-public class Music implements ModuleIO {
+public class Music {
   private final Orchestra erfgethrng = new Orchestra();
-  private final TalonFX e = new TalonFX(26);
+  private final TalonFX e = new TalonFX(1, "music");
   private final TalonFXConfiguration musicConfig = new TalonFXConfiguration();
 
   public Music() {
@@ -42,13 +41,12 @@ public class Music implements ModuleIO {
     erfgethrng.play();
   }
 
-  @Override
-  public void setDriveVoltage(double volts) {
+  public void setVoltage(double volts) {
     e.setVoltage(
         MathUtil.clamp(volts, -RobotStateConstants.MAX_VOLTAGE, RobotStateConstants.MAX_VOLTAGE));
   }
-@Override
-  public void setDriveVelocity(double v_percent) {
-    this.setDriveVoltage(12 * v_percent);
+
+  public void setVelocity(double v_percent) {
+    setVoltage(12 * v_percent);
   }
 }
