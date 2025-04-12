@@ -74,13 +74,14 @@ public class RobotContainer {
                 new ModuleIOSparkMaxTalonFX(2),
                 new ModuleIOSparkMaxTalonFX(3),
                 new GyroIOPigeon2());
-        m_algaePivotSubsystem = new AlgaePivot(new AlgaePivotIOSparkMax());
+        // m_algaePivotSubsystem = new AlgaePivot(new AlgaePivotIOSparkMax());
+        m_algaePivotSubsystem = new AlgaePivot(new AlgaePivotIO() {});
         m_periscopeSubsystem = new Periscope(new PeriscopeIOTalonFX());
         m_climberSubsystem = new Climber(new ClimberIOTalonFX());
         m_funnelSubsystem = new Funnel(new FunnelIOSparkMax());
-        m_AEESubsystem = new AEE(new AEEIOSparkMax() {}); // TODO: Comment back in when AEE is
-        // ready
-        // m_AEESubsystem = new AEE(new AEEIO() {});
+        // m_AEESubsystem = new AEE(new AEEIOSparkMax() {}); // TODO: Comment back in when AEE is
+        // ready (so like in October)
+        m_AEESubsystem = new AEE(new AEEIO() {});
         m_CEESubsystem = new CEE(new CEEIOSparkMax());
         m_visionSubsystem =
             new Vision(
@@ -474,17 +475,17 @@ public class RobotContainer {
                                 Rotation2d.kZero)),
                     m_driveSubsystem)
                 .withName("ZeroYaw"));
-
-    /* Pathfinding */
-    // Closest REEF BRANCH
     m_driverController
         .y()
         .onTrue(
-            PathfindingCommands.driveToClosestBranch(
-                    m_driveSubsystem,
-                    PathPlannerConstants.DEFAULT_WALL_DISTANCE_M,
-                    m_driverController.y().negate())
-                .withName("PathfindToBranch"));
+            new InstantCommand(
+                    () ->
+                        m_driveSubsystem.resetPose(
+                            new Pose2d(
+                                m_driveSubsystem.getCurrentPose2d().getTranslation(),
+                                Rotation2d.k180deg)),
+                    m_driveSubsystem)
+                .withName("ZeroYaw"));
 
     // Closest CORAL STATION
     m_driverController
@@ -827,10 +828,7 @@ public class RobotContainer {
                     m_climberSubsystem)
                 .until(() -> m_climberSubsystem.isLimitSwitchTriggered())
                 .andThen(
-                    Commands.repeatingSequence(
-                        m_climberSubsystem
-                            .holdClimb()
-                            .until(() -> m_climberSubsystem.isLimitSwitchTriggered())))
+                    new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem))
                 .withName("ClimberRetract"))
         .onFalse(
             new InstantCommand(() -> m_climberSubsystem.setVoltage(0), m_climberSubsystem)
@@ -1281,5 +1279,14 @@ public class RobotContainer {
     // m_funnelSubsystem.enableBrakeMode(enable);
     m_AEESubsystem.enableBrakeMode(enable);
     m_CEESubsystem.enableBrakeMode(enable);
+  }
+
+  public Command zeroAll() {
+    return SuperstructureCommands.zero(
+        m_periscopeSubsystem,
+        m_algaePivotSubsystem,
+        m_AEESubsystem,
+        m_CEESubsystem,
+        m_funnelSubsystem);
   }
 }

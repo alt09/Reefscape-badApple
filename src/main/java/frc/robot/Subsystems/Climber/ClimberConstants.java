@@ -9,7 +9,7 @@ public final class ClimberConstants {
   /** CAN ID for the second Climber motor */
   public static final int FOLLOWER_CAN_ID = 22;
   /** DIO port of the limit switch */
-  public static final int LIMIT_SWITCH_PORT = 9;
+  public static final int LIMIT_SWITCH_PORT = 8;
   /** Gear reduction of 9:1 for the Climber */
   public static final double GEAR_RATIO = 9.0 / 1.0; // TODO: Update
   /**

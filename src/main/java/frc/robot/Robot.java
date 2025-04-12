@@ -96,6 +96,8 @@ public class Robot extends LoggedRobot {
     PathfindingCommand.warmupCommand();
 
     m_robotContainer = new RobotContainer();
+
+    m_robotContainer.zeroAll().schedule();
   }
 
   /** This function is called periodically during all modes. */

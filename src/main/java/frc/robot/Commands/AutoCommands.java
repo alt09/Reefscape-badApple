@@ -536,30 +536,37 @@ public class AutoCommands {
         break;
     }
 
-    return Commands.runOnce(() -> drive.zeroYaw(), drive)
+    return Commands.runOnce(
+            () ->
+                // Update robot heading
+                drive.resetPose(
+                    new Pose2d(drive.getCurrentPose2d().getTranslation(), Rotation2d.k180deg)),
+            drive)
         .andThen(Commands.waitSeconds(0.5))
         .andThen(
             Commands.parallel(
+                    // Drive and raise the Periscope
                     DriveCommands.fieldRelativeDriveAtAngle(
                         drive,
-                        () -> RobotStateConstants.isRed() ? -driveSpeed : driveSpeed,
+                        () -> RobotStateConstants.isRed() ? driveSpeed : -driveSpeed,
                         () -> 0,
-                        () -> Rotation2d.kZero),
+                        () -> RobotStateConstants.isRed() ? Rotation2d.kZero : Rotation2d.k180deg),
                     coralPosition)
                 .withDeadline(Commands.waitSeconds(DRIVE_TIME_SEC)))
         .andThen(
-            Commands.runOnce(() -> drive.setRaw(0, 0, 0), drive)
-                .alongWith(
-                    Commands.run(() -> cee.setPercentSpeed(CEEConstants.SCORE_PERCENT_SPEED), cee)
-                        .withTimeout(1)))
+            Commands.parallel(
+                    // Stop and score
+                    Commands.runOnce(() -> drive.setRaw(0, 0, 0), drive),
+                    Commands.run(() -> cee.setPercentSpeed(CEEConstants.SCORE_PERCENT_SPEED), cee))
+                .withTimeout(1))
         .andThen(Commands.waitSeconds(1))
         .andThen(
-            DriveCommands.fieldRelativeDrive(
-                    drive,
-                    () -> RobotStateConstants.isRed() ? driveSpeed : -driveSpeed,
-                    () -> 0,
-                    () -> 0)
-                .withTimeout(2));
+            Commands.sequence(
+                Commands.runOnce(() -> cee.setPercentSpeed(0), cee),
+                // Drive back to avoid CORAL
+                DriveCommands.robotRelativeDrive(drive, () -> -driveSpeed, () -> 0, () -> 0)
+                    .withTimeout(1)))
+        .andThen(SuperstructureCommands.zero(periscope, algaePivot, aee, cee, funnel));
   }
 
   /**

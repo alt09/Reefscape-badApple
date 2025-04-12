@@ -75,8 +75,19 @@ public class Periscope extends SubsystemBase {
     m_io.updateInputs(m_inputs);
     Logger.processInputs("Periscope", m_inputs);
 
-    if (m_inputs.isHallEffectSensorTriggered && m_inputs.heightMeters < Units.inchesToMeters(3)) {
-      this.resetPosition(0);
+    // Hall Effect zeroing
+
+    // if (m_inputs.isHallEffectSensorTriggered && m_inputs.heightMeters < Units.inchesToMeters(3))
+    // {
+    //   this.resetPosition(0);
+    // }
+
+    // Current zeroing
+    if (m_inputs.currentDraw[0] > 30
+        && m_inputs.heightMeters < Units.inchesToMeters(5)
+        && Math.abs(m_inputs.velocityMetersPerSec) < 0.1) {
+      this.resetPosition(0); // TODO: test to make sure it doesn't trigger randomly
+      System.out.println("Zeroing PS");
     }
 
     // The feedforward calculates over 11 volts unless the a gain is changed with the tunable
@@ -300,5 +311,11 @@ public class Periscope extends SubsystemBase {
           PeriscopeConstants.KV,
           PeriscopeConstants.KA);
     }
+  }
+
+  public boolean isAtBottom() {
+    return m_inputs.currentDraw[0] > 40
+        && m_inputs.heightMeters < Units.inchesToMeters(5)
+        && Math.abs(m_inputs.velocityMetersPerSec) < 0.1;
   }
 }

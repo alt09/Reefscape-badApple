@@ -35,6 +35,8 @@ public class AlgaePivotConstants {
   public static final double GROUND_ALGAE_ANGLE_RAD = Units.degreesToRadians(-30);
   /** Angle (radians) of the ALGAE Pivot when trying to score ALGAE at the NET */
   public static final double NET_ANGLE_RAD = Units.degreesToRadians(65);
+  /** */
+  public static final double CORAL_ANGLE_RAD = Units.degreesToRadians(135);
 
   /** Angle (radians) of the ALGAE Pivot when trying to score ALGAE at PROCESSOR */
   public static final double PROCESSOR_ANGLE_RAD = 0;

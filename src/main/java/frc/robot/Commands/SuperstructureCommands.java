@@ -27,16 +27,13 @@ public class SuperstructureCommands {
    */
   public static Command setPositions(
       Periscope periscope, AlgaePivot algaePivot, double periscopeHeight, double pivotAngle) {
-    return Commands.runOnce(() -> algaePivot.resetRelativeEncoder(), algaePivot)
-        .andThen(
-            Commands.runOnce(
-                () -> {
-                  periscope.setPosition(periscopeHeight);
-                  algaePivot.setAngle(pivotAngle);
-                },
-                periscope,
-                algaePivot))
-        .andThen(Commands.runOnce(() -> algaePivot.resetRelativeEncoder(), algaePivot));
+    return Commands.runOnce(
+        () -> {
+          periscope.setPosition(periscopeHeight);
+          algaePivot.setAngle(pivotAngle);
+        },
+        periscope,
+        algaePivot);
   }
 
   /**
@@ -92,7 +89,10 @@ public class SuperstructureCommands {
         .andThen(
             Commands.waitUntil(
                 () ->
-                    periscope.isHallEffectSensorTriggered() && periscope.getHeightMeters() == 0.0))
+                    periscope.isHallEffectSensorTriggered()
+                        || periscope.getHeightMeters()
+                            == 0.0)) // TODO: change back to && when we have a working hall effect
+        // sensor
         .andThen(Commands.runOnce(() -> periscope.setPosition(0.0), periscope));
   }
 
@@ -210,9 +210,16 @@ public class SuperstructureCommands {
                 SuperstructureState.CEESpeed,
                 SuperstructureState.funnelSpeed))
         .andThen(
-            Commands.waitUntil(
-                () -> cee.isBeamBreakExitTriggered() && !cee.isBeamBreakEntranceTriggered()))
-        .andThen(Commands.runOnce(() -> cee.setVoltage(0), cee));
+            Commands.parallel(
+                Commands.sequence(
+                    Commands.waitUntil(
+                        () ->
+                            cee.isBeamBreakExitTriggered() && !cee.isBeamBreakEntranceTriggered()),
+                    Commands.runOnce(() -> cee.setVoltage(0), cee)),
+                Commands.sequence(
+                    Commands.waitUntil(() -> periscope.isAtBottom()),
+                    Commands.runOnce(() -> periscope.resetPosition(0), periscope),
+                    Commands.runOnce(() -> periscope.setPosition(0), periscope))));
   }
 
   /** ~~~~~~~~~~~~~~~~~~~~~~~~~ ALGAE ~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -392,7 +399,7 @@ public class SuperstructureCommands {
 
         case L2_CORAL:
           periscopeHeight = PeriscopeConstants.L2_HEIGHT_M;
-          algaePivotAngle = AlgaePivotConstants.DEFAULT_ANGLE_RAD;
+          algaePivotAngle = AlgaePivotConstants.CORAL_ANGLE_RAD;
           funnelSpeed = 0.0;
           CEESpeed = CEEConstants.SCORE_PERCENT_SPEED;
           AEESpeed = 0.0;
@@ -408,7 +415,7 @@ public class SuperstructureCommands {
 
         case L3_CORAL:
           periscopeHeight = PeriscopeConstants.L3_HEIGHT_M;
-          algaePivotAngle = AlgaePivotConstants.DEFAULT_ANGLE_RAD;
+          algaePivotAngle = AlgaePivotConstants.CORAL_ANGLE_RAD;
           funnelSpeed = 0.0;
           CEESpeed = CEEConstants.SCORE_PERCENT_SPEED;
           AEESpeed = 0.0;
@@ -424,7 +431,7 @@ public class SuperstructureCommands {
 
         case L4:
           periscopeHeight = PeriscopeConstants.L4_HEIGHT_M;
-          algaePivotAngle = AlgaePivotConstants.DEFAULT_ANGLE_RAD;
+          algaePivotAngle = AlgaePivotConstants.CORAL_ANGLE_RAD;
           funnelSpeed = 0.0;
           CEESpeed = CEEConstants.SCORE_PERCENT_SPEED;
           AEESpeed = 0.0;
