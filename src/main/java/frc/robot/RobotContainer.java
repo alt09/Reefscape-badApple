@@ -142,7 +142,7 @@ public class RobotContainer {
 
   /** Driver Controls */
   private void driverControllerBindings() {
-    m_driverController.a().onTrue(new InstantCommand(() -> music.setDriveVelocity(0.8)));
+    m_driverController.a().onTrue(new InstantCommand(() -> music.setVelocity(0.8)));
   }
 
   /** Aux Button Board Controls */
