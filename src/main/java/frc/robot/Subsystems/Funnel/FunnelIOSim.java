@@ -22,7 +22,7 @@ public class FunnelIOSim implements FunnelIO {
     // Initialize the flywheel sim with a NEO motor
     m_flywheelSim =
         new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(
+            LinearSystemId.createFlywheelSystem( // samething as the drive sim
                 DCMotor.getNEO(1), FunnelConstants.MOI_KG_M2, FunnelConstants.GEAR_RATIO),
             DCMotor.getNEO(1),
             0);
@@ -31,7 +31,7 @@ public class FunnelIOSim implements FunnelIO {
   @Override
   public void updateInputs(FunnelIOInputs inputs) {
     // Update the flywheel sim
-    m_flywheelSim.update(RobotStateConstants.LOOP_PERIODIC_SEC);
+    m_flywheelSim.update(RobotStateConstants.LOOP_PERIODIC_SEC); // update the flywheel sim
 
     // Update logged inputs from simulated flywheel system
     inputs.appliedVoltage = m_flywheelSim.getInputVoltage();

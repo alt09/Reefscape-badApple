@@ -207,19 +207,19 @@ public class ModuleIOSparkMaxTalonFX implements ModuleIO {
         m_orchestra.loadMusic(
             Filesystem.getDeployDirectory()
                 .toPath()
-                .resolve("orchestra" + File.separator + ) // copy the same files that are here on src/main/deploy/orchestra/
-                .toString());
+                .resolve("orchestra" + File.separator + "dangerzone.chrp") // copy the same files that are here on src/main/deploy/orchestra/ and create more with the music that you want 
+                .toString());// use phenix tuner (not phenix tuner x ) to create the files
 
     if (!status.isOK()) {
       System.out.println(
           "[Error] Failed to load orchestra music file: dangerzone.chrp. Status: "
-              + status.toString());
+              + status.toString()); // for debugging
     }
-    m_orchestra.play();
+    m_orchestra.play(); // TODO : play the music
   }
 
   @Override
-  public void updateInputs(ModuleIOInputs inputs) {
+  public void updateInputs(ModuleIOInputs inputs) { //this is gonna be the same thing in all the files, just use the logic to guess what this does
     // Update Drive motor signals and check if they are recieved
     inputs.driveIsConnected =
         BaseStatusSignal.refreshAll(
