@@ -31,20 +31,20 @@ import java.util.Queue;
 /** ModuleIO implementation for the real mode of the robot */
 public class ModuleIOSparkMaxTalonFX implements ModuleIO {
   // Drive motor, controller, and configurator
-  private final TalonFX m_driveTalonFX;
-  private final VelocityVoltage m_driveController = new VelocityVoltage(0);
-  private final TalonFXConfiguration m_driveConfig = new TalonFXConfiguration();
+  private final TalonFX m_driveTalonFX; // creates a talon fx aka a krakenX60
+  private final VelocityVoltage m_driveController = new VelocityVoltage(0); // creates a velocity controller for the krakenX60
+  private final TalonFXConfiguration m_driveConfig = new TalonFXConfiguration(); //  creates the configuration for the krakenX60
 
   // Turn motor, absolute encoder, controller, and configurator
-  private final SparkMax m_turnSparkMax;
-  private final SparkMaxConfig m_turnConfig = new SparkMaxConfig();
-  private final CANcoder m_turnCANcoder;
-  private final double m_absEncoderOffsetRad;
+  private final SparkMax m_turnSparkMax; // creates a spark max aka a neo or neo 550 or any motor that is conected to a spark max
+  private final SparkMaxConfig m_turnConfig = new SparkMaxConfig(); // creates the configuration for the spark max not the motor
+  private final CANcoder m_turnCANcoder; // creates a can coder aka a absolute encoder
+  private final double m_absEncoderOffsetRad; // the offset of the absolute encoder in radians
 
   // Drive motor's logged signals
-  private final StatusSignal<Voltage> m_driveAppliedVolts;
+  private final StatusSignal<Voltage> m_driveAppliedVolts; 
   private final StatusSignal<Current> m_driveCurrentAmps;
-  private final StatusSignal<Temperature> m_driveTempCelsius;
+  private final StatusSignal<Temperature> m_driveTempCelsius; // we don't need this but ok 
   private final StatusSignal<Angle> m_drivePositionRot; // Rotations
   private final StatusSignal<AngularVelocity> m_driveVelocityRotPerSec; // Rotations per second
 
@@ -53,10 +53,10 @@ public class ModuleIOSparkMaxTalonFX implements ModuleIO {
   private final StatusSignal<AngularVelocity> m_absEncoderVelocityRotPerSec; // Rotations per second
 
   // PhoenixOdometryThread queues
-  private final Queue<Double> m_timestampQueue;
-  private final Queue<Double> m_drivePositionQueue;
-  private final Queue<Double> m_absEncoderPositionQueue;
-  private final Orchestra m_orchestra = new Orchestra();
+  private final Queue<Double> m_timestampQueue; // bruh this time IDK what this does 
+  private final Queue<Double> m_drivePositionQueue; // your cooked 
+  private final Queue<Double> m_absEncoderPositionQueue; // RIP
+  private final Orchestra m_orchestra = new Orchestra();// this is completely necessary, follow this if you wanna be a pro
 
   /**
    * Constructs a new {@link ModuleIOSparkMaxTalonFX} instance.
@@ -68,53 +68,53 @@ public class ModuleIOSparkMaxTalonFX implements ModuleIO {
    * @param moduleNumber Number to the corresponding Swerve Module that is to be initilized.
    */
   public ModuleIOSparkMaxTalonFX(int moduleNumber) {
-    System.out.println("[Init] Creating ModuleIOSparkMaxTalonFX " + moduleNumber);
+    System.out.println("[Init] Creating ModuleIOSparkMaxTalonFX " + moduleNumber); //for debugging
 
     // Initialize Drive motors, Turn motors, Turn encoders and their offsets based on the Module
     // number
-    switch (moduleNumber) {
+    switch (moduleNumber) { // for each module do this
       case 0:
-        m_driveTalonFX = new TalonFX(DriveConstants.DRIVE_MOTOR.FRONT_LEFT.CAN_ID, "Drivetrain");
+        m_driveTalonFX = new TalonFX(DriveConstants.DRIVE_MOTOR.FRONT_LEFT.CAN_ID, "Drivetrain"); // drive is a krakenX60 with a can id and a canbus
         m_turnSparkMax =
-            new SparkMax(DriveConstants.TURN_MOTOR.FRONT_LEFT.CAN_ID, MotorType.kBrushless);
+            new SparkMax(DriveConstants.TURN_MOTOR.FRONT_LEFT.CAN_ID, MotorType.kBrushless); //turn is a neo aka brushhless and a can id 
         m_turnCANcoder =
-            new CANcoder(DriveConstants.ABSOLUTE_ENCODER.FRONT_LEFT.CAN_ID, "Drivetrain");
-        m_absEncoderOffsetRad = DriveConstants.ABSOLUTE_ENCODER_OFFSET.FRONT_LEFT.OFFSET;
-        m_orchestra.addInstrument(m_driveTalonFX);
+            new CANcoder(DriveConstants.ABSOLUTE_ENCODER.FRONT_LEFT.CAN_ID, "Drivetrain"); // absolute encoder with a can id and a canbus
+        m_absEncoderOffsetRad = DriveConstants.ABSOLUTE_ENCODER_OFFSET.FRONT_LEFT.OFFSET; // offset for each encoder
+        m_orchestra.addInstrument(m_driveTalonFX); // add this to the orchestra TODO:important don't msiss this 
         break;
 
       case 1:
-        m_driveTalonFX = new TalonFX(DriveConstants.DRIVE_MOTOR.FRONT_RIGHT.CAN_ID, "Drivetrain");
+        m_driveTalonFX = new TalonFX(DriveConstants.DRIVE_MOTOR.FRONT_RIGHT.CAN_ID, "Drivetrain"); // drive is a krakenX60 with a can id and a canbus
         m_turnSparkMax =
-            new SparkMax(DriveConstants.TURN_MOTOR.FRONT_RIGHT.CAN_ID, MotorType.kBrushless);
+            new SparkMax(DriveConstants.TURN_MOTOR.FRONT_RIGHT.CAN_ID, MotorType.kBrushless); //turn is a neo aka brushhless and a can id
         m_turnCANcoder =
-            new CANcoder(DriveConstants.ABSOLUTE_ENCODER.FRONT_RIGHT.CAN_ID, "Drivetrain");
-        m_absEncoderOffsetRad = DriveConstants.ABSOLUTE_ENCODER_OFFSET.FRONT_RIGHT.OFFSET;
-        m_orchestra.addInstrument(m_driveTalonFX);
+            new CANcoder(DriveConstants.ABSOLUTE_ENCODER.FRONT_RIGHT.CAN_ID, "Drivetrain"); // absolute encoder with a can id and a canbus
+        m_absEncoderOffsetRad = DriveConstants.ABSOLUTE_ENCODER_OFFSET.FRONT_RIGHT.OFFSET;  // offset for each encoder
+        m_orchestra.addInstrument(m_driveTalonFX); // add this to the orchestra TODO:important don't msiss this
         break;
 
       case 2:
-        m_driveTalonFX = new TalonFX(DriveConstants.DRIVE_MOTOR.BACK_LEFT.CAN_ID, "Drivetrain");
+        m_driveTalonFX = new TalonFX(DriveConstants.DRIVE_MOTOR.BACK_LEFT.CAN_ID, "Drivetrain"); // drive is a krakenX60 with a can id and a canbus
         m_turnSparkMax =
-            new SparkMax(DriveConstants.TURN_MOTOR.BACK_LEFT.CAN_ID, MotorType.kBrushless);
+            new SparkMax(DriveConstants.TURN_MOTOR.BACK_LEFT.CAN_ID, MotorType.kBrushless); //turn is a neo aka brushhless and a can id
         m_turnCANcoder =
-            new CANcoder(DriveConstants.ABSOLUTE_ENCODER.BACK_LEFT.CAN_ID, "Drivetrain");
-        m_absEncoderOffsetRad = DriveConstants.ABSOLUTE_ENCODER_OFFSET.BACK_LEFT.OFFSET;
-        m_orchestra.addInstrument(m_driveTalonFX);
+            new CANcoder(DriveConstants.ABSOLUTE_ENCODER.BACK_LEFT.CAN_ID, "Drivetrain"); // absolute encoder with a can id and a canbus
+        m_absEncoderOffsetRad = DriveConstants.ABSOLUTE_ENCODER_OFFSET.BACK_LEFT.OFFSET; // offset for each encoder
+        m_orchestra.addInstrument(m_driveTalonFX); // add this to the orchestra TODO:important don't msiss this
         break;
 
       case 3:
-        m_driveTalonFX = new TalonFX(DriveConstants.DRIVE_MOTOR.BACK_RIGHT.CAN_ID, "Drivetrain");
+        m_driveTalonFX = new TalonFX(DriveConstants.DRIVE_MOTOR.BACK_RIGHT.CAN_ID, "Drivetrain"); // drive is a krakenX60 with a can id and a canbus
         m_turnSparkMax =
-            new SparkMax(DriveConstants.TURN_MOTOR.BACK_RIGHT.CAN_ID, MotorType.kBrushless);
+            new SparkMax(DriveConstants.TURN_MOTOR.BACK_RIGHT.CAN_ID, MotorType.kBrushless); //turn is a neo aka brushhless and a can id
         m_turnCANcoder =
-            new CANcoder(DriveConstants.ABSOLUTE_ENCODER.BACK_RIGHT.CAN_ID, "Drivetrain");
-        m_absEncoderOffsetRad = DriveConstants.ABSOLUTE_ENCODER_OFFSET.BACK_RIGHT.OFFSET;
-        m_orchestra.addInstrument(m_driveTalonFX);
+            new CANcoder(DriveConstants.ABSOLUTE_ENCODER.BACK_RIGHT.CAN_ID, "Drivetrain"); // absolute encoder with a can id and a canbus
+        m_absEncoderOffsetRad = DriveConstants.ABSOLUTE_ENCODER_OFFSET.BACK_RIGHT.OFFSET; // offset for each encoder
+        m_orchestra.addInstrument(m_driveTalonFX); // add this to the orchestra TODO:important don't msiss this
         break;
 
       default:
-        throw new RuntimeException("Invalid Module number for ModuleIOSparkMaxTalonFX");
+        throw new RuntimeException("Invalid Module number for ModuleIOSparkMaxTalonFX"); // if the module number is invalid then throw this
     }
 
     // TalonFX motor configurations
@@ -123,17 +123,17 @@ public class ModuleIOSparkMaxTalonFX implements ModuleIO {
         .withInverted(
             DriveConstants.DRIVE_IS_INVERTED
                 ? InvertedValue.Clockwise_Positive
-                : InvertedValue.CounterClockwise_Positive)
-        .withNeutralMode(NeutralModeValue.Brake)
-        .withControlTimesyncFreqHz(DriveConstants.ODOMETRY_UPDATE_FREQUENCY_HZ);
+                : InvertedValue.CounterClockwise_Positive) // if is inverted the drive, you normllly don't want this
+        .withNeutralMode(NeutralModeValue.Brake) // be brake mode, to don't move without voltage the motor 
+        .withControlTimesyncFreqHz(DriveConstants.ODOMETRY_UPDATE_FREQUENCY_HZ); // update every 0.02 sec 
 
     // TalonFX current limit configurations
     m_driveConfig
         .CurrentLimits
-        .withSupplyCurrentLimit(DriveConstants.CUR_LIM_A)
-        .withSupplyCurrentLimitEnable(DriveConstants.ENABLE_CUR_LIM)
-        .withStatorCurrentLimit(DriveConstants.CUR_LIM_A)
-        .withStatorCurrentLimitEnable(DriveConstants.ENABLE_CUR_LIM);
+        .withSupplyCurrentLimit(DriveConstants.CUR_LIM_A) // 60 amps is the max they can handle 
+        .withSupplyCurrentLimitEnable(DriveConstants.ENABLE_CUR_LIM) // always enable it 
+        .withStatorCurrentLimit(DriveConstants.CUR_LIM_A) // 60 amps is the max they can handle
+        .withStatorCurrentLimitEnable(DriveConstants.ENABLE_CUR_LIM); // always enable it
 
     // TalonFX PID and Feedforward gains configuration
     m_driveConfig
@@ -142,36 +142,36 @@ public class ModuleIOSparkMaxTalonFX implements ModuleIO {
         .withKI(DriveConstants.DRIVE_KI)
         .withKD(DriveConstants.DRIVE_KD)
         .withKS(DriveConstants.DRIVE_KS)
-        .withKV(DriveConstants.DRIVE_KV);
+        .withKV(DriveConstants.DRIVE_KV); // bruh GL your cooked
 
     // TalonFX closed loop configurations
     m_driveConfig.ClosedLoopRamps.withVoltageClosedLoopRampPeriod(
-        1.0 / DriveConstants.ODOMETRY_UPDATE_FREQUENCY_HZ);
-    m_driveController.withUpdateFreqHz(DriveConstants.ODOMETRY_UPDATE_FREQUENCY_HZ);
+        1.0 / DriveConstants.ODOMETRY_UPDATE_FREQUENCY_HZ); // update every 0.02 sec be careful
+    m_driveController.withUpdateFreqHz(DriveConstants.ODOMETRY_UPDATE_FREQUENCY_HZ); // update every 0.02 sec be careful
 
     // Initialize Drive encoder position
-    m_driveTalonFX.setPosition(0.0);
+    m_driveTalonFX.setPosition(0.0); // set the position to 0 to reset the pose 
 
     // SPARK MAX configurations
     m_turnConfig
-        .inverted(DriveConstants.TURN_IS_INVERTED)
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(DriveConstants.CUR_LIM_A);
+        .inverted(DriveConstants.TURN_IS_INVERTED) // if is inverted the turn, you normllly don't want this
+        .idleMode(IdleMode.kBrake) // be brake mode, to don't move without voltage the motor
+        .smartCurrentLimit(DriveConstants.CUR_LIM_A); // 60 amps is the max they can handle
 
     // Optimize CAN bus usage, disable all signals besides those refreshed in code
     m_driveTalonFX.optimizeBusUtilization();
-    m_turnCANcoder.optimizeBusUtilization();
+    m_turnCANcoder.optimizeBusUtilization(); // always optimeize the bus utilization
 
     // Set CAN timeouts
-    m_driveTalonFX.setExpiration(RobotStateConstants.CAN_CONFIG_TIMEOUT_SEC);
-    m_turnSparkMax.setCANTimeout(RobotStateConstants.CAN_CONFIG_TIMEOUT_SEC * 1000);
+    m_driveTalonFX.setExpiration(RobotStateConstants.CAN_CONFIG_TIMEOUT_SEC); // TODO : if you habe an issue is probably this 
+    m_turnSparkMax.setCANTimeout(RobotStateConstants.CAN_CONFIG_TIMEOUT_SEC * 1000); // same thing 
 
     // Apply TalonFX configurations
-    m_driveTalonFX.getConfigurator().apply(m_driveConfig);
+    m_driveTalonFX.getConfigurator().apply(m_driveConfig); // apply the confuguration
 
     // Apply SPARK MAX configurations
     m_turnSparkMax.configure(
-        m_turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);  // apply the confuguration
 
     // Initialize logged Drive motor signals
     m_drivePositionRot = m_driveTalonFX.getPosition();
@@ -203,11 +203,11 @@ public class ModuleIOSparkMaxTalonFX implements ModuleIO {
     BaseStatusSignal.setUpdateFrequencyForAll(
         DriveConstants.ODOMETRY_UPDATE_FREQUENCY_HZ, m_drivePositionRot, m_absEncoderPositionRot);
 
-    var status =
+    var status = // TODO:important don't miss this
         m_orchestra.loadMusic(
             Filesystem.getDeployDirectory()
                 .toPath()
-                .resolve("orchestra" + File.separator + "dangerzone.chrp")
+                .resolve("orchestra" + File.separator + ) // copy the same files that are here on src/main/deploy/orchestra/
                 .toString());
 
     if (!status.isOK()) {

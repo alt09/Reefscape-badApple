@@ -32,24 +32,24 @@ import org.littletonrobotics.junction.Logger;
 public class Drive extends SubsystemBase {
   /* Chassis */
   // Modules
-  private final Module[] m_modules = new Module[4];
-  private final SwerveDriveKinematics m_swerveDriveKinematics;
+  private final Module[] m_modules = new Module[4]; // Array of all Modules ( 4 Modules)
+  private final SwerveDriveKinematics m_swerveDriveKinematics; // kinematics of the 4 swerve modules 
   // Gyro
-  private final GyroIO m_gyroIO;
-  private final GyroIOInputsAutoLogged m_gyroInputs = new GyroIOInputsAutoLogged();
+  private final GyroIO m_gyroIO; // Inputs and outputs off the Gyro
+  private final GyroIOInputsAutoLogged m_gyroInputs = new GyroIOInputsAutoLogged(); 
   // Robot rotation
-  public Rotation2d m_robotHeading = new Rotation2d();
-  private Twist2d m_twist = new Twist2d();
+  public Rotation2d m_robotHeading = new Rotation2d(); // bruh the name said what it does
+  private Twist2d m_twist = new Twist2d(); // is to calculate the change in heading
   private SwerveModulePosition[] m_lastModulePositions =
       new SwerveModulePosition[] {
         new SwerveModulePosition(),
         new SwerveModulePosition(),
         new SwerveModulePosition(),
         new SwerveModulePosition()
-      };
+      }; // the positions of the swerve modules of the last update  to compare the change in heading
 
   // Swerve Pose Estimator Objects
-  private final SwerveDrivePoseEstimator m_swervePoseEstimator;
+  private final SwerveDrivePoseEstimator m_swervePoseEstimator; // bruh the name said what it does
 
   // Odometry reading lock
   static final Lock odometryLock = new ReentrantLock();
@@ -68,7 +68,7 @@ public class Drive extends SubsystemBase {
    * @param gyroIO {@link GyroIO} implementation of the current robot mode.
    */
   public Drive(
-      ModuleIO FLModuleIO,
+      ModuleIO FLModuleIO, // read comment above 
       ModuleIO FRModuleIO,
       ModuleIO BLModuleIO,
       ModuleIO BRModuleIO,
@@ -83,29 +83,29 @@ public class Drive extends SubsystemBase {
     m_modules[3] = new Module(BRModuleIO, 3); // Index 3 corresponds to back right Module
 
     // Initialize utilities
-    m_swerveDriveKinematics = new SwerveDriveKinematics(DriveConstants.getModuleTranslations());
-    PhoenixOdometryThread.getInstance().start();
+    m_swerveDriveKinematics = new SwerveDriveKinematics(DriveConstants.getModuleTranslations()); //  creates the kinematics with the module translations 
+    PhoenixOdometryThread.getInstance().start(); // starts the odometry thread
 
     // Configure PathPlanner
     AutoBuilder.configure(
-        this::getCurrentPose2d,
-        this::resetPose,
-        this::getChassisSpeeds,
-        (speeds, feedforwards) -> runVelocity(speeds),
-        new PPHolonomicDriveController(
+        this::getCurrentPose2d, // this is the current pose of the robot
+        this::resetPose, // here is to reset the pose when starts a new path 
+        this::getChassisSpeeds, // the current speeds of the robot
+        (speeds, feedforwards) -> runVelocity(speeds), // this is the method to run the robot
+        new PPHolonomicDriveController( // this is the controller for a SWERVE just SWERVE  
             new PIDConstants(
-                PathPlannerConstants.TRANSLATION_KP, 0, PathPlannerConstants.TRANSLATION_KD),
+                PathPlannerConstants.TRANSLATION_KP, 0, PathPlannerConstants.TRANSLATION_KD), // PID you know what it is 
             new PIDConstants(
-                PathPlannerConstants.ROTATION_KP, 0, PathPlannerConstants.ROTATION_KD)),
-        PathPlannerConstants.ROBOT_CONFIG,
+                PathPlannerConstants.ROTATION_KP, 0, PathPlannerConstants.ROTATION_KD)), // samething 
+        PathPlannerConstants.ROBOT_CONFIG, // this is the robot configuration for pathplanner
         // Mirror the paths to the red side of the field if true
         () ->
-            DriverStation.getAlliance().isPresent()
-                && RobotStateConstants.getAlliance().get() == DriverStation.Alliance.Red,
+            DriverStation.getAlliance().isPresent() 
+                && RobotStateConstants.getAlliance().get() == DriverStation.Alliance.Red, // to change the allience that we are on 
         this);
     // Pathfinder by FRC 6328 that adds AdvantageKit logging functionality to PathPlanner's
     // Pathfinder
-    Pathfinding.setPathfinder(new LocalADStarAK());
+    Pathfinding.setPathfinder(new LocalADStarAK());//LOL IDK what this does TODO: search on google 
 
     // Initialize Pose Estimator
     m_swervePoseEstimator =
@@ -115,9 +115,9 @@ public class Drive extends SubsystemBase {
     // Tunable PID & Feedforward gains
     SmartDashboard.putBoolean("PIDFF_Tuning/Drive/EnableTuning", false);
     SmartDashboard.putNumber("PIDFF_Tuning/Drive/Drive_kP", DriveConstants.DRIVE_KP);
-    SmartDashboard.putNumber("PIDFF_Tuning/Drive/Drive_kI", DriveConstants.DRIVE_KI);
-    SmartDashboard.putNumber("PIDFF_Tuning/Drive/Drive_kD", DriveConstants.DRIVE_KD);
-    SmartDashboard.putNumber("PIDFF_Tuning/Drive/Drive_kS", DriveConstants.DRIVE_KS);
+    SmartDashboard.putNumber("PIDFF_Tuning/Drive/Drive_kI", DriveConstants.DRIVE_KI); // this is for logging the PID you dont have to do
+    SmartDashboard.putNumber("PIDFF_Tuning/Drive/Drive_kD", DriveConstants.DRIVE_KD); // this in the final verison, this is for testing 
+    SmartDashboard.putNumber("PIDFF_Tuning/Drive/Drive_kS", DriveConstants.DRIVE_KS); // and find PID values easier 
     SmartDashboard.putNumber("PIDFF_Tuning/Drive/Drive_kV", DriveConstants.DRIVE_KV);
     SmartDashboard.putNumber("PIDFF_Tuning/Drive/Turn_kP", DriveConstants.TURN_KP);
     SmartDashboard.putNumber("PIDFF_Tuning/Drive/Turn_kI", DriveConstants.TURN_KI);
@@ -132,11 +132,11 @@ public class Drive extends SubsystemBase {
     // Update the periodic for each Module and the Gyro
     m_gyroIO.updateInputs(m_gyroInputs);
     Logger.processInputs("Gyro", m_gyroInputs);
-    for (int i = 0; i < m_modules.length; i++) {
+    for (int i = 0; i < m_modules.length; i++) { // for each module update their inputs 
       m_modules[i].updateInputs();
     }
     // Re-enable odometry updates
-    odometryLock.unlock();
+    odometryLock.unlock(); 
 
     // Run the periodic of each Module
     for (var module : m_modules) {
@@ -247,7 +247,7 @@ public class Drive extends SubsystemBase {
     // Record initial Module States setpoint
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
 
-    SwerveModuleState[] optimizedStates = new SwerveModuleState[4];
+    SwerveModuleState[] optimizedStates = new SwerveModuleState[4]; // the optimized states of the modules
 
     // Run each Module
     for (int i = 0; i < m_modules.length; i++) {
