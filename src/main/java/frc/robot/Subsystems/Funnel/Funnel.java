@@ -6,9 +6,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotStateConstants;
 import org.littletonrobotics.junction.Logger;
 
-public class Funnel extends SubsystemBase {
+public class Funnel extends SubsystemBase { //important to extend SubsystemBase
   private final FunnelIO m_io;
-  private final FunnelIOInputsAutoLogged m_inputs = new FunnelIOInputsAutoLogged();
+  private final FunnelIOInputsAutoLogged m_inputs = new FunnelIOInputsAutoLogged(); // if this has an error dont worry check the IO file
 
   // PID Controller
   private final PIDController m_PIDController;
@@ -24,7 +24,7 @@ public class Funnel extends SubsystemBase {
    * @param io {@link FunnelIO} implementation of the current mode of the robot
    */
   public Funnel(FunnelIO io) {
-    System.out.println("[Init] Creating Funnel");
+    System.out.println("[Init] Creating Funnel"); // for debugging
 
     // Initialize the IO implementation
     m_io = io;
@@ -137,7 +137,7 @@ public class Funnel extends SubsystemBase {
    *
    * @return {@code true} if the sensor has been triggered, {@code false} if not.
    */
-  public boolean isBeamBreakTriggered() {
+  public boolean isBeamBreakTriggered() { // this is a beam brake 
     return m_inputs.isbeamBreakTriggered;
   }
 }

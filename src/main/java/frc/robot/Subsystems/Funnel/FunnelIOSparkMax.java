@@ -15,7 +15,7 @@ public class FunnelIOSparkMax implements FunnelIO {
   // Funnel motor, encoder, and configurator
   private final SparkMax m_sparkmax;
   private final RelativeEncoder m_relativeEncoder;
-  private final SparkMaxConfig m_config = new SparkMaxConfig();
+  private final SparkMaxConfig m_config = new SparkMaxConfig(); // check drive to see what this is, is the same thing 
 
   /**
    * Constructs a new {@link FunnelIOSparkMax} instance.

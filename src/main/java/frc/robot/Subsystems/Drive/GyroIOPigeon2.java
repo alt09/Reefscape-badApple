@@ -17,12 +17,12 @@ public class GyroIOPigeon2 implements GyroIO {
   private final Pigeon2 m_gyro;
 
   // Pigeon logged signals
-  private final StatusSignal<Angle> m_yawDeg;
-  private final StatusSignal<AngularVelocity> m_yawVelocityDegPerSec;
+  private final StatusSignal<Angle> m_yawDeg; // yaw in degrees of the Pidgeon 2
+  private final StatusSignal<AngularVelocity> m_yawVelocityDegPerSec; // the angular velocity of the Pidgeon 2
 
   // PhoenixOdometryThread queues
-  private final Queue<Double> m_yawPositionQueue;
-  private final Queue<Double> m_yawTimestampQueue;
+  private final Queue<Double> m_yawPositionQueue; // yaw position in degrees of the Pidgeon 2 but queue
+  private final Queue<Double> m_yawTimestampQueue; // timestamp of the yaw position in seconds but queue
 
   /**
    * Constructs a new {@link GyroIOPigeon2} instance.
@@ -34,7 +34,7 @@ public class GyroIOPigeon2 implements GyroIO {
     System.out.println("[Init] Creating GyroIOPigeon2");
 
     // Initialize Pigeon 2.0 IMU
-    m_gyro = new Pigeon2(DriveConstants.GYRO_CAN_ID, "Drivetrain");
+    m_gyro = new Pigeon2(DriveConstants.GYRO_CAN_ID, "Drivetrain");  
 
     // Pigeon configuration
     m_gyro.getConfigurator().apply(new Pigeon2Configuration());

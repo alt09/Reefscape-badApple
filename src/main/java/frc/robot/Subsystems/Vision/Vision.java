@@ -30,7 +30,7 @@ public class Vision extends SubsystemBase {
   // Vision pose estimation
   private final PhotonPoseEstimator[] m_photonPoseEstimators;
   private List<Pose2d> m_estimatedPoses = new LinkedList<>();
-  private Matrix<N3, N1> m_stdDevs = VecBuilder.fill(0, 0, 0);
+  private Matrix<N3, N1> m_stdDevs = VecBuilder.fill(0, 0, 0); // Standard deviations
   private double m_stdDevCoeff = 0.0;
 
   /**
@@ -62,7 +62,7 @@ public class Vision extends SubsystemBase {
               PoseStrategy.LOWEST_AMBIGUITY,
               VisionConstants.CAMERA_ROBOT_OFFSETS[i]);
       Logger.recordOutput(
-          "Camera/" + VisionConstants.CAMERA_NAMES[i], VisionConstants.CAMERA_ROBOT_OFFSETS[i]);
+          "Camera/" + VisionConstants.CAMERA_NAMES[i], VisionConstants.CAMERA_ROBOT_OFFSETS[i]); // the camera 
     }
   }
 

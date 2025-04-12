@@ -50,10 +50,10 @@ public class Module {
     // Calculate the positions for odometry updates
     int sampleCount = m_inputs.odometryTimestamps.length;
     m_odometryPositions = new SwerveModulePosition[sampleCount];
-    for (int i = 0; i < sampleCount; i++) {
+    for (int i = 0; i < sampleCount; i++) { // for each odometry  sample 
       double positionMeters = m_inputs.odometryDrivePositionsRad[i] * DriveConstants.WHEEL_RADIUS_M;
       var angle = m_inputs.odometryAbsTurnPositions[i];
-      m_odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
+      m_odometryPositions[i] = new SwerveModulePosition(positionMeters, angle); // your position based on the odometry (don't trust this a lot)
     }
   }
 
@@ -63,8 +63,8 @@ public class Module {
    * @param inputs Inputs from the auto logger.
    */
   public void updateInputs() {
-    m_io.updateInputs(m_inputs);
-    Logger.processInputs("Drive/Module" + Integer.toString(m_moduleNumber), m_inputs);
+    m_io.updateInputs(m_inputs); // update moduleIO.java
+    Logger.processInputs("Drive/Module" + Integer.toString(m_moduleNumber), m_inputs); // put it  on the logger
   }
 
   /**
