@@ -86,10 +86,12 @@ public class Vision extends SubsystemBase {
           (currentResult.targets.size() > 1 && currentResult.getMultiTagResult().isPresent())
               ? currentResult.getMultiTagResult().get().estimatedPose.ambiguity
               : currentResult.getBestTarget().getPoseAmbiguity();
+      double tagDistance = currentResult.getBestTarget().getBestCameraToTarget().getX();
       if (
       // Ensure pose is trustworthy and within field bounds in order to be used
       ambiguity >= 0.0
           && ambiguity <= 0.2
+          && tagDistance <= 3.5
           && estimatedPose.getX() >= 0.0
           && estimatedPose.getX() <= FieldConstants.FIELD_LENGTH
           && estimatedPose.getY() >= 0.0

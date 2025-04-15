@@ -86,8 +86,7 @@ public class Periscope extends SubsystemBase {
     if (m_inputs.currentDraw[0] > 30
         && m_inputs.heightMeters < Units.inchesToMeters(5)
         && Math.abs(m_inputs.velocityMetersPerSec) < 0.1) {
-      this.resetPosition(0); // TODO: test to make sure it doesn't trigger randomly
-      System.out.println("Zeroing PS");
+      this.resetPosition(0);
     }
 
     // The feedforward calculates over 11 volts unless the a gain is changed with the tunable
@@ -177,7 +176,7 @@ public class Periscope extends SubsystemBase {
     // Compare new setpoint to previous to determine whether to lower acceleration or not
     var acceleration =
         (heightMeters < m_prevSetpoint)
-            ? PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2 / 6
+            ? PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2 / 4 // TODO: test
             : PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2;
 
     // Record and update setpoint

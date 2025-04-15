@@ -226,11 +226,11 @@ public class PathfindingCommands {
     double branchOffset = 0.0;
     switch (branchLetter) { // TODO: update based on a real field
       case "A":
-        branchOffset = 0.0;
+        branchOffset = Units.inchesToMeters(-2);
         break;
 
       case "B":
-        branchOffset = 0.0;
+        branchOffset = Units.inchesToMeters(-2);
         break;
 
       case "C":
@@ -258,11 +258,11 @@ public class PathfindingCommands {
         break;
 
       case "I":
-        branchOffset = 0.0;
+        branchOffset = Units.inchesToMeters(-6);
         break;
 
       case "J":
-        branchOffset = 0.0;
+        branchOffset = Units.inchesToMeters(-6);
         break;
 
       case "K":
@@ -270,7 +270,7 @@ public class PathfindingCommands {
         break;
 
       case "L":
-        branchOffset = Units.inchesToMeters(4.0);
+        branchOffset = 0.0;
         break;
     }
 
@@ -500,8 +500,7 @@ public class PathfindingCommands {
       reefAprilTagID = 19;
     }
 
-    return PathfindingCommands.driveToAprilTag(
-            drive, reefAprilTagID, 0.5, Units.inchesToMeters(6), true)
+    return PathfindingCommands.driveToAprilTag(drive, reefAprilTagID, 0.75, 0, true)
         .withTolerance(0.30, Units.degreesToRadians(7))
         .finishAtGoal()
         .andThen(
