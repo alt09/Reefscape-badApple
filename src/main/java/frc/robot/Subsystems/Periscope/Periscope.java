@@ -168,6 +168,15 @@ public class Periscope extends SubsystemBase {
   }
 
   /**
+   * @return If the Periscope is stalling, below a certain height, and not moving then it is at the bottom of its travel
+   */
+  public boolean isAtBottom() {
+    return (m_inputs.currentDraw[0] > 30
+        && m_inputs.heightMeters < Units.inchesToMeters(5)
+        && Math.abs(m_inputs.velocityMetersPerSec) < 0.1);
+  }
+
+  /**
    * Sets the position of the Periscope using a motion profiled PID controller.
    *
    * @param heightMeters Position of the Periscope in meters.
@@ -176,7 +185,7 @@ public class Periscope extends SubsystemBase {
     // Compare new setpoint to previous to determine whether to lower acceleration or not
     var acceleration =
         (heightMeters < m_prevSetpoint)
-            ? PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2 / 4 // TODO: test
+            ? PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2 / 4
             : PeriscopeConstants.MAX_ACCELERATION_M_PER_SEC2;
 
     // Record and update setpoint
@@ -310,11 +319,5 @@ public class Periscope extends SubsystemBase {
           PeriscopeConstants.KV,
           PeriscopeConstants.KA);
     }
-  }
-
-  public boolean isAtBottom() {
-    return m_inputs.currentDraw[0] > 40
-        && m_inputs.heightMeters < Units.inchesToMeters(5)
-        && Math.abs(m_inputs.velocityMetersPerSec) < 0.1;
   }
 }

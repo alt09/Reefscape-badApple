@@ -104,8 +104,10 @@ public class Vision extends SubsystemBase {
       }
     }
 
-    if (m_estimatedPoses.size() == 0)
+    if (m_estimatedPoses.size() == 0) {
+      m_estimatedPoses.clear();
       return; // Move to next periodic iteration if no poses estimated
+    }
 
     /* Add Vision measurements to Swerve Pose Estimator in Drive through the VisionConsumer */
     if (m_estimatedPoses.size() > 1) {

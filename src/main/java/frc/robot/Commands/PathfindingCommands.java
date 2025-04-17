@@ -500,14 +500,17 @@ public class PathfindingCommands {
       reefAprilTagID = 19;
     }
 
-    return PathfindingCommands.driveToAprilTag(drive, reefAprilTagID, 0.75, 0, true)
-        .withTolerance(0.30, Units.degreesToRadians(7))
-        .finishAtGoal()
-        .andThen(
-            Commands.waitUntil(
-                () ->
-                    drive.getChassisSpeeds().vxMetersPerSecond < 0.2
-                        && drive.getChassisSpeeds().vyMetersPerSecond < 0.2))
-        .andThen(PathfindingCommands.driveToBranch(drive, branch, 0.0).finishAtGoal());
+    // Two step align
+    // return PathfindingCommands.driveToAprilTag(drive, reefAprilTagID, 0.75, 0, true)
+    //     .withTolerance(0.30, Units.degreesToRadians(7))
+    //     .finishAtGoal()
+    //     .andThen(
+    //         Commands.waitUntil(
+    //             () ->
+    //                 drive.getChassisSpeeds().vxMetersPerSecond < 0.2
+    //                     && drive.getChassisSpeeds().vyMetersPerSecond < 0.2))
+    //     .andThen(PathfindingCommands.driveToBranch(drive, branch, 0.0).finishAtGoal());
+    // One step align
+    return PathfindingCommands.driveToBranch(drive, branch, 0.0).finishAtGoal();
   }
 }

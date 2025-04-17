@@ -47,11 +47,11 @@ public class PeriscopeConstants {
   /** Height position of the Periscope for reaching L1 */
   public static final double L1_HEIGHT_M = Units.inchesToMeters(23.48727733017911);
   /** Height position of the Periscope for reaching L2 */
-  public static final double L2_HEIGHT_M = Units.inchesToMeters(24.48727733017911);
+  public static final double L2_HEIGHT_M = Units.inchesToMeters(26.48727733017911);
   /** Height position of the Periscope for intaking L2 ALGAE */
   public static final double L2_ALGAE_HEIGHT_M = Units.inchesToMeters(22.06998575818367);
   /** Height position of the Periscope for reaching L3 */
-  public static final double L3_HEIGHT_M = Units.inchesToMeters(40.308153793068136);
+  public static final double L3_HEIGHT_M = Units.inchesToMeters(42.308153793068136);
   /** Height position of the Periscope for intaking L3 ALGAE */
   public static final double L3_ALGAE_HEIGHT_M = L2_ALGAE_HEIGHT_M + Units.inchesToMeters(15.26);
   /** Height position of the Periscope for reaching L4 */

@@ -481,11 +481,11 @@ public class AutoCommands {
         .andThen(Commands.waitSeconds(0.5))
         .andThen(
             Commands.parallel(
-                DriveCommands.fieldRelativeDriveAtAngle(
+                DriveCommands.robotRelativeDrive(
                         drive,
-                        () -> RobotStateConstants.isRed() ? -driveSpeed : driveSpeed,
-                        () -> 0,
-                        () -> Rotation2d.kZero)
+                        () -> driveSpeed,
+                        () -> 0.0,
+                        () -> 0.0)
                     .withTimeout(driveTime)));
   }
 

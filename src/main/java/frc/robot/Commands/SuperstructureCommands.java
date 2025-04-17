@@ -89,10 +89,9 @@ public class SuperstructureCommands {
         .andThen(
             Commands.waitUntil(
                 () ->
-                    periscope.isHallEffectSensorTriggered()
+                    periscope.isAtBottom()
                         || periscope.getHeightMeters()
-                            == 0.0)) // TODO: change back to && when we have a working hall effect
-        // sensor
+                            == 0.0))
         .andThen(Commands.runOnce(() -> periscope.setPosition(0.0), periscope));
   }
 
@@ -279,31 +278,6 @@ public class SuperstructureCommands {
    */
   public static Command scoreNet(Periscope periscope, AlgaePivot algaePivot, AEE aee) {
     SuperstructureState.objective(SuperstructureState.Objective.NET);
-    /* Use elevator momentum */
-    // return Commands.runOnce(
-    //         () -> periscope.setPosition(SuperstructureState.periscopeHeight), periscope)
-    //     .andThen(
-    //         Commands.waitUntil(
-    //             () -> periscope.getHeightMeters() > PeriscopeConstants.MAX_HEIGHT_M / 2))
-    //     .andThen(
-    //         Commands.runOnce(
-    //             () -> algaePivot.setAngle(SuperstructureState.algaePivotAngle), algaePivot))
-    /* Use Pivot momentum */
-    // return SuperstructureCommands.setPositions(
-    //         periscope,
-    //         algaePivot,
-    //         SuperstructureState.periscopeHeight,
-    //         SuperstructureState.algaePivotAngle)
-    //     .andThen(
-    //         Commands.waitUntil(() -> periscope.atSetpointHeight() &&
-    // algaePivot.atSetpointAngle()))
-    //     .andThen(
-    //         Commands.runOnce(
-    //             () -> algaePivot.setAngle(AlgaePivotConstants.NET_LAUNCH_ANGLE_RAD), algaePivot))
-    //     .andThen(Commands.waitUntil(() -> algaePivot.atSetpointAngle()))
-    //     .andThen(
-    //         Commands.runOnce(() -> aee.setPercentSpeed(AEEConstants.SCORE_PERCENT_SPEED), aee));
-    /* Drop ALGAE in */
     return SuperstructureCommands.setPositions(
             periscope,
             algaePivot,
@@ -311,9 +285,8 @@ public class SuperstructureCommands {
             SuperstructureState.algaePivotAngle)
         .andThen(
             Commands.waitUntil(() -> periscope.atSetpointHeight() && algaePivot.atSetpointAngle())
-                .withTimeout(5))
-        .andThen(Commands.runOnce(() -> algaePivot.resetRelativeEncoder(), algaePivot));
-  }
+                .withTimeout(5));
+    }
 
   /**
    * Sets the position of the Periscope height and ALGAE Pivot angle to score ALGAE in the
@@ -406,7 +379,7 @@ public class SuperstructureCommands {
           break;
 
         case L2_ALGAE:
-          periscopeHeight = PeriscopeConstants.L2_ALGAE_HEIGHT_M;
+          periscopeHeight = PeriscopeConstants.L2_HEIGHT_M;
           algaePivotAngle = AlgaePivotConstants.REEF_ALGAE_ANGLE_RAD;
           funnelSpeed = 0.0;
           CEESpeed = 0.0;
@@ -422,7 +395,7 @@ public class SuperstructureCommands {
           break;
 
         case L3_ALGAE:
-          periscopeHeight = PeriscopeConstants.L3_ALGAE_HEIGHT_M;
+          periscopeHeight = PeriscopeConstants.L3_HEIGHT_M;
           algaePivotAngle = AlgaePivotConstants.REEF_ALGAE_ANGLE_RAD;
           funnelSpeed = 0.0;
           CEESpeed = 0.0;
@@ -505,7 +478,6 @@ public class SuperstructureCommands {
      * @return {@code true} if both at setpoints, {@code false} if not.
      */
     public static boolean atGoal(Periscope periscope, AlgaePivot algaePivot) {
-      // return periscope.
       return periscope.atSetpointHeight() && algaePivot.atSetpointAngle();
     }
   }
