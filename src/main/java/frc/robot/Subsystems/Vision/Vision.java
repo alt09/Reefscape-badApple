@@ -82,6 +82,7 @@ public class Vision extends SubsystemBase {
       if (optionalEstimatedPose.isEmpty())
         continue; // Move to next camera update iteration if no position is estimated
       var estimatedPose = optionalEstimatedPose.get().estimatedPose.toPose2d();
+
       double ambiguity =
           (currentResult.targets.size() > 1 && currentResult.getMultiTagResult().isPresent())
               ? currentResult.getMultiTagResult().get().estimatedPose.ambiguity
@@ -114,6 +115,7 @@ public class Vision extends SubsystemBase {
       // Average poses is both cameras see an AprilTag and clear pose list
       var averagePose =
           averageVisionPoses(m_estimatedPoses.toArray(new Pose2d[m_estimatedPoses.size()]));
+      Logger.recordOutput("Odometry/Vision/AveragePose", averagePose);
       m_consumer.accept(averagePose, m_inputs[0].timestampSec, m_stdDevs);
       m_estimatedPoses.clear();
     } else {

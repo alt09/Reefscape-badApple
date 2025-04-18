@@ -87,11 +87,7 @@ public class SuperstructureCommands {
                 SuperstructureState.CEESpeed,
                 SuperstructureState.funnelSpeed))
         .andThen(
-            Commands.waitUntil(
-                () ->
-                    periscope.isAtBottom()
-                        || periscope.getHeightMeters()
-                            == 0.0))
+            Commands.waitUntil(() -> periscope.isAtBottom() || periscope.getHeightMeters() == 0.0))
         .andThen(Commands.runOnce(() -> periscope.setPosition(0.0), periscope));
   }
 
@@ -214,11 +210,11 @@ public class SuperstructureCommands {
                     Commands.waitUntil(
                         () ->
                             cee.isBeamBreakExitTriggered() && !cee.isBeamBreakEntranceTriggered()),
-                    Commands.runOnce(() -> cee.setVoltage(0), cee)),
-                Commands.sequence(
-                    Commands.waitUntil(() -> periscope.isAtBottom()),
-                    Commands.runOnce(() -> periscope.resetPosition(0), periscope),
-                    Commands.runOnce(() -> periscope.setPosition(0), periscope))));
+                    Commands.runOnce(() -> cee.setVoltage(0), cee))));
+    // Commands.sequence(
+    //     Commands.waitUntil(() -> periscope.isAtBottom()),
+    //     Commands.runOnce(() -> periscope.resetPosition(0), periscope),
+    //     Commands.runOnce(() -> periscope.setPosition(0), periscope))));
   }
 
   /** ~~~~~~~~~~~~~~~~~~~~~~~~~ ALGAE ~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -286,7 +282,7 @@ public class SuperstructureCommands {
         .andThen(
             Commands.waitUntil(() -> periscope.atSetpointHeight() && algaePivot.atSetpointAngle())
                 .withTimeout(5));
-    }
+  }
 
   /**
    * Sets the position of the Periscope height and ALGAE Pivot angle to score ALGAE in the

@@ -1011,7 +1011,8 @@ public class RobotContainer {
     //                 m_funnelSubsystem.setPercentSpeed(
     //                     SmartDashboard.getNumber("SetVoltage/FunnelPercentSpeed", 1.0)),
     //             m_funnelSubsystem))
-    //     .onFalse(new InstantCommand(() -> m_funnelSubsystem.setPercentSpeed(0), m_funnelSubsystem));
+    //     .onFalse(new InstantCommand(() -> m_funnelSubsystem.setPercentSpeed(0),
+    // m_funnelSubsystem));
     // m_auxController
     //     .povRight()
     //     .onTrue(
@@ -1020,7 +1021,8 @@ public class RobotContainer {
     //                 m_funnelSubsystem.setPercentSpeed(
     //                     -SmartDashboard.getNumber("SetVoltage/FunnelPercentSpeed", 1.0)),
     //             m_funnelSubsystem))
-    //     .onFalse(new InstantCommand(() -> m_funnelSubsystem.setPercentSpeed(0), m_funnelSubsystem));
+    //     .onFalse(new InstantCommand(() -> m_funnelSubsystem.setPercentSpeed(0),
+    // m_funnelSubsystem));
 
     // // ALGAE Pivot testing binding
     // // PID
@@ -1094,15 +1096,18 @@ public class RobotContainer {
     // m_auxController
     //     .rightStick()
     //     .onTrue(
-    //         new InstantCommand(() -> m_periscopeSubsystem.resetPosition(0), m_periscopeSubsystem));
+    //         new InstantCommand(() -> m_periscopeSubsystem.resetPosition(0),
+    // m_periscopeSubsystem));
     // m_auxController
     //     .start()
     //     .onTrue(
-    //         new InstantCommand(() -> m_periscopeSubsystem.enablePID(true), m_periscopeSubsystem));
+    //         new InstantCommand(() -> m_periscopeSubsystem.enablePID(true),
+    // m_periscopeSubsystem));
     // m_auxController
     //     .back()
     //     .onTrue(
-    //         new InstantCommand(() -> m_periscopeSubsystem.enablePID(false), m_periscopeSubsystem));
+    //         new InstantCommand(() -> m_periscopeSubsystem.enablePID(false),
+    // m_periscopeSubsystem));
 
     /* Climb */
     // Deploy
@@ -1136,8 +1141,7 @@ public class RobotContainer {
     // L1 or PROCESSOR
     m_auxController
         .a()
-        .onTrue(SuperstructureCommands.positionsToL1(m_periscopeSubsystem,
-    m_algaePivotSubsystem))
+        .onTrue(SuperstructureCommands.positionsToL1(m_periscopeSubsystem, m_algaePivotSubsystem))
         .onFalse(
             SuperstructureCommands.zero(
                 m_periscopeSubsystem,
@@ -1279,7 +1283,7 @@ public class RobotContainer {
   }
 
   /**
-   * @return {@link Command} that resets the positions of the mechanisms on the Superstructure 
+   * @return {@link Command} that resets the positions of the mechanisms on the Superstructure
    */
   public Command zeroAll() {
     return SuperstructureCommands.zero(

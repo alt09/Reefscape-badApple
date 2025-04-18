@@ -8,7 +8,6 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
@@ -69,36 +68,38 @@ public class AlgaePivot extends SubsystemBase {
   @Override
   // This method will be called once per scheduler run
   public void periodic() {
-    // Update and log inputs
-    m_io.updateInputs(m_inputs);
-    Logger.processInputs("Algae Pivot", m_inputs);
+    // // Update and log inputs // TODO: test to reduce loop time
+    // m_io.updateInputs(m_inputs);
+    // Logger.processInputs("Algae Pivot", m_inputs);
 
-    if (DriverStation.isDisabled()) {
-      this.setAngle(m_inputs.absPositionRad);
-      this.setVoltage(0);
-    }
+    // if (DriverStation.isDisabled()) {
+    //   this.setAngle(m_inputs.absPositionRad);
+    //   this.setVoltage(0);
+    // }
 
-    // Control the ALGAE Pivot through the PID controller if enabled, open loop voltage control if
-    // disabled
-    if (SmartDashboard.getBoolean("PIDFF_Tuning/ALGAE_Pivot/EnablePID", m_enablePID)) {
-      // Calculate voltage based on PID controller
-      this.setVoltage(
-          m_PIDController.calculate(m_inputs.absPositionRad)
-              + m_feedforward.calculate(
-                  m_PIDController.getSetpoint().position, m_PIDController.getSetpoint().velocity));
+    // // Control the ALGAE Pivot through the PID controller if enabled, open loop voltage control
+    // if
+    // // disabled
+    // if (SmartDashboard.getBoolean("PIDFF_Tuning/ALGAE_Pivot/EnablePID", m_enablePID)) {
+    //   // Calculate voltage based on PID controller
+    //   this.setVoltage(
+    //       m_PIDController.calculate(m_inputs.absPositionRad)
+    //           + m_feedforward.calculate(
+    //               m_PIDController.getSetpoint().position,
+    // m_PIDController.getSetpoint().velocity));
 
-      Logger.recordOutput(
-          "Superstructure/Setpoints/ALGAEPivot/AtSetpointAngle", m_PIDController.atSetpoint());
-      Logger.recordOutput(
-          "Superstructure/Setpoints/ALGAEPivot/AtGoalState", m_PIDController.atGoal());
+    //   Logger.recordOutput(
+    //       "Superstructure/Setpoints/ALGAEPivot/AtSetpointAngle", m_PIDController.atSetpoint());
+    //   Logger.recordOutput(
+    //       "Superstructure/Setpoints/ALGAEPivot/AtGoalState", m_PIDController.atGoal());
 
-      // Enable and update tunable PID gains through SmartDashboard
-      if (SmartDashboard.getBoolean("PIDFF_Tuning/ALGAE_Pivot/EnableTuning", false)) {
-        this.updatePID();
-        this.updateFF();
-        this.updateConstraints();
-      }
-    }
+    //   // Enable and update tunable PID gains through SmartDashboard
+    //   if (SmartDashboard.getBoolean("PIDFF_Tuning/ALGAE_Pivot/EnableTuning", false)) {
+    //     this.updatePID();
+    //     this.updateFF();
+    //     this.updateConstraints();
+    //   }
+    // }
   }
 
   /**

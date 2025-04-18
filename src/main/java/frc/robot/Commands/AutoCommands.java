@@ -481,11 +481,7 @@ public class AutoCommands {
         .andThen(Commands.waitSeconds(0.5))
         .andThen(
             Commands.parallel(
-                DriveCommands.robotRelativeDrive(
-                        drive,
-                        () -> driveSpeed,
-                        () -> 0.0,
-                        () -> 0.0)
+                DriveCommands.robotRelativeDrive(drive, () -> driveSpeed, () -> 0.0, () -> 0.0)
                     .withTimeout(driveTime)));
   }
 
@@ -540,7 +536,9 @@ public class AutoCommands {
             () ->
                 // Update robot heading
                 drive.resetPose(
-                    new Pose2d(drive.getCurrentPose2d().getTranslation(), Rotation2d.k180deg)),
+                    new Pose2d(
+                        drive.getCurrentPose2d().getTranslation(),
+                        RobotStateConstants.isRed() ? Rotation2d.kZero : Rotation2d.k180deg)),
             drive)
         .andThen(Commands.waitSeconds(0.5))
         .andThen(
@@ -548,7 +546,7 @@ public class AutoCommands {
                     // Drive and raise the Periscope
                     DriveCommands.fieldRelativeDriveAtAngle(
                         drive,
-                        () -> RobotStateConstants.isRed() ? driveSpeed : -driveSpeed,
+                        () -> RobotStateConstants.isRed() ? -driveSpeed : driveSpeed,
                         () -> 0,
                         () -> RobotStateConstants.isRed() ? Rotation2d.kZero : Rotation2d.k180deg),
                     coralPosition)
@@ -566,7 +564,10 @@ public class AutoCommands {
                 // Drive back to avoid CORAL
                 DriveCommands.robotRelativeDrive(drive, () -> -driveSpeed, () -> 0, () -> 0)
                     .withTimeout(1)))
-        .andThen(SuperstructureCommands.zero(periscope, algaePivot, aee, cee, funnel));
+        .andThen(
+            Commands.parallel(
+                SuperstructureCommands.zero(periscope, algaePivot, aee, cee, funnel),
+                DriveCommands.robotRelativeDrive(drive, () -> 0, () -> 0, () -> 0)));
   }
 
   /**

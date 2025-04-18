@@ -6,7 +6,6 @@ package frc.robot.Subsystems.Algae.EndEffector;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotStateConstants;
-import org.littletonrobotics.junction.Logger;
 
 public class AEE extends SubsystemBase {
   private final AEEIO m_io;
@@ -30,9 +29,9 @@ public class AEE extends SubsystemBase {
   @Override
   // This method will be called once per scheduler run
   public void periodic() {
-    // Update and log inputs
-    m_io.updateInputs(m_inputs);
-    Logger.processInputs("AEE", m_inputs);
+    // // Update and log inputs // TODO: test to reduce loop time
+    // m_io.updateInputs(m_inputs);
+    // Logger.processInputs("AEE", m_inputs);
   }
 
   /**

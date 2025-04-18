@@ -168,7 +168,8 @@ public class Periscope extends SubsystemBase {
   }
 
   /**
-   * @return If the Periscope is stalling, below a certain height, and not moving then it is at the bottom of its travel
+   * @return If the Periscope is stalling, below a certain height, and not moving then it is at the
+   *     bottom of its travel
    */
   public boolean isAtBottom() {
     return (m_inputs.currentDraw[0] > 30

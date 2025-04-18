@@ -266,11 +266,11 @@ public class PathfindingCommands {
         break;
 
       case "K":
-        branchOffset = 0.0;
+        branchOffset = Units.inchesToMeters(-3);
         break;
 
       case "L":
-        branchOffset = 0.0;
+        branchOffset = Units.inchesToMeters(-3);
         break;
     }
 
