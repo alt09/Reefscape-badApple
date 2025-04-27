@@ -80,8 +80,8 @@ public class Drive extends SubsystemBase {
 
     // Initialize Drivetrain and Gyro
     m_gyroIO = gyroIO;
-    m_modules[0] = new Module(FLModuleIO, 0); // Index 0 corresponds to front left Module
-    m_modules[1] = new Module(FRModuleIO, 1); // Index 1 corresponds to front right Module
+    m_modules[0] = new Module(FRModuleIO, 0); // Index 0 corresponds to front left Module
+    m_modules[1] = new Module(FLModuleIO, 1); // Index 1 corresponds to front right Module
     m_modules[2] = new Module(BLModuleIO, 2); // Index 2 corresponds to back left Module
     m_modules[3] = new Module(BRModuleIO, 3); // Index 3 corresponds to back right Module
 
@@ -169,7 +169,7 @@ public class Drive extends SubsystemBase {
     // Update the periodic for each Module and the Gyro
     m_gyroIO.updateInputs(m_gyroInputs);
     Logger.processInputs("Gyro", m_gyroInputs);
-    for (int i = 0; i < m_modules.length; i++) {
+    for (int i = 0; i < 6; i++) {
       m_modules[i].updateInputs();
     }
     // Re-enable odometry updates
@@ -228,6 +228,11 @@ public class Drive extends SubsystemBase {
       this.updateDriveFF();
       this.updateTurnPID();
     }
+    public void enableBrakeModeAll(boolean enable) {
+      for (var module : m_modules) {
+        module.enableBrakeMode(enable);
+      }
+    }
   }
 
   /**
@@ -235,11 +240,6 @@ public class Drive extends SubsystemBase {
    *
    * @param enable {@code true} to enable brake mode, {@code false} to enable coast mode.
    */
-  public void enableBrakeModeAll(boolean enable) {
-    for (var module : m_modules) {
-      module.enableBrakeMode(enable);
-    }
-  }
 
   /** Stops all the Drivetrain motors */
   public void stop() {
@@ -255,7 +255,7 @@ public class Drive extends SubsystemBase {
 
     m_swerveDriveKinematics.resetHeadings(headings);
     stop();
-  }
+  
 
   /* ~~~~~~~~~~~~~~~~~~ Chassis and Modules ~~~~~~~~~~~~~~~~~~ */
 
@@ -336,7 +336,7 @@ public class Drive extends SubsystemBase {
       modulePositions[i] = m_modules[i].getPosition();
     }
 
-    return modulePositions;
+    return ModulePositions;
   }
 
   /**
@@ -363,7 +363,7 @@ public class Drive extends SubsystemBase {
           m_modules[1].getState(),
           m_modules[2].getState(),
           m_modules[3].getState(),
-        });
+        })
   }
 
   /**
@@ -466,7 +466,7 @@ public class Drive extends SubsystemBase {
       positions[i] = m_modules[i].getPositionRad();
     }
     return positions;
-  }
+  
 
   /* ~~~~~~~~~~~~~~~~~~ PID and Feedforward ~~~~~~~~~~~~~~~~~~ */
 
@@ -563,4 +563,6 @@ public class Drive extends SubsystemBase {
       this.setTurnPID(DriveConstants.TURN_KP, DriveConstants.TURN_KI, DriveConstants.TURN_KD);
     }
   }
+}
+}
 }

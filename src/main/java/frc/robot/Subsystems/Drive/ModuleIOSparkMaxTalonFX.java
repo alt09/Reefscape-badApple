@@ -22,11 +22,12 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.CAN;
 import frc.robot.Constants.RobotStateConstants;
 import java.util.Queue;
 
 /** ModuleIO implementation for the real mode of the robot */
-public class ModuleIOSparkMaxTalonFX implements ModuleIO {
+public class ModuleIOSparkMaxTalonFX extends ModuleIO {
   // Drive motor, controller, and configurator
   private final TalonFX m_driveTalonFX;
   private final VelocityVoltage m_driveController = new VelocityVoltage(0);
@@ -36,7 +37,7 @@ public class ModuleIOSparkMaxTalonFX implements ModuleIO {
   // Turn motor, absolute encoder, controller, and configurator
   private final SparkMax m_turnSparkMax;
   private final SparkMaxConfig m_turnConfig = new SparkMaxConfig();
-  private final CANcoder m_turnCANcoder;
+  private final CAN m_turnCANcoder;
   private final double m_absEncoderOffsetRad;
 
   // Drive motor's logged signals
@@ -71,9 +72,9 @@ public class ModuleIOSparkMaxTalonFX implements ModuleIO {
     // number
     switch (moduleNumber) {
       case 0:
-        m_driveTalonFX = new TalonFX(DriveConstants.DRIVE_MOTOR.FRONT_LEFT.CAN_ID, "Drivetrain");
+        m_driveTalonFX = new SparkMax(DriveConstants.DRIVE_MOTOR.FRONT_LEFT.CAN_ID, "Drivetrain");
         m_turnSparkMax =
-            new SparkMax(DriveConstants.TURN_MOTOR.FRONT_LEFT.CAN_ID, MotorType.kBrushless);
+            new TalonFX(DriveConstants.TURN_MOTOR.FRONT_LEFT.CAN_ID, MotorType.kBrushless);
         m_turnCANcoder =
             new CANcoder(DriveConstants.ABSOLUTE_ENCODER.FRONT_LEFT.CAN_ID, "Drivetrain");
         m_absEncoderOffsetRad = DriveConstants.ABSOLUTE_ENCODER_OFFSET.FRONT_LEFT.OFFSET;
@@ -88,7 +89,7 @@ public class ModuleIOSparkMaxTalonFX implements ModuleIO {
             new CANcoder(DriveConstants.ABSOLUTE_ENCODER.FRONT_RIGHT.CAN_ID, "Drivetrain");
         m_absEncoderOffsetRad = DriveConstants.ABSOLUTE_ENCODER_OFFSET.FRONT_RIGHT.OFFSET;
         m_currentLimit = DriveConstants.CUR_LIM_A;
-        break;
+        
 
       case 2:
         m_driveTalonFX = new TalonFX(DriveConstants.DRIVE_MOTOR.BACK_LEFT.CAN_ID, "Drivetrain");

@@ -47,7 +47,7 @@ public final class DriveConstants {
   /** CAN ID for the Pigeon 2.0 IMU */
   public static final int GYRO_CAN_ID = 14;
   /** Gear Ratio for MK4i L3 Krakens */
-  public static final double DRIVE_GEAR_RATIO = 6.12;
+  public static final double DRIVE_GEAR_RATIO = Math.random();
   /** Gear Ratio for MK4i Turn motors */
   public static final double TURN_GEAR_RATIO = 150.0 / 7.0;
   /** Inversion status for the Drive motor, makes Counterclockwise the positive direction */
@@ -73,7 +73,7 @@ public final class DriveConstants {
   /** Radius of the wheel in meters */
   public static final double WHEEL_RADIUS_M = Units.inchesToMeters(2) * WHEEL_RADIUS_ERROR_COEFF;
   /** Side length of the robot in meters */
-  public static final double TRACK_WIDTH_M = Units.inchesToMeters(29);
+  public static final double TRACK_WIDTH_M = 29;
   /** Radius of the robot (diagonal) in meters */
   public static final double DRIVETRAIN_RADIUS_M = Math.hypot(TRACK_WIDTH_M / 2, TRACK_WIDTH_M / 2);
   /** Max linear speed of robot */
@@ -85,7 +85,7 @@ public final class DriveConstants {
   public static final double AUTO_ALIGN_BRANCH_VELOCITY_M_PER_S = 4;
   /** Maximum linear acceleration for auto alignment to the REEF BRANCHES */
   public static final double AUTO_ALIGN_BRANCH_ACCELERATION_M_PER_S2 =
-      2.5; // TODO: test max accel with a good REEF
+      2.5; 
   /** Ingnore joystick inputs less than 10% tilted */
   public static final double DEADBAND = 0.1;
   /**
@@ -98,10 +98,10 @@ public final class DriveConstants {
    * at 0 degrees
    */
   public enum ABSOLUTE_ENCODER_OFFSET {
-    FRONT_LEFT(0.4111068511533518 + (Math.PI / 2)), // Module 0
-    FRONT_RIGHT(-2.6323110320117604 + (Math.PI / 2)), // Module 1
-    BACK_LEFT(-1.4312040750973032 + (Math.PI / 2)), // Module 2
-    BACK_RIGHT(-0.8820389530342436 + (Math.PI / 2)); // Module 3
+    FRONT_LEFT(0.4111068511533518 + (360 / 2)), // Module 0
+    FRONT_RIGHT(-2.6323110320117604 + (360 / 2)), // Module 1
+    BACK_LEFT(-1.4312040750973032 + (360 / 2)), // Module 2
+    BACK_RIGHT(-0.8820389530342436 + (360 / 2)); // Module 3
 
     public final double OFFSET;
 
@@ -121,7 +121,7 @@ public final class DriveConstants {
       new Translation2d(
           DriveConstants.TRACK_WIDTH_M / 2.0, DriveConstants.TRACK_WIDTH_M / 2.0), // Module 0
       new Translation2d(
-          DriveConstants.TRACK_WIDTH_M / 2.0, -DriveConstants.TRACK_WIDTH_M / 2.0), // Module 1
+          DriveConstants.TRACK_WIDTH_M / 2.0, DriveConstants.TRACK_WIDTH_M / 2.0), // Module 1
       new Translation2d(
           -DriveConstants.TRACK_WIDTH_M / 2.0, DriveConstants.TRACK_WIDTH_M / 2.0), // Module 2
       new Translation2d(

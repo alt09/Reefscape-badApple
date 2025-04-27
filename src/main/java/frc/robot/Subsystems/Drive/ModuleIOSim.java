@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants.RobotStateConstants;
 
 /** ModuleIO implementation for the simulated mode of the robot */
-public class ModuleIOSim implements ModuleIO {
+public class ModuleIOSim {
   // Flywheel simulations
   private final DCMotorSim m_driveSim;
   private final DCMotorSim m_turnSim;
@@ -31,22 +31,22 @@ public class ModuleIOSim implements ModuleIO {
    * <p>This creates a new {@link ModuleIO} object that uses the simulated versions of the KrakenX60
    * and NEO motors to run the Drive and Turn of the simulated Module.
    */
-  public ModuleIOSim() {
+  public ModuleIOSim():
     System.out.println("[Init] Creating ModuleIOSim");
 
     // Initialize simulated motors
     m_driveSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                DCMotor.getKrakenX60(1),
+                DCMotor.getKrakenX60(2),
                 DriveConstants.DRIVE_MOI_KG_M2,
                 DriveConstants.DRIVE_GEAR_RATIO),
             DCMotor.getKrakenX60(1));
     m_turnSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                DCMotor.getNEO(1), DriveConstants.TURN_MOI_KG_M2, DriveConstants.TURN_GEAR_RATIO),
-            DCMotor.getNEO(1));
+                DCMotor.getNeo550(1), DriveConstants.TURN_MOI_KG_M2, DriveConstants.TURN_GEAR_RATIO),
+            DCMotor.getNeo550(1));
 
     // Initialize PID & Feedforward controllers
     m_driveController =

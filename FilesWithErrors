@@ -1,0 +1,36 @@
+This project contains 20 errors in different files. These are issues you may encounter in the future.
+
+Don't forget that some errors won't be highlighted in red by VScode. I recommend keeping in mind that this project is based on the Reefscape 2025 robot.
+
+the files with error and the number of errors are : 
+
+Drive.java , 8;
+DriveConstants.java , 4;
+ModuleIOSparkMaxTalonFX.java 4;
+ModuleIOSim, 4;
+
+if the issue is repeated nearly(like within 5 lines range) it counts as 1 error 
+
+Rules:
+1. Do not use any AI
+2. Do not look at ANY DOF, Andy, or any code that has 6413||9993 as a team number in it exeppt this code( you can use other people code but not 6413 code related )
+3. Do not ask to Josue, Helen, or ANY mentor that knows how to do a hello world on any programming lenguage any question that will give you where is the error( you can ask questions that will lead you to the anwere but don't ask questions that gives you the answere)
+4. Don't depend on others, (Everyone has to find atleast 5 issues by themselves in other to collaborate with others)
+5. if you find a way to see the commits on this repo don't use it 
+6. If you find something that looks like a loophole on this rules, Don't use it 
+7. if someone brake this rules, that person has 2 options, Study every single time until you can go for free to MIT, became a NASA ingennier, go to space and say sikibidi sigma rizz absolute cinema while doing a backflip with tralalero tralala on the background OR do 25 squats per each times the rules were broken, and if you fail you are obligated to work on scouting, social media, impact or mechanical depending on who you are (andy has to choose).
+
+protips:
+1. Read the error messagess.
+2. Read comments.
+3. Theres no errors on comments (josue is not gonna be here next season so dont worry about them(JK I just don't know how a grammar or spelling error looks like ))
+4. Understand what the function does.
+5. Collaborate with other programmers, you are not alone while coding.
+6. Have fun, don't stress if you don't find the issue
+7. if you didn't understood me, please tell me.
+8. search on websites like chiefdephi, stackoverflow or any forum of your preference(exept if an AI gives you an anwere)
+
+Good luck to everyone, and remember that this is just the part 1, part 2 is finding issues physically on the real robot, but part 2 is gonna be in groups 
+
+
+
