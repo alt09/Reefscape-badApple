@@ -47,7 +47,7 @@ public final class DriveConstants {
   /** CAN ID for the Pigeon 2.0 IMU */
   public static final int GYRO_CAN_ID = 14;
   /** Gear Ratio for MK4i L3 Krakens */
-  public static final double DRIVE_GEAR_RATIO = Math.random();
+  public static final double DRIVE_GEAR_RATIO = 6.12;
   /** Gear Ratio for MK4i Turn motors */
   public static final double TURN_GEAR_RATIO = 150.0 / 7.0;
   /** Inversion status for the Drive motor, makes Counterclockwise the positive direction */
@@ -59,12 +59,12 @@ public final class DriveConstants {
   /** Enables the current limit */
   public static final boolean ENABLE_CUR_LIM = true;
   /** Refresh signals of the TalonFX and CANcoder 50 times a second (every 0.02 second) */
-  public static final double UPDATE_FREQUENCY_HZ = 50;
+  public static final int UPDATE_FREQUENCY_HZ = 50;
   /**
    * Refresh the position signals of the TalonFX and CANcoder 250 times a second (every 0.004
    * second)
    */
-  public static final double ODOMETRY_UPDATE_FREQUENCY_HZ = 250;
+  public static final int ODOMETRY_UPDATE_FREQUENCY_HZ = 250;
   /**
    * Proportion of error from Drive relative encoder readings to actual distance travelled by the
    * wheel due to the bolts holding down the tread
@@ -73,7 +73,7 @@ public final class DriveConstants {
   /** Radius of the wheel in meters */
   public static final double WHEEL_RADIUS_M = Units.inchesToMeters(2) * WHEEL_RADIUS_ERROR_COEFF;
   /** Side length of the robot in meters */
-  public static final double TRACK_WIDTH_M = 29;
+  public static final double TRACK_WIDTH_M = Units.inchesToMeters(29);
   /** Radius of the robot (diagonal) in meters */
   public static final double DRIVETRAIN_RADIUS_M = Math.hypot(TRACK_WIDTH_M / 2, TRACK_WIDTH_M / 2);
   /** Max linear speed of robot */
@@ -121,11 +121,11 @@ public final class DriveConstants {
       new Translation2d(
           DriveConstants.TRACK_WIDTH_M / 2.0, DriveConstants.TRACK_WIDTH_M / 2.0), // Module 0
       new Translation2d(
-          DriveConstants.TRACK_WIDTH_M / 2.0, DriveConstants.TRACK_WIDTH_M / 2.0), // Module 1
+          -DriveConstants.TRACK_WIDTH_M / 2.0, DriveConstants.TRACK_WIDTH_M / 2.0), // Module 1
       new Translation2d(
-          -DriveConstants.TRACK_WIDTH_M / 2.0, DriveConstants.TRACK_WIDTH_M / 2.0), // Module 2
+          -DriveConstants.TRACK_WIDTH_M / 2.0, -DriveConstants.TRACK_WIDTH_M / 2.0), // Module 2
       new Translation2d(
-          -DriveConstants.TRACK_WIDTH_M / 2.0, -DriveConstants.TRACK_WIDTH_M / 2.0), // Module 3
+          DriveConstants.TRACK_WIDTH_M / 2.0, -DriveConstants.TRACK_WIDTH_M / 2.0), // Module 3
     };
   }
 

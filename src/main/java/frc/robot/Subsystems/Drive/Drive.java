@@ -227,13 +227,13 @@ public class Drive extends SubsystemBase {
       this.updateDrivePID();
       this.updateDriveFF();
       this.updateTurnPID();
+    }  
     }
     public void enableBrakeModeAll(boolean enable) {
       for (var module : m_modules) {
         module.enableBrakeMode(enable);
       }
     }
-  }
 
   /**
    * Sets the idle mode of the entire Drivetrain (Drive and Turn motors).
@@ -255,8 +255,7 @@ public class Drive extends SubsystemBase {
 
     m_swerveDriveKinematics.resetHeadings(headings);
     stop();
-  
-
+  }
   /* ~~~~~~~~~~~~~~~~~~ Chassis and Modules ~~~~~~~~~~~~~~~~~~ */
 
   /**
@@ -336,7 +335,7 @@ public class Drive extends SubsystemBase {
       modulePositions[i] = m_modules[i].getPosition();
     }
 
-    return ModulePositions;
+    return modulePositions;
   }
 
   /**
@@ -363,7 +362,7 @@ public class Drive extends SubsystemBase {
           m_modules[1].getState(),
           m_modules[2].getState(),
           m_modules[3].getState(),
-        })
+        });
   }
 
   /**
@@ -466,7 +465,7 @@ public class Drive extends SubsystemBase {
       positions[i] = m_modules[i].getPositionRad();
     }
     return positions;
-  
+  }
 
   /* ~~~~~~~~~~~~~~~~~~ PID and Feedforward ~~~~~~~~~~~~~~~~~~ */
 
@@ -563,6 +562,4 @@ public class Drive extends SubsystemBase {
       this.setTurnPID(DriveConstants.TURN_KP, DriveConstants.TURN_KI, DriveConstants.TURN_KD);
     }
   }
-}
-}
 }
